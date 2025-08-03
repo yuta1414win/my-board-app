@@ -2,8 +2,10 @@
  * @jest-environment node
  */
 import { createMocks } from 'node-mocks-http';
-import handler from '../../pages/api/posts/index';
-import idHandler from '../../pages/api/posts/[id]';
+// モックした後にインポートする必要がある
+const Post = require('../../models/Post');
+const handler = require('../../pages/api/posts/index').default;
+const idHandler = require('../../pages/api/posts/[id]').default;
 
 // MongoDBのモック
 jest.mock('../../lib/mongodb', () => {
