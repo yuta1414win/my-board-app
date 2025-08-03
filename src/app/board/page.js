@@ -40,7 +40,7 @@ export default function BoardPage() {
       if (data.success) {
         setPosts(data.data);
       }
-    } catch (error) {
+    } catch {
       setError('投稿の取得に失敗しました');
     } finally {
       setLoading(false);
