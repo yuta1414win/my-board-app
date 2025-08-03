@@ -1,4 +1,12 @@
 import { test, expect } from '@playwright/test';
+import {
+  generateUniqueTitle,
+  generateUniqueContent,
+  createTestPost,
+  cleanupTestData,
+  refreshPage,
+  deleteTestPostByTitle
+} from './utils/testUtils.js';
 
 test.describe('掲示板アプリケーション E2E テスト', () => {
   test.beforeEach(async ({ page }) => {
