@@ -5,11 +5,13 @@ import {
   createTestPost,
   cleanupTestData,
   refreshPage,
-  deleteTestPostByTitle
+  deleteTestPostByTitle,
 } from './utils/testUtils.js';
 
 test.describe('掲示板アプリケーション E2E テスト', () => {
   test.beforeEach(async ({ page }) => {
+    // テストデータをクリーンアップ
+    await cleanupTestData(page);
     // 各テスト前にホームページに移動
     await page.goto('/');
   });
