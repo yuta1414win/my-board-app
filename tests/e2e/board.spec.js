@@ -130,7 +130,10 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
       const editedContent = '編集された内容です。';
 
       // 編集ボタンをクリック
-      await page.locator('button[aria-label*="edit"], [data-testid="EditIcon"]').first().click();
+      await page
+        .locator('button[aria-label*="edit"], [data-testid="EditIcon"]')
+        .first()
+        .click();
 
       // 編集ダイアログが表示されることを確認
       await expect(page.locator('text=投稿を編集')).toBeVisible();
@@ -166,7 +169,10 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
 
     test('編集をキャンセルできる', async ({ page }) => {
       // 編集ボタンをクリック
-      await page.locator('button[aria-label*="edit"], [data-testid="EditIcon"]').first().click();
+      await page
+        .locator('button[aria-label*="edit"], [data-testid="EditIcon"]')
+        .first()
+        .click();
 
       // 編集ダイアログが表示されることを確認
       await expect(page.locator('text=投稿を編集')).toBeVisible();
@@ -212,9 +218,7 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
       page.on('dialog', (dialog) => dialog.accept());
 
       // 削除ボタンをクリック
-      await page
-        .click('button[aria-label*="delete"], [data-testid="DeleteIcon"]')
-        .first();
+      await page.locator('button[aria-label*="delete"], [data-testid="DeleteIcon"]').first().click();
 
       // 投稿が削除されて表示されなくなることを確認
       await expect(page.locator(`text=${testPostTitle}`)).not.toBeVisible();
@@ -226,9 +230,7 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
       page.on('dialog', (dialog) => dialog.dismiss());
 
       // 削除ボタンをクリック
-      await page
-        .click('button[aria-label*="delete"], [data-testid="DeleteIcon"]')
-        .first();
+      await page.locator('button[aria-label*="delete"], [data-testid="DeleteIcon"]').first().click();
 
       // 投稿が削除されずに残っていることを確認
       await expect(page.locator(`text=${testPostTitle}`)).toBeVisible();
