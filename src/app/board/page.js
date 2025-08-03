@@ -174,7 +174,7 @@ export default function BoardPage() {
       } else {
         setError(data.error || '更新に失敗しました');
       }
-    } catch (error) {
+    } catch {
       setError('更新に失敗しました');
     }
   };
