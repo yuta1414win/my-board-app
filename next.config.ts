@@ -1,8 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+// Bundle analyzer configuration
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig: NextConfig = {
   /* config options here */
-  
+
   // 本番環境でテストAPIルートを除外
   ...(process.env.NODE_ENV === 'production' && {
     webpack: (config: any) => {
