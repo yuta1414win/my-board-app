@@ -1,4 +1,9 @@
-import { formatDate, countCharacters, isEmpty, validatePost } from '../../utils/dateUtils';
+import {
+  formatDate,
+  countCharacters,
+  isEmpty,
+  validatePost,
+} from '../../utils/dateUtils';
 
 describe('dateUtils', () => {
   describe('formatDate', () => {
@@ -32,6 +37,7 @@ describe('dateUtils', () => {
     test('nullまたはundefinedの場合エラーメッセージを返す', () => {
       expect(formatDate(null)).toBe('無効な日付');
       expect(formatDate(undefined)).toBe('無効な日付');
+      expect(formatDate('')).toBe('無効な日付');
     });
   });
 
@@ -84,7 +90,7 @@ describe('dateUtils', () => {
     test('有効な投稿データの場合、isValid: trueを返す', () => {
       const postData = {
         title: '有効なタイトル',
-        content: '有効な本文です。'
+        content: '有効な本文です。',
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(true);
@@ -94,7 +100,7 @@ describe('dateUtils', () => {
     test('タイトルが空の場合、エラーを返す', () => {
       const postData = {
         title: '',
-        content: '有効な本文です。'
+        content: '有効な本文です。',
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(false);
@@ -104,7 +110,7 @@ describe('dateUtils', () => {
     test('タイトルが50文字を超える場合、エラーを返す', () => {
       const postData = {
         title: 'a'.repeat(51), // 51文字
-        content: '有効な本文です。'
+        content: '有効な本文です。',
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(false);
@@ -114,7 +120,7 @@ describe('dateUtils', () => {
     test('本文が空の場合、エラーを返す', () => {
       const postData = {
         title: '有効なタイトル',
-        content: ''
+        content: '',
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(false);
@@ -124,7 +130,7 @@ describe('dateUtils', () => {
     test('本文が200文字を超える場合、エラーを返す', () => {
       const postData = {
         title: '有効なタイトル',
-        content: 'a'.repeat(201) // 201文字
+        content: 'a'.repeat(201), // 201文字
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(false);
@@ -134,7 +140,7 @@ describe('dateUtils', () => {
     test('複数のエラーがある場合、すべてのエラーを返す', () => {
       const postData = {
         title: '',
-        content: ''
+        content: '',
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(false);
@@ -155,7 +161,7 @@ describe('dateUtils', () => {
     test('境界値（50文字、200文字）は有効とする', () => {
       const postData = {
         title: 'a'.repeat(50), // 50文字（境界値）
-        content: 'b'.repeat(200) // 200文字（境界値）
+        content: 'b'.repeat(200), // 200文字（境界値）
       };
       const result = validatePost(postData);
       expect(result.isValid).toBe(true);
