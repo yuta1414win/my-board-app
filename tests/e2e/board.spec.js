@@ -180,7 +180,7 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
   });
 
   test.describe('投稿削除フロー', () => {
-    let testPostTitle = 'E2E削除テスト投稿';
+    let testPostTitle = `E2E削除テスト投稿_${Date.now()}`;
     let testPostContent = 'これは削除テスト用の投稿です。';
 
     test.beforeEach(async ({ page }) => {
