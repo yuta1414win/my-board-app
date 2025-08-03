@@ -4,19 +4,24 @@
  * @returns {string} フォーマットされた日付文字列
  */
 export const formatDate = (dateString) => {
-  const date = new Date(dateString);
+  // null、undefined、空文字列の場合
+  if (!dateString) {
+    return '無効な日付';
+  }
   
+  const date = new Date(dateString);
+
   // 無効な日付の場合
   if (isNaN(date.getTime())) {
     return '無効な日付';
   }
-  
+
   const dateStr = date.toLocaleDateString('ja-JP');
-  const timeStr = date.toLocaleTimeString('ja-JP', { 
-    hour: '2-digit', 
-    minute: '2-digit' 
+  const timeStr = date.toLocaleTimeString('ja-JP', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
-  
+
   return `${dateStr} ${timeStr}`;
 };
 
@@ -50,27 +55,27 @@ export const isEmpty = (text) => {
  */
 export const validatePost = (postData) => {
   const errors = {};
-  
+
   if (!postData) {
     return { isValid: false, errors: { general: '投稿データが必要です' } };
   }
-  
+
   // タイトルのバリデーション
   if (isEmpty(postData.title)) {
     errors.title = 'タイトルを入力してください';
   } else if (countCharacters(postData.title) > 50) {
     errors.title = 'タイトルは50文字以内にしてください';
   }
-  
+
   // 本文のバリデーション
   if (isEmpty(postData.content)) {
     errors.content = '本文を入力してください';
   } else if (countCharacters(postData.content) > 200) {
     errors.content = '本文は200文字以内にしてください';
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 };
