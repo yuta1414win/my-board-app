@@ -21,9 +21,9 @@ describe('BoardPage', () => {
       });
 
       render(<BoardPage />);
-      
+
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
@@ -67,7 +67,7 @@ describe('BoardPage', () => {
 
     test('有効な投稿を作成できる', async () => {
       const user = userEvent.setup();
-      
+
       // 新規投稿作成のレスポンスをモック
       fetch.mockResolvedValueOnce({
         json: async () => ({
@@ -81,7 +81,7 @@ describe('BoardPage', () => {
           },
         }),
       });
-      
+
       // 投稿一覧再取得のレスポンスをモック
       fetch.mockResolvedValueOnce({
         json: async () => ({ success: true, data: [] }),
@@ -93,9 +93,9 @@ describe('BoardPage', () => {
 
       await user.type(titleInput, '新しい投稿');
       await user.type(contentInput, '新しい内容');
-      
+
       expect(submitButton).not.toBeDisabled();
-      
+
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -119,7 +119,7 @@ describe('BoardPage', () => {
       const titleInput = screen.getByLabelText('タイトル');
 
       await user.type(titleInput, 'テスト');
-      
+
       expect(screen.getByText('3/50文字')).toBeInTheDocument();
     });
 
@@ -130,7 +130,7 @@ describe('BoardPage', () => {
 
       // 51文字入力
       await user.type(titleInput, 'a'.repeat(51));
-      
+
       expect(screen.getByText('51/50文字')).toBeInTheDocument();
       expect(submitButton).toBeDisabled();
     });
@@ -142,7 +142,7 @@ describe('BoardPage', () => {
 
     test('投稿失敗時にエラーメッセージを表示する', async () => {
       const user = userEvent.setup();
-      
+
       fetch.mockResolvedValueOnce({
         json: async () => ({
           success: false,
@@ -159,7 +159,9 @@ describe('BoardPage', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('タイトルを入力してください')).toBeInTheDocument();
+        expect(
+          screen.getByText('タイトルを入力してください')
+        ).toBeInTheDocument();
       });
     });
   });

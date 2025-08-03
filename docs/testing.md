@@ -70,6 +70,7 @@ npm test -- --testPathPatterns="utils"
 **テスト対象**: `utils/dateUtils.js`
 
 **テストケース**:
+
 - `formatDate`: 日付フォーマット関数
   - 有効な日付文字列の正しいフォーマット
   - Dateオブジェクトの正しいフォーマット
@@ -99,6 +100,7 @@ npm test -- --testPathPatterns="utils"
 **テスト対象**: `pages/api/posts/index.js`, `pages/api/posts/[id].js`
 
 **テストケース**:
+
 - `GET /api/posts`: 投稿一覧取得
   - 正常な投稿一覧の取得
   - データベースエラーの処理
@@ -124,6 +126,7 @@ npm test -- --testPathPatterns="utils"
 **テスト対象**: `src/app/board/page.js`
 
 **テストケース**:
+
 - 初期表示
   - ローディング状態の表示
   - 投稿0件時のメッセージ表示
@@ -139,23 +142,30 @@ npm test -- --testPathPatterns="utils"
 ### 3.3 モック設定
 
 #### 3.3.1 Next.js関連モック
+
 ```javascript
 // jest.setup.js
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({ /* モック実装 */ }),
+  useRouter: () => ({
+    /* モック実装 */
+  }),
   useSearchParams: () => new URLSearchParams(),
   usePathname: () => '',
 }));
 ```
 
 #### 3.3.2 MongoDB/Mongooseモック
+
 ```javascript
 // APIテストでのモック
 jest.mock('../../lib/mongodb', () => jest.fn(() => Promise.resolve()));
-jest.mock('../../models/Post', () => ({ /* モック実装 */ }));
+jest.mock('../../models/Post', () => ({
+  /* モック実装 */
+}));
 ```
 
 #### 3.3.3 fetchモック
+
 ```javascript
 // グローバルfetchモック
 global.fetch = jest.fn();
@@ -182,34 +192,42 @@ npm run test:all
 ### 4.2 テスト対象
 
 #### 4.2.1 基本的なナビゲーション
+
 - ホームページから掲示板への遷移
 
 #### 4.2.2 投稿作成フロー
+
 - 新規投稿の作成
 - 文字数制限のバリデーション
 - 空投稿の防止
 
 #### 4.2.3 投稿編集フロー
+
 - 投稿の編集
 - 編集のキャンセル
 
 #### 4.2.4 投稿削除フロー
+
 - 投稿の削除（確認ダイアログ含む）
 - 削除のキャンセル
 
 #### 4.2.5 レスポンシブデザイン
+
 - モバイル表示での動作確認
 
 #### 4.2.6 アクセシビリティ
+
 - キーボードナビゲーション
 - フォームラベルの適切な設定
 
 #### 4.2.7 エラーハンドリング
+
 - ネットワークエラー時の動作
 
 ### 4.3 テスト環境
 
 #### 4.3.1 ブラウザサポート
+
 - Chromium (Desktop)
 - Firefox (Desktop)
 - WebKit/Safari (Desktop)
@@ -217,6 +235,7 @@ npm run test:all
 - Mobile Safari (iPhone 12)
 
 #### 4.3.2 自動サーバー起動
+
 ```javascript
 // playwright.config.js
 webServer: {
@@ -230,18 +249,21 @@ webServer: {
 ## 5. テスト実行の前提条件
 
 ### 5.1 環境変数
+
 ```bash
 # テスト用MongoDB URI
 MONGODB_URI=mongodb://localhost:27017/test-db
 ```
 
 ### 5.2 必要なサービス
+
 - MongoDB（APIテスト用）
 - Next.js開発サーバー（E2Eテスト用）
 
 ## 6. CI/CD統合
 
 ### 6.1 GitHub Actions設定例
+
 ```yaml
 name: Tests
 on: [push, pull_request]
@@ -262,16 +284,20 @@ jobs:
 ## 7. テスト結果の確認
 
 ### 7.1 カバレッジレポート
+
 ```bash
 npm run test:coverage
 ```
+
 - カバレッジレポートは `coverage/` ディレクトリに出力
 - HTML形式で詳細な結果を確認可能
 
 ### 7.2 Playwrightレポート
+
 ```bash
 npm run test:e2e
 ```
+
 - テスト実行後、HTMLレポートが自動で開く
 - 失敗時のスクリーンショットとビデオが保存される
 
@@ -280,24 +306,28 @@ npm run test:e2e
 ### 8.1 よくある問題
 
 #### 8.1.1 テストがタイムアウトする
+
 ```bash
 # タイムアウト時間を延長
 npm test -- --testTimeout=30000
 ```
 
 #### 8.1.2 E2Eテストでブラウザが起動しない
+
 ```bash
 # Playwrightブラウザを再インストール
 npx playwright install
 ```
 
 #### 8.1.3 モックが正しく動作しない
+
 - `jest.clearAllMocks()` がテスト間で実行されているか確認
 - モックの設定順序を確認
 
 ### 8.2 デバッグ方法
 
 #### 8.2.1 単体テスト
+
 ```javascript
 // console.logを使ったデバッグ
 console.log('Debug:', variable);
@@ -307,6 +337,7 @@ debugger;
 ```
 
 #### 8.2.2 E2Eテスト
+
 ```javascript
 // スクリーンショット取得
 await page.screenshot({ path: 'debug.png' });
@@ -318,11 +349,13 @@ await page.pause();
 ## 9. テスト品質指標
 
 ### 9.1 目標値
+
 - **単体テストカバレッジ**: 80%以上
 - **E2Eテスト成功率**: 95%以上
 - **テスト実行時間**: 単体テスト5分以内、E2E10分以内
 
 ### 9.2 継続的改善
+
 - 新機能追加時は対応するテストも追加
 - テストの実行時間短縮の検討
 - フレイキーテストの特定と修正

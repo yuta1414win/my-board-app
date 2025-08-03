@@ -8,7 +8,7 @@ export const formatDate = (dateString) => {
   if (!dateString) {
     return '無効な日付';
   }
-  
+
   const date = new Date(dateString);
 
   // 無効な日付の場合

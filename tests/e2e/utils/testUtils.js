@@ -18,7 +18,9 @@ export function generateUniqueTitle(prefix = 'E2Eテスト投稿') {
  * @param {string} prefix - コンテンツのプレフィックス
  * @returns {string} 一意なコンテンツ
  */
-export function generateUniqueContent(prefix = 'これはE2Eテストで作成された投稿です') {
+export function generateUniqueContent(
+  prefix = 'これはE2Eテストで作成された投稿です'
+) {
   const timestamp = Date.now();
   return `${prefix} - ID: ${timestamp}`;
 }
@@ -34,7 +36,7 @@ export async function createTestPost(page, title, content) {
   await page.fill('input[placeholder*="タイトル"]', title);
   await page.fill('textarea[placeholder*="本文"]', content);
   await page.click('button:has-text("投稿する")');
-  
+
   // 投稿が作成されるまで待機
   await page.waitForTimeout(1000);
 }
@@ -55,9 +57,12 @@ export async function cleanupTestData(page) {
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!response.ok) {
-          console.warn('テストデータクリーンアップに失敗しました:', response.status);
+          console.warn(
+            'テストデータクリーンアップに失敗しました:',
+            response.status
+          );
         }
       } catch (error) {
         console.warn('テストデータクリーンアップエラー:', error);
@@ -87,17 +92,21 @@ export async function refreshPage(page) {
 export async function deleteTestPostByTitle(page, title) {
   try {
     // タイトルが含まれるカード要素を特定
-    const postCard = page.locator(`[data-testid="post-card"]:has-text("${title}")`);
-    
-    if (await postCard.count() > 0) {
+    const postCard = page.locator(
+      `[data-testid="post-card"]:has-text("${title}")`
+    );
+
+    if ((await postCard.count()) > 0) {
       // 削除ボタンをクリック
-      const deleteButton = postCard.locator('button[aria-label*="delete"], [data-testid="DeleteIcon"]');
-      
-      if (await deleteButton.count() > 0) {
+      const deleteButton = postCard.locator(
+        'button[aria-label*="delete"], [data-testid="DeleteIcon"]'
+      );
+
+      if ((await deleteButton.count()) > 0) {
         // 削除確認ダイアログを自動承認
-        page.on('dialog', dialog => dialog.accept());
+        page.on('dialog', (dialog) => dialog.accept());
         await deleteButton.first().click();
-        
+
         // 削除完了まで待機
         await page.waitForTimeout(1000);
       }
