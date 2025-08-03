@@ -59,8 +59,8 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
       await page.click('button:has-text("投稿する")');
 
       // 投稿が一覧に表示されることを確認（より安定したセレクター）
-      await expect(page.locator(`[data-testid="post-card"]:has-text("${testTitle}"), text=${testTitle}`).first()).toBeVisible();
-      await expect(page.locator(`[data-testid="post-card"]:has-text("${testContent}"), text=${testContent}`).first()).toBeVisible();
+      await expect(page.locator(`text=${testTitle}`).first()).toBeVisible();
+      await expect(page.locator(`text=${testContent}`).first()).toBeVisible();
 
       // フォームがクリアされることを確認
       await expect(page.locator('input[placeholder*="タイトル"]')).toHaveValue(
