@@ -94,7 +94,7 @@ export default function BoardPage() {
       } else {
         setError(data.error || '投稿に失敗しました');
       }
-    } catch (error) {
+    } catch {
       setError('投稿に失敗しました');
     }
   };
@@ -191,7 +191,11 @@ export default function BoardPage() {
   // 日付フォーマット
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP') + ' ' + date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    return (
+      date.toLocaleDateString('ja-JP') +
+      ' ' +
+      date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+    );
   };
 
   if (loading) {
@@ -207,10 +211,10 @@ export default function BoardPage() {
   return (
     <Container maxWidth="md">
       <Box sx={{ my: { xs: 2, sm: 4 }, px: { xs: 1, sm: 2 } }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          gutterBottom 
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
           align="center"
           sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}
         >
@@ -247,7 +251,12 @@ export default function BoardPage() {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={!title.trim() || title.length > 50 || !content.trim() || content.length > 200}
+                  disabled={
+                    !title.trim() ||
+                    title.length > 50 ||
+                    !content.trim() ||
+                    content.length > 200
+                  }
                   fullWidth
                   sx={{ height: 48 }}
                 >
@@ -266,38 +275,55 @@ export default function BoardPage() {
             </Typography>
           ) : (
             posts.map((post) => (
-              <Card key={post._id} sx={{ transition: 'all 0.3s', '&:hover': { boxShadow: 3 } }}>
+              <Card
+                key={post._id}
+                sx={{ transition: 'all 0.3s', '&:hover': { boxShadow: 3 } }}
+              >
                 <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                  >
                     <Box flex={1} sx={{ minWidth: 0 }}>
-                      <Typography 
-                        variant="h6" 
-                        component="h2" 
-                        gutterBottom 
-                        sx={{ 
+                      <Typography
+                        variant="h6"
+                        component="h2"
+                        gutterBottom
+                        sx={{
                           wordBreak: 'break-word',
                           fontWeight: 500,
-                          mb: 1
+                          mb: 1,
                         }}
                       >
                         {post.title}
                       </Typography>
-                      <Typography 
-                        variant="body1" 
-                        sx={{ 
+                      <Typography
+                        variant="body1"
+                        sx={{
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
-                          mb: 1
+                          mb: 1,
                         }}
                       >
                         {post.content}
                       </Typography>
-                      <Typography variant="caption" color="textSecondary" display="block">
+                      <Typography
+                        variant="caption"
+                        color="textSecondary"
+                        display="block"
+                      >
                         {formatDate(post.createdAt)}
                         {post.updatedAt !== post.createdAt && ' (編集済み)'}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, ml: 2 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        ml: 2,
+                      }}
+                    >
                       <IconButton
                         size="small"
                         onClick={() => handleEditStart(post)}
@@ -323,7 +349,12 @@ export default function BoardPage() {
         </Stack>
 
         {/* 編集ダイアログ */}
-        <Dialog open={openEditDialog} onClose={handleEditCancel} maxWidth="sm" fullWidth>
+        <Dialog
+          open={openEditDialog}
+          onClose={handleEditCancel}
+          maxWidth="sm"
+          fullWidth
+        >
           <DialogTitle>投稿を編集</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 2 }}>
@@ -354,7 +385,12 @@ export default function BoardPage() {
               onClick={handleEditSave}
               variant="contained"
               color="primary"
-              disabled={!editTitle.trim() || editTitle.length > 50 || !editContent.trim() || editContent.length > 200}
+              disabled={
+                !editTitle.trim() ||
+                editTitle.length > 50 ||
+                !editContent.trim() ||
+                editContent.length > 200
+              }
             >
               保存
             </Button>
