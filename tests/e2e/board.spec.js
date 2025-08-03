@@ -41,22 +41,26 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
 
     test('新規投稿を作成できる', async ({ page }) => {
       const testTitle = generateUniqueTitle('E2Eテスト投稿');
-      const testContent = generateUniqueContent('これはE2Eテストで作成された投稿です');
+      const testContent = generateUniqueContent(
+        'これはE2Eテストで作成された投稿です'
+      );
 
       // フォームに入力
       await page.fill('input[placeholder*="タイトル"]', testTitle);
       await page.fill('textarea[placeholder*="本文"]', testContent);
 
-      // 文字数カウンターの確認
-      await expect(page.locator('text=11/50文字')).toBeVisible();
-      await expect(page.locator('text=23/200文字')).toBeVisible();
+      // 文字数カウンターの確認（動的に計算）
+      const titleLength = testTitle.length;
+      const contentLength = testContent.length;
+      await expect(page.locator(`text=${titleLength}/50文字`)).toBeVisible();
+      await expect(page.locator(`text=${contentLength}/200文字`)).toBeVisible();
 
       // 投稿ボタンをクリック
       await page.click('button:has-text("投稿する")');
 
-      // 投稿が一覧に表示されることを確認
-      await expect(page.locator(`text=${testTitle}`)).toBeVisible();
-      await expect(page.locator(`text=${testContent}`)).toBeVisible();
+      // 投稿が一覧に表示されることを確認（より安定したセレクター）
+      await expect(page.locator(`[data-testid="post-card"]:has-text("${testTitle}"), text=${testTitle}`).first()).toBeVisible();
+      await expect(page.locator(`[data-testid="post-card"]:has-text("${testContent}"), text=${testContent}`).first()).toBeVisible();
 
       // フォームがクリアされることを確認
       await expect(page.locator('input[placeholder*="タイトル"]')).toHaveValue(
