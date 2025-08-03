@@ -117,7 +117,7 @@ export default function BoardPage() {
       } else {
         setError('削除に失敗しました');
       }
-    } catch (error) {
+    } catch {
       setError('削除に失敗しました');
     }
   };
