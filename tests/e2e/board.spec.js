@@ -40,8 +40,8 @@ test.describe('掲示板アプリケーション E2E テスト', () => {
     });
 
     test('新規投稿を作成できる', async ({ page }) => {
-      const testTitle = `E2Eテスト投稿_${Date.now()}`;
-      const testContent = 'これはE2Eテストで作成された投稿です。';
+      const testTitle = generateUniqueTitle('E2Eテスト投稿');
+      const testContent = generateUniqueContent('これはE2Eテストで作成された投稿です');
 
       // フォームに入力
       await page.fill('input[placeholder*="タイトル"]', testTitle);
