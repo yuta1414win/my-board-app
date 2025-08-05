@@ -1,0 +1,43 @@
+# CODEOWNERS
+# このファイルは、特定のファイルやディレクトリの変更に対して
+# 自動的にレビュアーを割り当てるために使用されます
+
+# グローバルオーナー（すべてのファイルのデフォルトオーナー）
+* @yamanouchiyuuta
+
+# フロントエンド
+/src/app/ @yamanouchiyuuta
+/src/components/ @yamanouchiyuuta
+/public/ @yamanouchiyuuta
+*.tsx @yamanouchiyuuta
+*.css @yamanouchiyuuta
+
+# API/バックエンド
+/src/app/api/ @yamanouchiyuuta
+/lib/ @yamanouchiyuuta
+/prisma/ @yamanouchiyuuta
+
+# 設定ファイル
+/next.config.* @yamanouchiyuuta
+/package.json @yamanouchiyuuta
+/tsconfig.json @yamanouchiyuuta
+/.env* @yamanouchiyuuta
+
+# テスト
+/__tests__/ @yamanouchiyuuta
+/playwright/ @yamanouchiyuuta
+/cypress/ @yamanouchiyuuta
+*.test.* @yamanouchiyuuta
+*.spec.* @yamanouchiyuuta
+
+# CI/CD & インフラ
+/.github/ @yamanouchiyuuta
+/docker/ @yamanouchiyuuta
+/scripts/ @yamanouchiyuuta
+*.yml @yamanouchiyuuta
+*.yaml @yamanouchiyuuta
+
+# ドキュメント
+/docs/ @yamanouchiyuuta
+*.md @yamanouchiyuuta
+/README.md @yamanouchiyuuta
