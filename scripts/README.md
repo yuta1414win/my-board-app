@@ -1,6 +1,7 @@
 # Git Branch Creation Script
 
 ## 概要
+
 新機能開発を始める際に、一貫性のあるブランチ名で新しいGitブランチを作成するためのスクリプトです。
 
 ## 使用方法
@@ -13,6 +14,7 @@
 ## 機能
 
 ### 1. ブランチタイプの選択
+
 - **feature**: 新機能開発
 - **bugfix**: バグ修正（developベース）
 - **hotfix**: 緊急修正（mainベース）
@@ -20,6 +22,7 @@
 - **docs**: ドキュメントのみの変更
 
 ### 2. 自動的な処理
+
 - チケット番号の検証（例: MB-123）
 - ブランチ名の自動生成
 - 未コミット変更の検出とstash
@@ -28,6 +31,7 @@
 - PR作成用URLの表示（GitHub）
 
 ### 3. ブランチ命名規則
+
 ```
 <type>/<ticket-number>-<description>
 例: feature/MB-123-user-authentication
@@ -62,7 +66,9 @@ $ ./scripts/create-feature-branch.sh
 ## カスタマイズ
 
 ### チケット番号の形式を変更
+
 スクリプトの21行目の正規表現を編集:
+
 ```bash
 # デフォルト: MB-123 形式
 if [[ ! $TICKET_NUMBER =~ ^[A-Z]+-[0-9]+$ ]]; then
@@ -72,7 +78,9 @@ if [[ ! $TICKET_NUMBER =~ ^[0-9]+$ ]]; then
 ```
 
 ### デフォルトのベースブランチを変更
+
 スクリプトの43-47行目を編集:
+
 ```bash
 if [ "$BRANCH_TYPE" = "hotfix" ]; then
     BASE_BRANCH="main"
@@ -84,11 +92,13 @@ fi
 ## トラブルシューティング
 
 ### 権限エラーが出る場合
+
 ```bash
 chmod +x scripts/create-feature-branch.sh
 ```
 
 ### stashの復元
+
 ```bash
 # stashリストを確認
 git stash list
