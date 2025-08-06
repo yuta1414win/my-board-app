@@ -116,9 +116,10 @@ jobs:
       env:
         CI: true
         PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
-        MONGODB_URI: mongodb://localhost:27017/test-db
+        MONGODB_URI: mock://localhost/test-db
         JWT_SECRET: test-jwt-secret-for-ci
         NEXT_PUBLIC_API_URL: http://localhost:3000
+        USE_MOCK_DB: true
     
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
