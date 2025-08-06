@@ -108,6 +108,8 @@ jobs:
       run: npm run build
       env:
         NEXT_PUBLIC_API_URL: http://localhost:3000
+        MONGODB_URI: mongodb://localhost:27017/test-db
+        JWT_SECRET: test-jwt-secret-for-ci
     
     - name: Run E2E tests
       run: npm run test:e2e
