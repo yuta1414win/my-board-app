@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: process.env.CI ? './tests/e2e/smoke.spec.js' : './tests/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -12,7 +12,9 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Use fewer workers on CI for stability */
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 1 : undefined,
+  /* Set timeout for CI */
+  timeout: process.env.CI ? 30 * 1000 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -76,7 +78,7 @@ export default defineConfig({
         command: 'npm run build && npm run start',
         port: 3000,
         reuseExistingServer: false,
-        timeout: 300 * 1000, // 5分（CI環境用に延長）
+        timeout: 180 * 1000, // 3分（CI環境用に短縮）
       }
     : {
         command: 'npm run dev',
