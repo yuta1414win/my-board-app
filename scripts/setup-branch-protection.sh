@@ -60,18 +60,20 @@ case $PROTECTION_LEVEL in
         # 標準的な保護設定（CIワークフローと連携）
         gh api repos/${REPO}/branches/${BRANCH_NAME}/protection \
             --method PUT \
-            --field required_status_checks='{"strict":true,"contexts":["test (18.x)","test (20.x)","build","security"]}' \
-            --field enforce_admins=true \
-            --field required_pull_request_reviews='{
-                "required_approving_review_count":2,
-                "dismiss_stale_reviews":true,
-                "require_code_owner_reviews":true,
-                "dismissal_restrictions":{}
-            }' \
-            --field restrictions=null \
-            --field required_conversation_resolution=true \
-            --field allow_force_pushes=false \
-            --field allow_deletions=false
+            -H "Accept: application/vnd.github+json" \
+            -f required_status_checks[strict]=true \
+            -f required_status_checks[contexts][]="test (18.x)" \
+            -f required_status_checks[contexts][]="test (20.x)" \
+            -f required_status_checks[contexts][]="build" \
+            -f required_status_checks[contexts][]="security" \
+            -f enforce_admins=true \
+            -f required_pull_request_reviews[required_approving_review_count]=1 \
+            -f required_pull_request_reviews[dismiss_stale_reviews]=true \
+            -f required_pull_request_reviews[require_code_owner_reviews]=true \
+            -f restrictions= \
+            -f required_conversation_resolution=true \
+            -f allow_force_pushes=false \
+            -f allow_deletions=false
         ;;
     
     3)
