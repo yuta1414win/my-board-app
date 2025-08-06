@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, feature/*, release/*, hotfix/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linter
+      run: npm run lint --if-present
+    
+    - name: Run unit tests
+      run: npm test
+      env:
+        CI: true
+    
+    - name: Run E2E tests
+      run: |
+        npx playwright install --with-deps
+        npm run test:e2e
+      env:
+        CI: true
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.node-version }}
+        path: |
+          coverage/
+          playwright-report/
+          test-results/
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: matrix.node-version == '20.x'
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: |
+          .next/
+          out/
+        retention-days: 7
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run security audit
+      run: npm audit --audit-level=high
+    
+    - name: Run dependency check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'my-board-app'
+        path: '.'
+        format: 'HTML'
+        args: >
+          --enableRetired
+          --enableExperimental
+    
+    - name: Upload dependency check results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: dependency-check-report
+        path: reports/
