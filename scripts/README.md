@@ -1,6 +1,25 @@
-# Git Branch Creation Script
+# スクリプト集
 
-## 概要
+このディレクトリには、開発環境の設定と管理を効率化するためのスクリプトが含まれています。
+
+## スクリプト一覧と使い分け
+
+### ブランチ保護設定スクリプト
+
+| スクリプト名 | 用途 | 推奨環境 |
+|------------|------|---------|
+| `setup-branch-protection.sh` | インタラクティブな保護設定（完全版） | 初期セットアップ、詳細な設定が必要な場合 |
+| `setup-branch-protection-simple.sh` | 最小限の保護設定（簡易版） | 小規模プロジェクト、個人開発 |
+| `setup-branch-protection-ci.sh` | CI/CD統合を含む保護設定 | CI/CDパイプラインがある環境 |
+
+#### 選択ガイド
+- **初めての設定**: `setup-branch-protection.sh` を使用（対話形式で設定を選択可能）
+- **素早く基本設定**: `setup-branch-protection-simple.sh` を使用（最小限の保護を即座に適用）
+- **CI/CDと連携**: `setup-branch-protection-ci.sh` を使用（GitHub Actionsと統合）
+
+### ブランチ作成スクリプト
+
+#### create-feature-branch.sh
 
 新機能開発を始める際に、一貫性のあるブランチ名で新しいGitブランチを作成するためのスクリプトです。
 
