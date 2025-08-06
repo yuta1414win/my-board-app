@@ -9,7 +9,7 @@ const mockPosts = [
     content: 'これはテスト用の投稿です。',
     author: 'テストユーザー',
     createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01')
+    updatedAt: new Date('2024-01-01'),
   },
   {
     _id: '2',
@@ -17,8 +17,8 @@ const mockPosts = [
     content: 'これは2つ目のテスト用投稿です。',
     author: 'テストユーザー2',
     createdAt: new Date('2024-01-02'),
-    updatedAt: new Date('2024-01-02')
-  }
+    updatedAt: new Date('2024-01-02'),
+  },
 ];
 
 export default async function handler(req, res) {
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   if (process.env.USE_MOCK_DB === 'true') {
     return handleMockRequest(req, res);
   }
-  
+
   await dbConnect();
 
   switch (req.method) {
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         res.status(400).json({ success: false, error: error.message });
       }
       break;
-    
+
     case 'POST':
       try {
         const post = await Post.create(req.body);
@@ -47,9 +47,11 @@ export default async function handler(req, res) {
         res.status(400).json({ success: false, error: error.message });
       }
       break;
-    
+
     default:
-      res.status(405).json({ success: false, error: 'メソッドが許可されていません' });
+      res
+        .status(405)
+        .json({ success: false, error: 'メソッドが許可されていません' });
       break;
   }
 }
@@ -59,18 +61,20 @@ function handleMockRequest(req, res) {
   switch (req.method) {
     case 'GET':
       return res.status(200).json({ success: true, data: mockPosts });
-    
+
     case 'POST':
       const newPost = {
         _id: String(Date.now()),
         ...req.body,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
       mockPosts.push(newPost);
       return res.status(201).json({ success: true, data: newPost });
-    
+
     default:
-      return res.status(405).json({ success: false, error: 'メソッドが許可されていません' });
+      return res
+        .status(405)
+        .json({ success: false, error: 'メソッドが許可されていません' });
   }
 }
