@@ -57,10 +57,10 @@ case $PROTECTION_LEVEL in
     2)
         echo -e "${BLUE}標準的な保護を設定中...${NC}"
         
-        # 標準的な保護設定
+        # 標準的な保護設定（CIワークフローと連携）
         gh api repos/${REPO}/branches/${BRANCH_NAME}/protection \
             --method PUT \
-            --field required_status_checks='{"strict":true,"contexts":["build","test","lint"]}' \
+            --field required_status_checks='{"strict":true,"contexts":["test (18.x)","test (20.x)","build","security"]}' \
             --field enforce_admins=true \
             --field required_pull_request_reviews='{
                 "required_approving_review_count":2,
