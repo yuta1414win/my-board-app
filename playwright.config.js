@@ -28,23 +28,26 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
+  projects: process.env.CI ? [
+    // CI環境では時間短縮のためChromiumのみ実行
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
+  ] : [
+    // ローカル環境では全ブラウザでテスト
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
-    /* Test against mobile viewports. */
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
