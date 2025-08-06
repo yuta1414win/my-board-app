@@ -28,9 +28,9 @@ describe('Basic Test Suite', () => {
     const user = {
       name: 'Test User',
       email: 'test@example.com',
-      isActive: true
+      isActive: true,
     };
-    
+
     expect(user).toHaveProperty('name');
     expect(user.isActive).toBe(true);
   });
@@ -44,7 +44,8 @@ describe('Async Test Suite', () => {
   });
 
   it('should handle async/await', async () => {
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
     const start = Date.now();
     await delay(100);
     const end = Date.now();
