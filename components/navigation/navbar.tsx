@@ -75,7 +75,7 @@ export default function Navbar() {
                   color="inherit"
                 >
                   <Avatar sx={{ width: 32, height: 32 }}>
-                    {session.user?.name?.charAt(0).toUpperCase()}
+                    {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </Avatar>
                 </IconButton>
                 <Menu
