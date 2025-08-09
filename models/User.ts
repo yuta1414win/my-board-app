@@ -57,6 +57,10 @@ const UserSchema = new Schema<IUser>(
       type: String,
       select: false,
     },
+    emailVerificationExpires: {
+      type: Date,
+      select: false,
+    },
     resetPasswordToken: {
       type: String,
       select: false,
@@ -65,11 +69,31 @@ const UserSchema = new Schema<IUser>(
       type: Date,
       select: false,
     },
+    lastLoginAt: {
+      type: Date,
+    },
+    failedLoginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// バーチャルフィールド: アカウントロック状態
+UserSchema.virtual('isLocked').get(function () {
+  return !!(this.lockUntil && this.lockUntil > new Date());
+});
 
 // パスワードのハッシュ化
 UserSchema.pre('save', async function (next) {
