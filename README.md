@@ -53,31 +53,90 @@ npm install @types/bcryptjs @types/jsonwebtoken @types/crypto-js --save-dev
 
 ### 1. 環境変数の設定
 
-```bash
-cp env.example .env.local
-```
-
-`.env.local` ファイルを編集し、以下の変数を設定してください：
+`.env.local` ファイルを作成し、以下の変数を設定してください：
 
 ```bash
-# データベース
-MONGODB_URI=mongodb://localhost:27017/my-board-app
+# ===========================================
+# NextAuth.js認証システム環境変数設定
+# ===========================================
 
-# NextAuth認証設定
+# NextAuth.js設定（必須）
+NEXTAUTH_SECRET=your-nextauth-secret-key-minimum-32-characters
 NEXTAUTH_URL=http://localhost:3001
-NEXTAUTH_SECRET=your-secret-key-here-change-this-in-production
-AUTH_TRUST_HOST=true
 
-# JWT設定（メール確認トークン用）
-JWT_SECRET=your-jwt-secret-here-change-this-in-production
+# MongoDB接続設定（必須）
+MONGODB_URI=mongodb://localhost:27017/my-board-app
+# または MongoDB Atlas の場合:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/my-board-app
 
-# メール送信設定（Nodemailer）
-EMAIL_FROM=noreply@example.com
-EMAIL_SERVER_HOST=smtp.gmail.com
-EMAIL_SERVER_PORT=465
-EMAIL_SERVER_USER=your-email@gmail.com
-EMAIL_SERVER_PASSWORD=your-app-password
+# メール送信設定（必須 - Resend推奨）
+RESEND_API_KEY=your-resend-api-key-here
+EMAIL_FROM=noreply@yourdomain.com
+
+# または他のメールプロバイダー（NodeMailer使用）
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@gmail.com
+# SMTP_PASSWORD=your-app-password
+
+# アプリケーション設定
+APP_URL=http://localhost:3001
+APP_NAME=My Board App
+NODE_ENV=development
+
+# セキュリティ設定（オプション）
+JWT_SECRET=your-jwt-secret-key-32-characters-long
+ENCRYPTION_KEY=your-encryption-key-32-characters-long
+
+# セッション設定（オプション）
+SESSION_MAX_AGE=2592000  # 30日間（秒）
+
+# レート制限設定（オプション）
+RATE_LIMIT_MAX_REQUESTS=5      # 1時間に5回まで
+RATE_LIMIT_WINDOW_MS=3600000   # 1時間
+
+# ログ設定（オプション）
+LOG_LEVEL=info  # development時は debug
 ```
+
+#### 重要な設定値の説明
+
+**必須設定:**
+- `NEXTAUTH_SECRET`: 32文字以上のランダムな文字列（本番では必須）
+- `MONGODB_URI`: MongoDBの接続URL
+- `RESEND_API_KEY`: メール送信用のResend APIキー
+- `EMAIL_FROM`: 送信者メールアドレス
+
+**セキュリティ強化設定:**
+```bash
+# 本番環境用の強力なシークレット生成例
+openssl rand -base64 32  # NEXTAUTH_SECRET用
+openssl rand -hex 32     # JWT_SECRET用
+```
+
+**メール設定オプション:**
+
+1. **Resend（推奨）**:
+   ```bash
+   RESEND_API_KEY=re_xxxxx
+   EMAIL_FROM=noreply@yourdomain.com
+   ```
+
+2. **Gmail SMTP**:
+   ```bash
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password  # Googleアプリパスワード
+   ```
+
+3. **その他のSMTP**:
+   ```bash
+   SMTP_HOST=your-smtp-server.com
+   SMTP_PORT=587  # または 465
+   SMTP_USER=your-email@domain.com
+   SMTP_PASSWORD=your-password
+   ```
 
 ### 2. MongoDBの起動
 
