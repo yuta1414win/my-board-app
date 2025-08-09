@@ -7,6 +7,10 @@ import { Container, Box } from '@mui/material';
 export const metadata: Metadata = {
   title: '掲示板アプリ',
   description: 'Next.js 15で作成した会員制掲示板システム',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.png',
+  },
 };
 
 export default function RootLayout({
