@@ -103,7 +103,8 @@ export default function CustomThemeProvider({
     localStorage.setItem('darkMode', JSON.stringify(newMode));
   };
 
-  const theme = darkMode ? darkTheme : lightTheme;
+  // ハイドレーション完了まではライトテーマを使用
+  const theme = (isHydrated && darkMode) ? darkTheme : lightTheme;
 
   return (
     <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
