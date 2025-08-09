@@ -8,11 +8,20 @@ export interface IUser extends Document {
   password: string;
   emailVerified: boolean;
   emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  lastLoginAt?: Date;
+  failedLoginAttempts?: number;
+  lockUntil?: Date;
+  isLocked: boolean;
+  role: 'user' | 'admin';
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  incrementLoginAttempts(): Promise<void>;
+  resetLoginAttempts(): Promise<void>;
+  isAccountLocked(): boolean;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -86,6 +95,7 @@ UserSchema.methods.comparePassword = async function (
   }
 };
 
-const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export default User;
