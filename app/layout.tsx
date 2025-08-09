@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import CustomThemeProvider from '../components/providers/theme-provider';
 import Providers from '../components/providers/session-provider';
-import Navbar from '../components/navigation/navbar';
-import { Container, Box } from '@mui/material';
+import AppWrapper from '../components/providers/app-wrapper';
 
 export const metadata: Metadata = {
   title: '掲示板アプリ',
@@ -23,10 +22,9 @@ export default function RootLayout({
       <body>
         <Providers>
           <CustomThemeProvider>
-            <Navbar />
-            <Container maxWidth="lg" sx={{ py: 3 }}>
+            <AppWrapper>
               {children}
-            </Container>
+            </AppWrapper>
           </CustomThemeProvider>
         </Providers>
       </body>
