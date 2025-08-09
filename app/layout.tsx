@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import CustomThemeProvider from '../components/providers/theme-provider';
 import Providers from '../components/providers/session-provider';
 import AppWrapper from '../components/providers/app-wrapper';
+import EmotionRegistry from '../components/providers/emotion-registry';
 
 export const metadata: Metadata = {
   title: '掲示板アプリ',
@@ -20,13 +21,13 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <Providers>
-          <CustomThemeProvider>
-            <AppWrapper>
-              {children}
-            </AppWrapper>
-          </CustomThemeProvider>
-        </Providers>
+        <EmotionRegistry>
+          <Providers>
+            <CustomThemeProvider>
+              <AppWrapper>{children}</AppWrapper>
+            </CustomThemeProvider>
+          </Providers>
+        </EmotionRegistry>
       </body>
     </html>
   );
