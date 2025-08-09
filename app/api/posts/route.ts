@@ -1,16 +1,13 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import dbConnect from '@/lib/mongodb';
-import Post from '@/models/Post';
+import { auth } from '../../../auth';
+import dbConnect from '../../../lib/mongodb';
+import Post from '../../../models/Post';
 
 export async function GET(request: Request) {
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     const url = new URL(request.url);
@@ -53,10 +50,7 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     const { title, content } = await request.json();
