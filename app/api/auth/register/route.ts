@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
-import { generateEmailVerificationToken, sendVerificationEmail } from '@/lib/email';
+import dbConnect from '../../../../lib/mongodb';
+import User from '../../../../models/User';
+import {
+  generateEmailVerificationToken,
+  sendVerificationEmail,
+} from '../../../../lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -42,8 +45,10 @@ export async function POST(request: Request) {
     });
 
     // メール確認トークン生成
-    const verificationToken = generateEmailVerificationToken(user._id.toString());
-    
+    const verificationToken = generateEmailVerificationToken(
+      user._id.toString()
+    );
+
     // メール確認トークンを保存
     user.emailVerificationToken = verificationToken;
     await user.save();
