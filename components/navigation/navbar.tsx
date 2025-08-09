@@ -42,8 +42,9 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
+    <Box>
+      <AppBar position="static">
+        <Toolbar>
         <Typography
           variant="h6"
           component="div"
@@ -91,9 +92,7 @@ export default function Navbar() {
                   <AccountCircle sx={{ mr: 1 }} />
                   プロフィール
                 </MenuItem>
-                <MenuItem onClick={handleSignOut}>
-                  ログアウト
-                </MenuItem>
+                <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
               </Menu>
             </>
           ) : (
