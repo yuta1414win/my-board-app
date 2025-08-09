@@ -1,0 +1,66 @@
+import { NextResponse } from 'next/server';
+import { hash } from 'bcryptjs';
+import { sendVerificationEmail } from '@/lib/email';
+import { prisma } from '@/lib/prisma';
+
+export async function POST(request: Request) {
+  try {
+    const { email, password, name } = await request.json();
+
+    // ユーザーが既に存在するかチェック
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'このメールアドレスは既に登録されています' },
+        { status: 400 }
+      );
+    }
+
+    // パスワードをハッシュ化
+    const hashedPassword = await hash(password, 12);
+
+    // 確認トークンを生成
+    const verificationToken = crypto.randomUUID();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24時間後
+
+    // ユーザーを作成
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        verificationToken,
+        verificationExpires,
+        emailVerified: false,
+      },
+    });
+
+    // 確認メールを送信
+    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    
+    const emailResult = await sendVerificationEmail(
+      email,
+      name,
+      verificationUrl
+    );
+
+    if (!emailResult.success) {
+      // メール送信に失敗した場合でも、ユーザー登録は成功として扱う
+      console.error('確認メール送信失敗:', emailResult.error);
+    }
+
+    return NextResponse.json({
+      message: '登録が完了しました。確認メールをご確認ください。',
+      success: true,
+    });
+  } catch (error) {
+    console.error('登録エラー:', error);
+    return NextResponse.json(
+      { error: '登録処理中にエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}

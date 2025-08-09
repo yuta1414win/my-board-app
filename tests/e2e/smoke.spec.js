@@ -21,7 +21,7 @@ test.describe('スモークテスト（CI用）', () => {
     await page.goto('/');
 
     // 掲示板リンクをクリック
-    await page.click('a[href*="board"]');
+    await page.click('text=掲示板を開く');
     await page.waitForURL('**/board');
 
     // 掲示板ページの基本要素
@@ -41,11 +41,14 @@ test.describe('スモークテスト（CI用）', () => {
   test('基本的なフォームバリデーション', async ({ page }) => {
     await page.goto('/board');
 
-    // 空のフォーム送信を試行
-    await page.click('button[type="submit"]');
+    // 投稿ボタンが無効化されていることを確認
+    await expect(page.locator('button[type="submit"]')).toBeDisabled();
 
-    // バリデーションメッセージの確認（簡易）
-    await expect(page.locator('input[name="title"]:invalid')).toBeVisible();
+    // 必須フィールドの確認
+    await expect(page.locator('input[name="title"][required]')).toBeVisible();
+    await expect(
+      page.locator('textarea[name="content"][required]')
+    ).toBeVisible();
   });
 
   test('レスポンシブデザインの基本確認', async ({ page }) => {

@@ -228,15 +228,18 @@ export default function BoardPage() {
               <Stack spacing={2}>
                 <TextField
                   fullWidth
+                  name="title"
                   placeholder="タイトルを入力してください（50文字以内）"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   error={title.length > 50}
                   helperText={`${title.length}/50文字`}
                   label="タイトル"
+                  required
                 />
                 <TextField
                   fullWidth
+                  name="content"
                   multiline
                   rows={3}
                   placeholder="本文を入力してください（200文字以内）"
@@ -245,6 +248,7 @@ export default function BoardPage() {
                   error={content.length > 200}
                   helperText={`${content.length}/200文字`}
                   label="本文"
+                  required
                 />
                 {error && <Alert severity="error">{error}</Alert>}
                 <Button

@@ -1,0 +1,59 @@
+import { NextResponse } from 'next/server';
+import { sendPasswordResetEmail } from '@/lib/email';
+import { prisma } from '@/lib/prisma';
+
+export async function POST(request: Request) {
+  try {
+    const { email } = await request.json();
+
+    // ユーザーを検索
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // セキュリティのため、ユーザーが存在しない場合でも成功メッセージを返す
+      return NextResponse.json({
+        message: 'メールアドレスが登録されている場合、リセットメールを送信しました。',
+        success: true,
+      });
+    }
+
+    // リセットトークンを生成
+    const resetToken = crypto.randomUUID();
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1時間後
+
+    // トークンをデータベースに保存
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken,
+        resetExpires,
+      },
+    });
+
+    // リセットメールを送信
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+    
+    const emailResult = await sendPasswordResetEmail(
+      email,
+      user.name || 'ユーザー',
+      resetUrl
+    );
+
+    if (!emailResult.success) {
+      console.error('リセットメール送信失敗:', emailResult.error);
+    }
+
+    return NextResponse.json({
+      message: 'メールアドレスが登録されている場合、リセットメールを送信しました。',
+      success: true,
+    });
+  } catch (error) {
+    console.error('パスワードリセットエラー:', error);
+    return NextResponse.json(
+      { error: 'リセット処理中にエラーが発生しました' },
+      { status: 500 }
+    );
+  }
+}
