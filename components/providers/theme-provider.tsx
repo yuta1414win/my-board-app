@@ -87,8 +87,10 @@ export default function CustomThemeProvider({
   children: React.ReactNode;
 }) {
   const [darkMode, setDarkMode] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    setIsHydrated(true);
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode !== null) {
       setDarkMode(JSON.parse(savedMode));
