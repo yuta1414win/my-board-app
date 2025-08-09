@@ -1,8 +1,8 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
-import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
+import dbConnect from './lib/mongodb';
+import User from './models/User';
 import bcrypt from 'bcryptjs';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
@@ -21,8 +21,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
         await dbConnect();
 
-        const user = await User.findOne({ 
-          email: credentials.email 
+        const user = await User.findOne({
+          email: credentials.email,
         }).select('+password');
 
         if (!user) {
