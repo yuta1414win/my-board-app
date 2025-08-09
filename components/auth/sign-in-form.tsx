@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { signIn, getSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
   Card,
@@ -13,17 +13,41 @@ import {
   Alert,
   CircularProgress,
   Link,
+  IconButton,
+  InputAdornment,
+  Divider,
 } from '@mui/material';
-import { Email, Lock } from '@mui/icons-material';
+import { 
+  Email, 
+  Lock, 
+  Visibility, 
+  VisibilityOff,
+  Security,
+  AccountCircle 
+} from '@mui/icons-material';
 import NextLink from 'next/link';
+import { z } from 'zod';
 
 interface FormData {
   email: string;
   password: string;
 }
 
+interface ErrorResponse {
+  error: string;
+  code?: string;
+  details?: Array<{ field: string; message: string }>;
+}
+
+// バリデーションスキーマ
+const signInSchema = z.object({
+  email: z.string().email('正しいメールアドレスを入力してください'),
+  password: z.string().min(1, 'パスワードを入力してください'),
+});
+
 export default function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -31,6 +55,51 @@ export default function SignInForm() {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockEndTime, setBlockEndTime] = useState<Date | null>(null);
+
+  // URLパラメータからエラーメッセージを取得
+  useEffect(() => {
+    const error = searchParams?.get('error');
+    const callbackUrl = searchParams?.get('callbackUrl');
+    
+    if (error) {
+      switch (error) {
+        case 'CredentialsSignin':
+          setMessage('メールアドレスまたはパスワードが正しくありません');
+          break;
+        case 'EmailNotVerified':
+          setMessage('メールアドレスが確認されていません。確認メールをご確認ください。');
+          break;
+        case 'AccountLocked':
+          setMessage('アカウントがロックされています。しばらく時間を置いてお試しください。');
+          break;
+        default:
+          setMessage('ログインエラーが発生しました');
+      }
+    }
+    
+    if (callbackUrl) {
+      setMessage('ログインが必要です');
+    }
+  }, [searchParams]);
+
+  // ブロック時間の管理
+  useEffect(() => {
+    if (isBlocked && blockEndTime) {
+      const timer = setInterval(() => {
+        if (new Date() >= blockEndTime) {
+          setIsBlocked(false);
+          setBlockEndTime(null);
+          setAttemptCount(0);
+        }
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [isBlocked, blockEndTime]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -51,7 +120,7 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -66,7 +135,9 @@ export default function SignInForm() {
 
       if (result?.error) {
         if (result.error === 'メールアドレスが確認されていません') {
-          setMessage('メールアドレスが確認されていません。確認メールをご確認ください。');
+          setMessage(
+            'メールアドレスが確認されていません。確認メールをご確認ください。'
+          );
         } else {
           setMessage('メールアドレスまたはパスワードが正しくありません');
         }
@@ -82,10 +153,10 @@ export default function SignInForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // エラーをクリア
     if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -95,7 +166,7 @@ export default function SignInForm() {
         <Typography variant="h4" component="h1" gutterBottom textAlign="center">
           ログイン
         </Typography>
-        
+
         {message && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {message}
