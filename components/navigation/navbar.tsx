@@ -114,5 +114,6 @@ export default function Navbar() {
         </Box>
       </Toolbar>
     </AppBar>
+    </Box>
   );
 }
