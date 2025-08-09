@@ -87,10 +87,10 @@ export default function CustomThemeProvider({
   children: React.ReactNode;
 }) {
   const [darkMode, setDarkMode] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsHydrated(true);
+    setMounted(true);
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode !== null) {
       setDarkMode(JSON.parse(savedMode));
@@ -98,13 +98,14 @@ export default function CustomThemeProvider({
   }, []);
 
   const toggleDarkMode = () => {
+    if (!mounted) return;
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem('darkMode', JSON.stringify(newMode));
   };
 
-  // ハイドレーション完了まではライトテーマを使用
-  const theme = (isHydrated && darkMode) ? darkTheme : lightTheme;
+  // サーバーとクライアントで一貫したテーマを使用
+  const theme = mounted && darkMode ? darkTheme : lightTheme;
 
   return (
     <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
