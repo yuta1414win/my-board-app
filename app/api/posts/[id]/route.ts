@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import dbConnect from '@/lib/mongodb';
-import Post from '@/models/Post';
+import { auth } from '../../../../auth';
+import dbConnect from '../../../../lib/mongodb';
+import Post from '../../../../models/Post';
 import { ObjectId } from 'mongodb';
 
 export async function PUT(
@@ -11,10 +11,7 @@ export async function PUT(
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     const { title, content } = await request.json();
@@ -39,10 +36,7 @@ export async function PUT(
 
     // 投稿者チェック
     if (post.author.toString() !== session.user.id) {
-      return NextResponse.json(
-        { error: '権限がありません' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: '権限がありません' }, { status: 403 });
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
@@ -72,10 +66,7 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     await dbConnect();
@@ -90,10 +81,7 @@ export async function DELETE(
 
     // 投稿者チェック
     if (post.author.toString() !== session.user.id) {
-      return NextResponse.json(
-        { error: '権限がありません' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: '権限がありません' }, { status: 403 });
     }
 
     await Post.findByIdAndDelete(params.id);
