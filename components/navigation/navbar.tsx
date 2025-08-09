@@ -61,10 +61,10 @@ export default function Navbar() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton color="inherit" onClick={toggleDarkMode}>
-              {darkMode ? <LightMode /> : <DarkMode />}
+              {mounted && darkMode ? <LightMode /> : <DarkMode />}
             </IconButton>
 
-            {session ? (
+            {mounted && session ? (
               <>
                 <IconButton
                   size="large"
