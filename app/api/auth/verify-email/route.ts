@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
-import { verifyToken } from '@/lib/email';
+import dbConnect from '../../../../lib/mongodb';
+import User from '../../../../models/User';
+import { verifyToken } from '../../../../lib/email';
 
 export async function GET(request: Request) {
   try {
@@ -27,8 +27,10 @@ export async function GET(request: Request) {
     await dbConnect();
 
     // ユーザーを見つけて更新
-    const user = await User.findById(decoded.userId).select('+emailVerificationToken');
-    
+    const user = await User.findById(decoded.userId).select(
+      '+emailVerificationToken'
+    );
+
     if (!user) {
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },
