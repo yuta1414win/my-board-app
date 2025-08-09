@@ -47,9 +47,8 @@ export default function Navbar() {
   };
 
   return (
-    <Box>
-      <AppBar position="static">
-        <Toolbar>
+    <AppBar position="static">
+      <Toolbar>
           <Typography
             variant="h6"
             component="div"
