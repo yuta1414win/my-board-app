@@ -17,13 +17,13 @@ import {
   InputAdornment,
   Divider,
 } from '@mui/material';
-import { 
-  Email, 
-  Lock, 
-  Visibility, 
+import {
+  Email,
+  Lock,
+  Visibility,
   VisibilityOff,
   Security,
-  AccountCircle 
+  AccountCircle,
 } from '@mui/icons-material';
 import NextLink from 'next/link';
 import { z } from 'zod';
@@ -64,23 +64,27 @@ export default function SignInForm() {
   useEffect(() => {
     const error = searchParams?.get('error');
     const callbackUrl = searchParams?.get('callbackUrl');
-    
+
     if (error) {
       switch (error) {
         case 'CredentialsSignin':
           setMessage('メールアドレスまたはパスワードが正しくありません');
           break;
         case 'EmailNotVerified':
-          setMessage('メールアドレスが確認されていません。確認メールをご確認ください。');
+          setMessage(
+            'メールアドレスが確認されていません。確認メールをご確認ください。'
+          );
           break;
         case 'AccountLocked':
-          setMessage('アカウントがロックされています。しばらく時間を置いてお試しください。');
+          setMessage(
+            'アカウントがロックされています。しばらく時間を置いてお試しください。'
+          );
           break;
         default:
           setMessage('ログインエラーが発生しました');
       }
     }
-    
+
     if (callbackUrl) {
       setMessage('ログインが必要です');
     }
@@ -96,30 +100,37 @@ export default function SignInForm() {
           setAttemptCount(0);
         }
       }, 1000);
-      
+
       return () => clearInterval(timer);
     }
   }, [isBlocked, blockEndTime]);
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<FormData> = {};
-
-    if (!formData.email) {
-      newErrors.email = 'メールアドレスは必須です';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = '有効なメールアドレスを入力してください';
+    const validation = signInSchema.safeParse(formData);
+    
+    if (!validation.success) {
+      const newErrors: Partial<FormData> = {};
+      validation.error.errors.forEach((error) => {
+        const field = error.path[0] as keyof FormData;
+        newErrors[field] = error.message;
+      });
+      setErrors(newErrors);
+      return false;
     }
-
-    if (!formData.password) {
-      newErrors.password = 'パスワードは必須です';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    setErrors({});
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ブロック状態チェック
+    if (isBlocked) {
+      const remainingTime = blockEndTime ? Math.ceil((blockEndTime.getTime() - new Date().getTime()) / 1000) : 0;
+      setMessage(`ログインがブロックされています。あと${remainingTime}秒お待ちください。`);
+      return;
+    }
 
     if (!validateForm()) return;
 
@@ -131,21 +142,50 @@ export default function SignInForm() {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl: searchParams?.get('callbackUrl') || '/board',
       });
 
       if (result?.error) {
-        if (result.error === 'メールアドレスが確認されていません') {
-          setMessage(
-            'メールアドレスが確認されていません。確認メールをご確認ください。'
-          );
-        } else {
-          setMessage('メールアドレスまたはパスワードが正しくありません');
+        // ログイン失敗時の試行回数を増加
+        const newAttemptCount = attemptCount + 1;
+        setAttemptCount(newAttemptCount);
+        
+        // 5回失敗でブロック（5分間）
+        if (newAttemptCount >= 5) {
+          const blockTime = new Date(Date.now() + 5 * 60 * 1000); // 5分間
+          setIsBlocked(true);
+          setBlockEndTime(blockTime);
+          setMessage('ログイン試行回数が上限を超えました。5分間お待ちください。');
+          return;
+        }
+
+        // エラーメッセージの設定
+        switch (result.error) {
+          case 'メールアドレスが確認されていません':
+          case 'メールアドレスが確認されていません。確認メールをご確認ください。':
+            setMessage('メールアドレスが確認されていません。確認メールをご確認ください。');
+            break;
+          case 'CredentialsSignin':
+          case 'Invalid credentials':
+            setMessage(`メールアドレスまたはパスワードが正しくありません（試行回数: ${newAttemptCount}/5）`);
+            break;
+          default:
+            setMessage(`ログインエラーが発生しました（試行回数: ${newAttemptCount}/5）`);
         }
       } else if (result?.ok) {
-        router.push('/board');
+        // ログイン成功時は試行回数をリセット
+        setAttemptCount(0);
+        
+        // セッション更新待機
+        const session = await getSession();
+        if (session) {
+          const callbackUrl = searchParams?.get('callbackUrl') || '/board';
+          router.push(callbackUrl);
+        }
       }
     } catch (error) {
-      setMessage('サーバーエラーが発生しました');
+      console.error('Sign in error:', error);
+      setMessage('サーバーエラーが発生しました。しばらく時間を置いてお試しください。');
     } finally {
       setLoading(false);
     }
@@ -154,10 +194,28 @@ export default function SignInForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
     // エラーをクリア
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
+    
+    // メッセージクリア
+    if (message && !isBlocked) {
+      setMessage('');
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const getRemainingTime = (): string => {
+    if (!blockEndTime) return '';
+    const remaining = Math.ceil((blockEndTime.getTime() - new Date().getTime()) / 1000);
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
