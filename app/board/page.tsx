@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, Fab } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import PostList from '@/components/board/post-list';
-import PostForm from '@/components/board/post-form';
+import PostList from '../../components/board/post-list';
+import PostForm from '../../components/board/post-form';
 
 interface Post {
   _id: string;
@@ -37,7 +37,7 @@ export default function BoardPage() {
   };
 
   const handleSuccess = () => {
-    setRefreshTrigger(prev => prev + 1);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
@@ -45,15 +45,12 @@ export default function BoardPage() {
       <Typography variant="h4" component="h1" gutterBottom>
         掲示板
       </Typography>
-      
+
       <Typography variant="body1" color="text.secondary" paragraph>
         みんなで情報を共有しましょう！
       </Typography>
 
-      <PostList
-        onEditPost={handleEditPost}
-        refresh={refreshTrigger}
-      />
+      <PostList onEditPost={handleEditPost} refresh={refreshTrigger} />
 
       <PostForm
         open={postFormOpen}
