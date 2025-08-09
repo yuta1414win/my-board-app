@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import CustomThemeProvider from '@/components/providers/theme-provider';
-import Providers from '@/components/providers/session-provider';
-import Navbar from '@/components/navigation/navbar';
+import CustomThemeProvider from '../components/providers/theme-provider';
+import Providers from '../components/providers/session-provider';
+import Navbar from '../components/navigation/navbar';
 import { Container, Box } from '@mui/material';
 
 export const metadata: Metadata = {
