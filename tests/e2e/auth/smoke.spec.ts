@@ -49,7 +49,7 @@ test.describe('認証機能 スモークテスト', () => {
       await expect(page.getByLabel(/名前|Name/)).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
       await expect(
-        page.getByLabel('パスワード', { exact: true })
+        page.locator('input[name="password"]').first()
       ).toBeVisible();
       await expect(
         page.locator('form').getByRole('button', { name: '登録する' })
@@ -126,7 +126,7 @@ test.describe('認証機能 スモークテスト', () => {
         console.log(
           'Login failed, checking if still on signin page or redirected to board'
         );
-        
+
         // ログイン成功の場合は/boardに、失敗の場合は/auth/signinにいる
         const currentUrl = page.url();
         if (currentUrl.includes('/board')) {
@@ -251,7 +251,7 @@ test.describe('認証機能 スモークテスト', () => {
       await expect(page.getByLabel(/名前|Name/)).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
       await expect(
-        page.getByLabel('パスワード', { exact: true })
+        page.locator('input[name="password"]').first()
       ).toBeVisible();
       await expect(
         page.locator('form').getByRole('button', { name: '登録する' })
