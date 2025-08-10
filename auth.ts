@@ -106,14 +106,20 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     updateAge: 24 * 60 * 60, // 24 hours - セッション更新間隔
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session, account }) {
       // 初回ログイン時
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.emailVerified = user.emailVerified;
+        token.emailVerified = user.emailVerified || true; // OAuthは認証済みとする
         token.loginAt = Date.now();
+        
+        // OAuthプロバイダーの場合
+        if (account?.provider !== 'credentials') {
+          token.provider = account?.provider;
+          token.role = 'user'; // デフォルトロール
+        }
       }
 
       // セッション更新時
