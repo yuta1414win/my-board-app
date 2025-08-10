@@ -111,15 +111,18 @@ global.Request = class Request {
     Object.defineProperty(this, 'url', {
       value: url,
       writable: false,
-      enumerable: true
+      enumerable: true,
     });
-    
+
+    Object.defineProperty(this, 'nextUrl', {
+      value: new URL(url),
+      writable: false,
+      enumerable: true,
+    });
+
     this.method = init?.method || 'GET';
     this.headers = new Headers(init?.headers || {});
     this.body = init?.body;
-    
-    // NextRequest互換のプロパティ
-    this.nextUrl = new URL(url);
   }
 
   async json() {
@@ -137,7 +140,7 @@ global.Request = class Request {
     return new Request(this.url, {
       method: this.method,
       headers: this.headers,
-      body: this.body
+      body: this.body,
     });
   }
 };
