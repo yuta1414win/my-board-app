@@ -6,6 +6,9 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  bio?: string;
+  quickComment?: string;
+  avatar?: string;
   emailVerified: boolean;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
@@ -16,12 +19,37 @@ export interface IUser extends Document {
   lockUntil?: Date;
   isLocked: boolean;
   role: 'user' | 'admin';
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
   incrementLoginAttempts(): Promise<void>;
   resetLoginAttempts(): Promise<void>;
   isAccountLocked(): boolean;
+}
+
+// プロフィール機能用の型定義
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  bio?: string;
+  quickComment?: string;
+  avatar?: string;
+  emailVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UpdateUserProfileData {
+  name?: string;
+  bio?: string;
+  quickComment?: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
 }
 
 const UserSchema = new Schema<IUser>(
