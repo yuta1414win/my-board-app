@@ -214,7 +214,7 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
           <Edit sx={{ mr: 1 }} fontSize="small" />
           編集
         </MenuItem>
-        <MenuItem onClick={handleDelete}>
+        <MenuItem onClick={handleDeleteClick}>
           <Delete sx={{ mr: 1 }} fontSize="small" />
           削除
         </MenuItem>
