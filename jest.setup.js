@@ -147,6 +147,16 @@ global.Response = class Response {
     this.headers = new Map(Object.entries(init?.headers || {}));
   }
 
+  static json(data, init = {}) {
+    return new Response(JSON.stringify(data), {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...init.headers,
+      },
+    });
+  }
+
   json() {
     return Promise.resolve(JSON.parse(this.body));
   }
