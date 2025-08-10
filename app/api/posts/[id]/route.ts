@@ -17,10 +17,7 @@ export async function GET(
 
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json(
-        { error: '無効な投稿IDです' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
     }
 
     await dbConnect();
@@ -51,6 +48,14 @@ export async function PUT(
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+    }
+
+    // ObjectIdの形式チェック
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json(
+        { error: '無効な投稿IDです' },
+        { status: 400 }
+      );
     }
 
     const { title, content } = await request.json();
