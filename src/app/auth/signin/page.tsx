@@ -66,7 +66,9 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
+        setError(
+          'ログインに失敗しました。メールアドレスまたはパスワードを確認してください。'
+        );
       } else if (result?.ok) {
         router.push('/board');
       }
@@ -167,6 +169,10 @@ export default function SignInPage() {
                 または
               </Typography>
             </Divider>
+
+            <Typography variant="h6" color="primary" sx={{ textAlign: 'center', my: 2 }}>
+              ソーシャルログイン
+            </Typography>
 
             <Stack spacing={2}>
               <Button
