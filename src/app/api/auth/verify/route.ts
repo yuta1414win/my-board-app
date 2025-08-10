@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 
+// 日本語エラーメッセージの定数
+const MESSAGES = {
+  TOKEN_REQUIRED: '確認トークンが必要です',
+  INVALID_TOKEN: '無効または期限切れのトークンです',
+  EMAIL_VERIFIED: 'メールアドレスが確認されました。ログインできます。',
+  VERIFICATION_ERROR: 'メール確認中にエラーが発生しました',
+  EMAIL_REQUIRED: 'メールアドレスが必要です',
+  USER_NOT_FOUND: 'ユーザーが見つかりません',
+  ALREADY_VERIFIED: 'メールアドレスは既に確認済みです',
+  RESEND_SUCCESS: '確認メールを再送信しました',
+  RESEND_EMAIL_ERROR: '確認メールの送信に失敗しました',
+  RESEND_ERROR: '確認メール再送信中にエラーが発生しました',
+} as const;
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
