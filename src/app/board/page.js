@@ -479,7 +479,8 @@ export default function BoardPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </>
   );
 }
