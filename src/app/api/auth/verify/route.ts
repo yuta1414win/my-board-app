@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Email verification error:', error);
     return NextResponse.json(
       { error: 'メール確認中にエラーが発生しました' },
@@ -67,8 +67,9 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     // メールアドレスでユーザーを検索
-    const user = await User.findOne({ email: email.toLowerCase() })
-      .select('+emailVerificationToken +emailVerificationExpires');
+    const user = await User.findOne({ email: email.toLowerCase() }).select(
+      '+emailVerificationToken +emailVerificationExpires'
+    );
 
     if (!user) {
       return NextResponse.json(
@@ -98,7 +99,10 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     // 確認メールを再送信
-    const emailResult = await sendVerificationEmail(user.email, verificationToken);
+    const emailResult = await sendVerificationEmail(
+      user.email,
+      verificationToken
+    );
 
     if (!emailResult.success) {
       return NextResponse.json(
@@ -114,7 +118,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Resend verification email error:', error);
     return NextResponse.json(
       { error: '確認メール再送信中にエラーが発生しました' },
