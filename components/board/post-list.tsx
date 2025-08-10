@@ -230,6 +230,52 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
           />
         </Box>
       )}
+
+      {/* 削除確認ダイアログ */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
+          <Warning sx={{ mr: 1, color: 'warning.main' }} />
+          投稿を削除
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" paragraph>
+            以下の投稿を削除しますか？
+          </Typography>
+          {selectedPost && (
+            <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                {selectedPost.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {selectedPost.content.substring(0, 100)}
+                {selectedPost.content.length > 100 && '...'}
+              </Typography>
+            </Box>
+          )}
+          <Typography variant="body2" color="error.main" sx={{ mt: 2 }}>
+            ※この操作は取り消すことができません
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} disabled={deleting}>
+            キャンセル
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            variant="contained" 
+            color="error"
+            disabled={deleting}
+            startIcon={deleting ? <CircularProgress size={20} /> : null}
+          >
+            {deleting ? '削除中...' : '削除する'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
