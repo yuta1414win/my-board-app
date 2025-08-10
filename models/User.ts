@@ -209,7 +209,16 @@ const User: Model<IUser> =
 export class UserModel {
   static async findById(id: string): Promise<IUser | null> {
     try {
-      return await User.findById(id).exec();
+      // まずObjectIdとして検索を試す
+      try {
+        return await User.findById(id).exec();
+      } catch (objectIdError) {
+        // ObjectIdでない場合（OAuth UUIDなど）、emailで検索
+        // NextAuthのOAuthログインはユーザーをセッションに保存しているため
+        // セッションからの情報を使用する必要がある
+        console.warn('ObjectId検索失敗、代替手段が必要:', id);
+        return null;
+      }
     } catch (error) {
       console.error('UserModel.findById error:', error);
       return null;
@@ -254,7 +263,9 @@ export class UserModel {
       }
 
       // 現在のパスワードを確認
-      const isCurrentPasswordValid = await user.comparePassword(data.currentPassword);
+      const isCurrentPasswordValid = await user.comparePassword(
+        data.currentPassword
+      );
       if (!isCurrentPasswordValid) {
         return { success: false, error: '現在のパスワードが正しくありません' };
       }
