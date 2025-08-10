@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Box, Typography, Fab } from '@mui/material';
+import { Box, Typography, Fab, Container, Paper } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { useSession } from 'next-auth/react';
 import PostList from '../../components/board/post-list';
 import PostForm from '../../components/board/post-form';
 
