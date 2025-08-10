@@ -205,4 +205,84 @@ UserSchema.methods.isAccountLocked = function (): boolean {
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
+// プロフィール機能用のUserModelクラス
+export class UserModel {
+  static async findById(id: string): Promise<IUser | null> {
+    try {
+      return await User.findById(id).exec();
+    } catch (error) {
+      console.error('UserModel.findById error:', error);
+      return null;
+    }
+  }
+
+  static async findByEmail(email: string): Promise<IUser | null> {
+    try {
+      return await User.findOne({ email }).select('+password').exec();
+    } catch (error) {
+      console.error('UserModel.findByEmail error:', error);
+      return null;
+    }
+  }
+
+  static async updateProfile(
+    id: string,
+    data: UpdateUserProfileData
+  ): Promise<boolean> {
+    try {
+      const result = await User.findByIdAndUpdate(
+        id,
+        { $set: data },
+        { new: true }
+      ).exec();
+      return !!result;
+    } catch (error) {
+      console.error('UserModel.updateProfile error:', error);
+      return false;
+    }
+  }
+
+  static async changePassword(
+    id: string,
+    data: ChangePasswordData
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // 現在のユーザー情報を取得
+      const user = await User.findById(id).select('+password').exec();
+      if (!user) {
+        return { success: false, error: 'ユーザーが見つかりません' };
+      }
+
+      // 現在のパスワードを確認
+      const isCurrentPasswordValid = await user.comparePassword(data.currentPassword);
+      if (!isCurrentPasswordValid) {
+        return { success: false, error: '現在のパスワードが正しくありません' };
+      }
+
+      // 新しいパスワードを設定（pre saveフックでハッシュ化される）
+      user.password = data.newPassword;
+      await user.save();
+
+      return { success: true };
+    } catch (error) {
+      console.error('UserModel.changePassword error:', error);
+      return { success: false, error: 'パスワードの変更に失敗しました' };
+    }
+  }
+
+  static documentToProfile(user: IUser): UserProfile {
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      bio: user.bio,
+      quickComment: user.quickComment,
+      avatar: user.avatar,
+      emailVerified: user.emailVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+}
+
 export default User;
