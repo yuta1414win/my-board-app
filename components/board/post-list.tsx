@@ -106,20 +106,31 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
     if (!selectedPost) return;
 
     setDeleting(true);
+    setError(''); // エラーをクリア
+    
     try {
       const response = await fetch(`/api/posts/${selectedPost._id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        fetchPosts(page);
+        // 削除成功時の処理
         setDeleteDialogOpen(false);
+        setSelectedPost(null);
+        // 一覧を再取得
+        await fetchPosts(page);
       } else {
         const data = await response.json();
-        setError(data.error || '削除に失敗しました');
+        const errorMessage = data.error || '削除に失敗しました';
+        setError(errorMessage);
+        console.error('削除エラー:', errorMessage);
+        // エラー時もダイアログを閉じる
+        setDeleteDialogOpen(false);
       }
     } catch (error) {
+      console.error('削除処理エラー:', error);
       setError('サーバーエラーが発生しました');
+      setDeleteDialogOpen(false);
     } finally {
       setDeleting(false);
     }
@@ -127,6 +138,7 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
 
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
+    setSelectedPost(null);
   };
 
   if (loading && posts.length === 0) {
@@ -265,9 +277,9 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
           <Button onClick={handleDeleteCancel} disabled={deleting}>
             キャンセル
           </Button>
-          <Button 
-            onClick={handleDeleteConfirm} 
-            variant="contained" 
+          <Button
+            onClick={handleDeleteConfirm}
+            variant="contained"
             color="error"
             disabled={deleting}
             startIcon={deleting ? <CircularProgress size={20} /> : null}
