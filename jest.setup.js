@@ -105,21 +105,40 @@ global.Response = class Response {
   }
 };
 
-// Mock Request constructor
+// Mock Request constructor - NextRequestと互換性を保つ
 global.Request = class Request {
-  constructor(url, init) {
-    this.url = url;
+  constructor(url, init = {}) {
+    Object.defineProperty(this, 'url', {
+      value: url,
+      writable: false,
+      enumerable: true
+    });
+    
     this.method = init?.method || 'GET';
-    this.headers = new Map(Object.entries(init?.headers || {}));
+    this.headers = new Headers(init?.headers || {});
     this.body = init?.body;
+    
+    // NextRequest互換のプロパティ
+    this.nextUrl = new URL(url);
   }
 
-  json() {
-    return Promise.resolve(JSON.parse(this.body));
+  async json() {
+    if (typeof this.body === 'string') {
+      return JSON.parse(this.body);
+    }
+    return this.body;
   }
 
-  text() {
-    return Promise.resolve(this.body);
+  async text() {
+    return this.body?.toString() || '';
+  }
+
+  clone() {
+    return new Request(this.url, {
+      method: this.method,
+      headers: this.headers,
+      body: this.body
+    });
   }
 };
 
