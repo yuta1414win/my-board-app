@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
-import { TextEncoder, TextDecoder, URL } from 'util';
+import { TextEncoder, TextDecoder } from 'util';
+import { URL } from 'url';
 
 // Polyfills for Node.js environment
 global.TextEncoder = TextEncoder;
