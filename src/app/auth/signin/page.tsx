@@ -58,21 +58,17 @@ export default function SignInPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        callbackUrl: '/board',
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        // ログイン成功時はボードページにリダイレクト
+      if (result?.error) {
+        setError('ログインに失敗しました。メールアドレスまたはパスワードを確認してください。');
+      } else if (result?.ok) {
         router.push('/board');
-      } else {
-        setError(data.error || 'ログインに失敗しました');
       }
     } catch (err) {
       setError('ネットワークエラーが発生しました');
