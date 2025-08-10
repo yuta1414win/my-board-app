@@ -166,3 +166,30 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
 };
+
+import { getServerSession } from 'next-auth/next';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return null;
+    }
+
+    return {
+      id: session.user.id || '',
+      email: session.user.email || '',
+      name: session.user.name || '',
+    };
+  } catch (error) {
+    console.error('getCurrentUser error:', error);
+    return null;
+  }
+}
