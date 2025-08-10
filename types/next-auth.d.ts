@@ -26,6 +26,18 @@ declare module 'next-auth' {
     token_type: string;
     id_token: string;
   }
+
+  callbacks: {
+    async session({ session, token }) {
+      if (token.sub) {
+        session.user.id = token.sub
+      }
+      if (token.role) {
+        session.user.role = token.role as string
+      }
+      return session
+    }
+  }
 }
 
 declare module 'next-auth/jwt' {
