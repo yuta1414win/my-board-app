@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Box,
@@ -17,9 +18,14 @@ import {
   Alert,
   CircularProgress,
   Stack,
+  AppBar,
+  Toolbar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function BoardPage() {
   const [posts, setPosts] = useState([]);
