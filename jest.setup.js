@@ -127,6 +127,10 @@ global.Headers = class Headers {
     this.headers.delete(name.toLowerCase());
   }
 
+  entries() {
+    return this.headers.entries();
+  }
+
   *[Symbol.iterator]() {
     for (const [key, value] of this.headers) {
       yield [key, value];
