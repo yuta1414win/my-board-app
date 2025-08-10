@@ -123,6 +123,10 @@ export default function ProfileEditForm({
 
       if (response.ok) {
         const updatedUser = await response.json();
+        // セッションを更新してヘッダーに反映
+        await update({
+          name: updatedUser.name,
+        });
         onUpdate(updatedUser);
       } else {
         const error = await response.json();
