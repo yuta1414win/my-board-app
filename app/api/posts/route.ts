@@ -49,12 +49,12 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
-    const { title, content } = await request.json();
+    const { title, content, category } = await request.json();
 
     // バリデーション
     if (!title || !content) {
