@@ -1,27 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '../../../../auth';
+import { getCurrentUser } from '@/lib/auth';
+import { UserModel } from '@/models/User';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await auth();
+    const currentUser = await getCurrentUser();
 
-    if (!session?.user?.email) {
+    if (!currentUser) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
-    // ここで実際のデータベースからユーザー情報を取得
-    // 現在はセッション情報をそのまま返す
-    const userProfile = {
-      id: session.user.id,
-      name: session.user.name,
-      email: session.user.email,
-      image: session.user.image,
-      bio: session.user.bio || '',
-      emailVerified: session.user.emailVerified,
-      createdAt: session.user.createdAt,
-      updatedAt: session.user.updatedAt,
-    };
+    // データベースからユーザー情報を取得
+    const user = await UserModel.findById(currentUser.id);
+    
+    if (!user) {
+      return NextResponse.json({ error: 'ユーザーが見つかりません' }, { status: 404 });
+    }
 
+    const userProfile = UserModel.documentToProfile(user);
     return NextResponse.json(userProfile);
   } catch (error) {
     console.error('Profile fetch error:', error);
