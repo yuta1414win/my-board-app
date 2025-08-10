@@ -77,8 +77,8 @@ test.describe('認証機能 スモークテスト', () => {
       await page.getByLabel(/メールアドレス|Email/).fill(smokeTestUser.email);
       await page.getByLabel(/パスワード|Password/).fill(smokeTestUser.password);
 
-      // 3. ログイン実行
-      await page.getByRole('button', { name: /ログイン|Sign In/ }).click();
+      // 3. ログイン実行（フォーム内のボタンを指定）
+      await page.locator('form').getByRole('button', { name: 'ログイン' }).click();
 
       // 4. ログイン成功確認
       await expect(page).toHaveURL(/\/board/);
