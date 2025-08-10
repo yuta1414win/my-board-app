@@ -38,7 +38,7 @@ jest.mock('next-auth/react', () => ({
 }));
 
 // Mock NextAuth.js server functions
-jest.mock('../auth', () => ({
+jest.mock('./auth', () => ({
   auth: jest.fn(),
   signIn: jest.fn(),
   signOut: jest.fn(),
@@ -49,13 +49,13 @@ jest.mock('../auth', () => ({
 }));
 
 // Mock MongoDB connection
-jest.mock('../lib/mongodb', () => ({
+jest.mock('./lib/mongodb', () => ({
   __esModule: true,
   default: jest.fn().mockResolvedValue({}),
 }));
 
 // Mock User model
-jest.mock('../models/User', () => ({
+jest.mock('./models/User', () => ({
   findOne: jest.fn(),
   findById: jest.fn(),
   findByIdAndUpdate: jest.fn(),
@@ -64,10 +64,17 @@ jest.mock('../models/User', () => ({
 }));
 
 // Mock email functions
-jest.mock('../lib/email', () => ({
+jest.mock('./lib/email', () => ({
   generateEmailVerificationToken: jest.fn(() => 'mock-token'),
   sendVerificationEmail: jest.fn().mockResolvedValue(true),
   verifyEmailToken: jest.fn(),
+}));
+
+// Mock rate limiting
+jest.mock('./lib/rate-limit', () => ({
+  rateLimit: jest.fn(() => ({
+    check: jest.fn().mockResolvedValue(undefined),
+  })),
 }));
 
 // Test environment variables
