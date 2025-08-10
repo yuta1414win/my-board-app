@@ -1,10 +1,9 @@
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-import { render } from '@react-email/render';
 
 // Gmail SMTP設定
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
     secure: process.env.EMAIL_SERVER_PORT === '465', // true for 465, false for other ports
@@ -45,17 +44,26 @@ interface EmailTemplate {
   text?: string;
 }
 
-export async function sendEmail({ to, subject, html, text, attachments }: EmailOptions): Promise<EmailResult> {
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  text,
+  attachments,
+}: EmailOptions): Promise<EmailResult> {
   const transporter = createTransporter();
-  
+
   try {
     // 接続テスト
     await transporter.verify();
-    
+
     const info = await transporter.sendMail({
       from: {
         name: process.env.EMAIL_FROM_NAME || 'My Board App',
-        address: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || 'noreply@example.com'
+        address:
+          process.env.EMAIL_FROM ||
+          process.env.EMAIL_SERVER_USER ||
+          'noreply@example.com',
       },
       to,
       subject,
@@ -63,10 +71,10 @@ export async function sendEmail({ to, subject, html, text, attachments }: EmailO
       text: text || html.replace(/<[^>]*>/g, ''), // HTMLタグを除去してテキスト版を作成
       attachments,
     });
-    
+
     console.log(`Email sent successfully: ${info.messageId}`);
     console.log(`To: ${to}, Subject: ${subject}`);
-    
+
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Email sending failed:', {
@@ -74,12 +82,12 @@ export async function sendEmail({ to, subject, html, text, attachments }: EmailO
       subject,
       error: error instanceof Error ? error.message : error,
     });
-    
+
     // エラーの詳細をログに記録
     if (error instanceof Error) {
       console.error('Error details:', error.stack);
     }
-    
+
     return { success: false, error };
   } finally {
     // 接続を閉じる
@@ -105,12 +113,18 @@ export function verifyToken(token: string): any {
   try {
     return jwt.verify(token, process.env.JWT_SECRET!);
   } catch (error) {
-    console.error('Token verification failed:', error instanceof Error ? error.message : error);
+    console.error(
+      'Token verification failed:',
+      error instanceof Error ? error.message : error
+    );
     return null;
   }
 }
 
-export async function sendVerificationEmail(email: string, token: string): Promise<EmailResult> {
+export async function sendVerificationEmail(
+  email: string,
+  token: string
+): Promise<EmailResult> {
   const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${token}`;
 
   const html = `
@@ -148,7 +162,10 @@ export async function sendVerificationEmail(email: string, token: string): Promi
   });
 }
 
-export async function sendPasswordResetEmail(email: string, token: string): Promise<EmailResult> {
+export async function sendPasswordResetEmail(
+  email: string,
+  token: string
+): Promise<EmailResult> {
   const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
 
   const html = `
@@ -190,7 +207,10 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
 }
 
 // ウェルカムメール送信
-export async function sendWelcomeEmail(email: string, userName?: string): Promise<EmailResult> {
+export async function sendWelcomeEmail(
+  email: string,
+  userName?: string
+): Promise<EmailResult> {
   const displayName = userName || 'ユーザー様';
   const dashboardUrl = `${process.env.NEXTAUTH_URL}/board`;
 
@@ -243,7 +263,7 @@ export async function sendWelcomeEmail(email: string, userName?: string): Promis
 // メール送信のテスト関数
 export async function testEmailConnection(): Promise<EmailResult> {
   const transporter = createTransporter();
-  
+
   try {
     await transporter.verify();
     console.log('Email connection test successful');
