@@ -89,7 +89,6 @@ export async function PUT(
       {
         title: title.trim(),
         content: content.trim(),
-        category: category || post.category,
         updatedAt: new Date(),
       },
       { new: true }
