@@ -167,13 +167,15 @@ global.Response = class Response {
   }
 
   static json(data, init = {}) {
-    return new Response(JSON.stringify(data), {
-      ...init,
+    const responseInit = {
+      status: init?.status || 200,
+      statusText: init?.statusText || 'OK',
       headers: {
         'Content-Type': 'application/json',
-        ...init.headers,
+        ...(init?.headers || {}),
       },
-    });
+    };
+    return new Response(JSON.stringify(data), responseInit);
   }
 
   json() {
