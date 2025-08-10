@@ -95,7 +95,8 @@ export default function Header() {
               component={Link}
               href="/dashboard"
               sx={{
-                textDecoration: pathname === '/dashboard' ? 'underline' : 'none',
+                textDecoration:
+                  pathname === '/dashboard' ? 'underline' : 'none',
               }}
             >
               ダッシュボード
