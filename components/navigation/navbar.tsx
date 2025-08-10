@@ -104,12 +104,14 @@ export default function Navbar() {
               <Button
                 color="inherit"
                 onClick={() => router.push('/auth/signin')}
+                data-testid="navbar-signin-button"
               >
                 ログイン
               </Button>
               <Button
                 color="inherit"
                 onClick={() => router.push('/auth/register')}
+                data-testid="navbar-register-button"
               >
                 新規登録
               </Button>
