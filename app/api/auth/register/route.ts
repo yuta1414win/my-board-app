@@ -119,8 +119,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // ユーザー作成
-    const verificationToken = generateEmailVerificationToken();
+    // ユーザー作成（暫定的に仮IDでトークン生成）
+    const tempUserId = new Date().getTime().toString();
+    const verificationToken = generateEmailVerificationToken(tempUserId);
     const user = await User.create({
       name,
       email,
