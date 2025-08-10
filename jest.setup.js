@@ -87,6 +87,51 @@ process.env.NODE_ENV = 'test';
 // Global fetch mock for API tests
 global.fetch = jest.fn();
 
+// Mock Headers constructor
+global.Headers = class Headers {
+  constructor(init) {
+    this.headers = new Map();
+    
+    if (init) {
+      if (init instanceof Headers) {
+        for (const [key, value] of init.headers) {
+          this.headers.set(key.toLowerCase(), value);
+        }
+      } else if (Array.isArray(init)) {
+        for (const [key, value] of init) {
+          this.headers.set(key.toLowerCase(), value);
+        }
+      } else if (typeof init === 'object') {
+        for (const [key, value] of Object.entries(init)) {
+          this.headers.set(key.toLowerCase(), value);
+        }
+      }
+    }
+  }
+
+  get(name) {
+    return this.headers.get(name.toLowerCase()) || null;
+  }
+
+  set(name, value) {
+    this.headers.set(name.toLowerCase(), value);
+  }
+
+  has(name) {
+    return this.headers.has(name.toLowerCase());
+  }
+
+  delete(name) {
+    this.headers.delete(name.toLowerCase());
+  }
+
+  *[Symbol.iterator]() {
+    for (const [key, value] of this.headers) {
+      yield [key, value];
+    }
+  }
+};
+
 // Mock Response constructor
 global.Response = class Response {
   constructor(body, init) {
