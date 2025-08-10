@@ -77,7 +77,11 @@ test.describe('認証機能 スモークテスト', () => {
 
       // 2. ログイン情報入力
       await page.getByLabel(/メールアドレス|Email/).fill(smokeTestUser.email);
-      await page.getByRole('textbox', { name: /パスワード|Password/ }).or(page.locator('input[name="password"]')).first().fill(smokeTestUser.password);
+      await page
+        .getByRole('textbox', { name: /パスワード|Password/ })
+        .or(page.locator('input[name="password"]'))
+        .first()
+        .fill(smokeTestUser.password);
 
       // 3. ログイン実行（フォーム内のボタンを指定）
       await page
@@ -137,7 +141,7 @@ test.describe('認証機能 スモークテスト', () => {
 
       // 間違った認証情報でログイン試行
       await page.getByLabel(/メールアドレス|Email/).fill(smokeTestUser.email);
-      await page.getByLabel(/パスワード|Password/).fill('WrongPassword123!');
+      await page.getByRole('textbox', { name: /パスワード|Password/ }).or(page.locator('input[name="password"]')).first().fill('WrongPassword123!');
       await page
         .locator('form')
         .getByRole('button', { name: 'ログイン' })
