@@ -15,6 +15,9 @@ const customJestConfig = {
     '<rootDir>/tests/e2e/',
     '<rootDir>/playwright/',
   ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact)/)',
+  ],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
