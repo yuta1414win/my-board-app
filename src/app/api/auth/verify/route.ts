@@ -43,11 +43,11 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.INVALID_TOKEN,
           code: 'INVALID_TOKEN',
-          canResend: true
+          canResend: true,
         },
         { status: 400 }
       );
@@ -62,7 +62,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'メールアドレスが確認されました。ログインできます。',
+        message: MESSAGES.EMAIL_VERIFIED,
+        code: 'EMAIL_VERIFIED',
+        redirectUrl: '/auth/signin'
       },
       { status: 200 }
     );
