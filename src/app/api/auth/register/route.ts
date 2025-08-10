@@ -1,101 +1,149 @@
-import { NextResponse } from 'next/server';
-import { hash } from 'bcryptjs';
-import { MongoClient } from 'mongodb';
+import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import dbConnect from '@/lib/mongodb';
+import User from '@/models/User';
+import { checkPasswordStrength, validateEmail, generateVerificationToken } from '@/lib/validation';
+import { sendVerificationEmail } from '@/lib/email';
 
-export async function POST(request: Request) {
-  let client: MongoClient | null = null;
-  
+export async function POST(request: NextRequest) {
   try {
-    const { email, password, name } = await request.json();
+    const { name, email, password, confirmPassword } = await request.json();
 
-    // バリデーション
-    if (!email || !password || !name) {
+    // 入力検証
+    if (!name || !email || !password || !confirmPassword) {
       return NextResponse.json(
-        { error: '全ての項目を入力してください', success: false },
+        { error: '必須項目を入力してください' },
         { status: 400 }
       );
     }
 
-    if (name.length > 50) {
+    // 名前の検証
+    if (name.length < 2 || name.length > 50) {
       return NextResponse.json(
-        { error: '名前は50文字以内で入力してください', success: false },
+        { error: '名前は2文字以上50文字以内で入力してください' },
         { status: 400 }
       );
     }
 
-    if (password.length < 8) {
+    // メールアドレスの検証
+    if (!validateEmail(email)) {
       return NextResponse.json(
-        { error: 'パスワードは8文字以上で入力してください', success: false },
+        { error: '有効なメールアドレスを入力してください' },
         { status: 400 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // パスワードの一致確認
+    if (password !== confirmPassword) {
       return NextResponse.json(
-        { error: '有効なメールアドレスを入力してください', success: false },
+        { error: 'パスワードが一致しません' },
         { status: 400 }
       );
     }
 
-    // MongoDB接続
-    const MONGODB_URI = process.env.MONGODB_URI;
-    if (!MONGODB_URI) {
-      console.error('MONGODB_URI is not defined');
+    // パスワード強度チェック
+    const passwordStrength = checkPasswordStrength(password);
+    if (!passwordStrength.isValid) {
+      const missingRequirements = [];
+      if (!passwordStrength.requirements.minLength) {
+        missingRequirements.push('8文字以上');
+      }
+      if (!passwordStrength.requirements.hasUpperCase) {
+        missingRequirements.push('大文字');
+      }
+      if (!passwordStrength.requirements.hasLowerCase) {
+        missingRequirements.push('小文字');
+      }
+      if (!passwordStrength.requirements.hasNumber) {
+        missingRequirements.push('数字');
+      }
+      if (!passwordStrength.requirements.hasSpecialChar) {
+        missingRequirements.push('特殊文字');
+      }
+
       return NextResponse.json(
-        { error: 'データベース設定エラー', success: false },
-        { status: 500 }
+        { 
+          error: `パスワードは次の要件を満たす必要があります: ${missingRequirements.join('、')}`,
+          requirements: passwordStrength.requirements
+        },
+        { status: 400 }
       );
     }
 
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
+    // データベース接続
+    await dbConnect();
 
-    const db = client.db();
-    const users = db.collection('users');
-
-    // 既存ユーザーのチェック
-    const existingUser = await users.findOne({ email });
+    // メールアドレスの重複チェック
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'このメールアドレスは既に登録されています', success: false },
-        { status: 400 }
+        { error: 'このメールアドレスは既に登録されています' },
+        { status: 409 }
       );
     }
 
-    // パスワードをハッシュ化
-    const hashedPassword = await hash(password, 12);
+    // パスワードのハッシュ化
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    // ユーザーを作成
-    const newUser = {
+    // 確認トークンの生成
+    const verificationToken = generateVerificationToken();
+    const verificationExpires = new Date();
+    verificationExpires.setHours(verificationExpires.getHours() + 24);
+
+    // ユーザーの作成
+    const user = await User.create({
       name,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
-      emailVerified: true, // テスト環境では認証済みとして作成
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+      emailVerified: false,
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: verificationExpires,
+    });
 
-    const result = await users.insertOne(newUser);
+    // 確認メールの送信
+    const emailResult = await sendVerificationEmail(user.email, verificationToken);
 
-    if (result.insertedId) {
-      return NextResponse.json({
-        message: '登録が完了しました',
-        success: true,
-      });
-    } else {
-      throw new Error('ユーザー作成に失敗しました');
+    if (!emailResult.success) {
+      // メール送信失敗時でもユーザーは作成されているため、エラーをログに記録
+      console.error('Failed to send verification email:', emailResult.error);
+      
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'アカウントが作成されました。確認メールの送信に失敗しました。サポートにお問い合わせください。',
+          userId: user._id,
+          emailSent: false
+        },
+        { status: 201 }
+      );
     }
-    
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'アカウントが作成されました。メールアドレスに送信された確認リンクをクリックしてください。',
+        userId: user._id,
+        emailSent: true
+      },
+      { status: 201 }
+    );
+
   } catch (error) {
     console.error('Registration error:', error);
+    
+    if (error instanceof Error) {
+      // MongoDBのエラー処理
+      if (error.message.includes('E11000')) {
+        return NextResponse.json(
+          { error: 'このメールアドレスは既に登録されています' },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { error: '登録処理中にエラーが発生しました', success: false },
+      { error: 'アカウント作成中にエラーが発生しました。しばらく待ってから再度お試しください。' },
       { status: 500 }
     );
-  } finally {
-    if (client) {
-      await client.close();
-    }
   }
 }
