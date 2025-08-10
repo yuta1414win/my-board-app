@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import {
   Container,
@@ -15,6 +16,7 @@ import {
   Stack,
   Divider,
 } from '@mui/material';
+import { Google as GoogleIcon, GitHub as GitHubIcon } from '@mui/icons-material';
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({
@@ -84,9 +86,9 @@ export default function SignInPage() {
           component="h1"
           gutterBottom
           align="center"
-          sx={{ 
+          sx={{
             fontSize: { xs: '1.75rem', sm: '2.125rem' },
-            mb: 4 
+            mb: 4,
           }}
         >
           ログイン
@@ -134,8 +136,12 @@ export default function SignInPage() {
                   color="primary"
                   fullWidth
                   size="large"
-                  disabled={loading || !formData.email.trim() || !formData.password.trim()}
-                  sx={{ 
+                  disabled={
+                    loading ||
+                    !formData.email.trim() ||
+                    !formData.password.trim()
+                  }
+                  sx={{
                     height: 48,
                     fontSize: '1rem',
                   }}
