@@ -25,8 +25,7 @@ export default function BoardPage() {
 
   const handleCreatePost = () => {
     if (!session) return;
-    setEditPost(null);
-    setPostFormOpen(true);
+    window.location.href = '/posts/new';
   };
 
   const handleEditPost = (post: Post) => {
