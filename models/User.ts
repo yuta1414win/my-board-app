@@ -209,16 +209,8 @@ const User: Model<IUser> =
 export class UserModel {
   static async findById(id: string): Promise<IUser | null> {
     try {
-      // まずObjectIdとして検索を試す
-      try {
-        return await User.findById(id).exec();
-      } catch (objectIdError) {
-        // ObjectIdでない場合（OAuth UUIDなど）、emailで検索
-        // NextAuthのOAuthログインはユーザーをセッションに保存しているため
-        // セッションからの情報を使用する必要がある
-        console.warn('ObjectId検索失敗、代替手段が必要:', id);
-        return null;
-      }
+      // NextAuthのUUID形式のIDに対応するため、_idフィールドで直接検索
+      return await User.findOne({ _id: id }).exec();
     } catch (error) {
       console.error('UserModel.findById error:', error);
       return null;
