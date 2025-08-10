@@ -1,6 +1,6 @@
 import { getCurrentUser } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import ChangePasswordClient from '@/components/profile/ChangePasswordClient';
+import ChangeCredentialsClient from '@/components/profile/ChangeCredentialsClient';
 
 export default async function ChangePasswordPage() {
   const currentUser = await getCurrentUser();
@@ -9,5 +9,5 @@ export default async function ChangePasswordPage() {
     redirect('/auth/signin');
   }
 
-  return <ChangePasswordClient />;
+  return <ChangeCredentialsClient />;
 }
