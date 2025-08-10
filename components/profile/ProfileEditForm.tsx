@@ -39,6 +39,7 @@ export default function ProfileEditForm({
   onError,
   onCancel,
 }: ProfileEditFormProps) {
+  const { update } = useSession();
   const [formData, setFormData] = useState<FormData>({
     name: user.name || '',
     bio: user.bio || '',
