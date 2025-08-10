@@ -77,7 +77,7 @@ test.describe('認証機能 スモークテスト', () => {
 
       // 2. ログイン情報入力
       await page.getByLabel(/メールアドレス|Email/).fill(smokeTestUser.email);
-      await page.getByLabel(/パスワード|Password/).fill(smokeTestUser.password);
+      await page.getByRole('textbox', { name: /パスワード|Password/ }).or(page.locator('input[name="password"]')).first().fill(smokeTestUser.password);
 
       // 3. ログイン実行（フォーム内のボタンを指定）
       await page
