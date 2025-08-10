@@ -45,7 +45,7 @@ export async function PUT(
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
-    const { title, content, category } = await request.json();
+    const { title, content } = await request.json();
 
     // バリデーション
     if (!title || !content) {
@@ -62,24 +62,9 @@ export async function PUT(
       );
     }
 
-    if (content.length > 5000) {
+    if (content.length > 1000) {
       return NextResponse.json(
-        { error: '内容は5000文字以内で入力してください' },
-        { status: 400 }
-      );
-    }
-
-    const validCategories = [
-      'general',
-      'question',
-      'discussion',
-      'announcement',
-      'tech',
-      'hobby',
-    ];
-    if (category && !validCategories.includes(category)) {
-      return NextResponse.json(
-        { error: '無効なカテゴリーです' },
+        { error: '内容は1000文字以内で入力してください' },
         { status: 400 }
       );
     }
