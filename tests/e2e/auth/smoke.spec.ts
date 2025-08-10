@@ -178,11 +178,6 @@ test.describe('認証機能 スモークテスト', () => {
           .first()
       ).toBeVisible({ timeout: 10000 });
 
-      // または、HTML5バリデーションメッセージを確認
-      const nameField = page.getByLabel(/名前|Name/);
-      const emailField = page.getByLabel(/メールアドレス|Email/);
-      const passwordField = page.getByLabel('パスワード', { exact: true });
-
       // フィールドが required 属性を持つことを確認
       await expect(nameField).toHaveAttribute('required');
       await expect(emailField).toHaveAttribute('required');
@@ -201,13 +196,15 @@ test.describe('認証機能 スモークテスト', () => {
       // バリデーションエラーの確認（Material-UIではhelperTextでエラーが表示される）
       // HTML5バリデーションまたはカスタムバリデーションのいずれかが動作することを確認
       await expect(
-        page.locator('form .MuiFormHelperText-root, form p[id*="helper-text"]').first()
+        page
+          .locator('form .MuiFormHelperText-root, form p[id*="helper-text"]')
+          .first()
       ).toBeVisible({ timeout: 10000 });
-      
+
       // フィールドが required 属性を持つことを確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
       const passwordField = page.getByLabel(/パスワード|Password/);
-      
+
       await expect(emailField).toHaveAttribute('required');
       await expect(passwordField).toHaveAttribute('required');
     });
