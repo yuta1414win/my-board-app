@@ -82,7 +82,6 @@ export async function POST(request: Request) {
     const post = await Post.create({
       title: title.trim(),
       content: content.trim(),
-      category: category || 'general',
       author: session.user.id,
       authorName: session.user.name,
     });
