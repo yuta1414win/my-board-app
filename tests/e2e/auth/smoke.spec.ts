@@ -48,7 +48,9 @@ test.describe('認証機能 スモークテスト', () => {
       ).toBeVisible();
       await expect(page.getByLabel(/名前|Name/)).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
-      await expect(page.getByLabel('パスワード', { exact: true })).toBeVisible();
+      await expect(
+        page.getByLabel('パスワード', { exact: true })
+      ).toBeVisible();
       await expect(
         page.locator('form').getByRole('button', { name: '登録する' })
       ).toBeVisible();
@@ -219,11 +221,9 @@ test.describe('認証機能 スモークテスト', () => {
       ).toBeVisible();
       await expect(page.getByLabel(/名前|Name/)).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
+      await expect(page.getByLabel('パスワード', { exact: true })).toBeVisible();
       await expect(
-        page.locator('input[name="password"]').first()
-      ).toBeVisible();
-      await expect(
-        page.getByRole('button', { name: /登録|Register/ })
+        page.locator('form').getByRole('button', { name: '登録する' })
       ).toBeVisible();
     });
   });
