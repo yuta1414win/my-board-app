@@ -166,6 +166,54 @@ export default function SignInPage() {
               </Stack>
             </form>
 
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="body2" color="textSecondary">
+                または
+              </Typography>
+            </Divider>
+
+            <Stack spacing={2}>
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                startIcon={<GoogleIcon />}
+                onClick={() => handleOAuthSignIn('google')}
+                disabled={loading}
+                sx={{
+                  height: 48,
+                  borderColor: '#db4437',
+                  color: '#db4437',
+                  '&:hover': {
+                    borderColor: '#c23321',
+                    backgroundColor: '#fdf2f2',
+                  },
+                }}
+              >
+                Googleでログイン
+              </Button>
+
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                startIcon={<GitHubIcon />}
+                onClick={() => handleOAuthSignIn('github')}
+                disabled={loading}
+                sx={{
+                  height: 48,
+                  borderColor: '#333',
+                  color: '#333',
+                  '&:hover': {
+                    borderColor: '#000',
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                GitHubでログイン
+              </Button>
+            </Stack>
+
             <Divider sx={{ my: 3 }} />
 
             <Box sx={{ textAlign: 'center' }}>
