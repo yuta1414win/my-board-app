@@ -119,6 +119,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.emailVerified = token.emailVerified as boolean;
+        if (token.role) {
+          session.user.role = token.role as string;
+        }
       }
       return session;
     },
