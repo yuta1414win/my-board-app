@@ -37,6 +37,9 @@ export default function BoardPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [user, setUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const router = useRouter();
 
   // 投稿一覧を取得
   const fetchPosts = async () => {
