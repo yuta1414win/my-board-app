@@ -52,10 +52,7 @@ export async function PUT(
 
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json(
-        { error: '無効な投稿IDです' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
     }
 
     const { title, content } = await request.json();
@@ -92,8 +89,9 @@ export async function PUT(
       );
     }
 
-    // 投稿者チェック
-    if (post.author.toString() !== session.user.id) {
+    // 投稿者チェック - String型として比較
+    const isAuthor = String(post.author) === String(session.user.id);
+    if (!isAuthor) {
       return NextResponse.json({ error: '権限がありません' }, { status: 403 });
     }
 
@@ -131,6 +129,13 @@ export async function DELETE(
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
+    // デバッグ: セッション情報を確認
+    console.log('削除リクエスト - セッション情報:', {
+      userId: session.user.id,
+      userEmail: session.user.email,
+      userName: session.user.name,
+    });
+
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
       console.error('無効なID形式:', params.id);
@@ -139,7 +144,7 @@ export async function DELETE(
 
     await dbConnect();
 
-    const post = await Post.findById(params.id);
+    const post = await Post.findById(params.id).populate('author');
     if (!post) {
       console.error('投稿が見つかりません:', params.id);
       return NextResponse.json(
@@ -148,14 +153,24 @@ export async function DELETE(
       );
     }
 
-    // 投稿者チェック
-    console.log('投稿者チェック:', {
+    // デバッグ: 投稿の詳細情報を確認
+    console.log('削除対象の投稿情報:', {
+      postId: post._id.toString(),
       postAuthor: post.author,
-      sessionUserId: session.user.id,
-      match: post.author.toString() === session.user.id,
+      postAuthorType: typeof post.author,
+      postAuthorToString: post.author?.toString(),
     });
 
-    if (post.author.toString() !== session.user.id) {
+    // 投稿者チェック - String型として比較
+    // post.authorにはユーザーIDが文字列として保存されている
+    const isAuthor = String(post.author) === String(session.user.id);
+    console.log('権限チェック結果:', {
+      postAuthor: String(post.author),
+      sessionUserId: String(session.user.id),
+      isAuthor: isAuthor,
+    });
+
+    if (!isAuthor) {
       return NextResponse.json({ error: '権限がありません' }, { status: 403 });
     }
 
@@ -168,7 +183,8 @@ export async function DELETE(
       success: true,
     });
   } catch (error: any) {
-    console.error('Delete post error:', error);
+    console.error('Delete post error - 詳細:', error);
+    console.error('エラースタック:', error.stack);
     return NextResponse.json(
       { error: 'サーバーエラーが発生しました' },
       { status: 500 }
