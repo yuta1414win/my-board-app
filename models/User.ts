@@ -214,7 +214,8 @@ export class UserModel {
   static async findById(id: string): Promise<IUser | null> {
     try {
       // NextAuthのUUID形式のIDに対応するため、_idフィールドで直接検索
-      return await User.findOne({ _id: id }).exec();
+      // MongooseのcastingをスキップしてString型のIDを検索
+      return await User.findOne({ _id: id as any }).exec();
     } catch (error) {
       console.error('UserModel.findById error:', error);
       return null;
