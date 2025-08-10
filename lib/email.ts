@@ -38,11 +38,6 @@ interface EmailResult {
   error?: any;
 }
 
-interface EmailTemplate {
-  subject: string;
-  html: string;
-  text?: string;
-}
 
 export async function sendEmail({
   to,
