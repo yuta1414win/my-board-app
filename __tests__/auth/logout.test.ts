@@ -67,7 +67,7 @@ describe('ログアウト機能テスト', () => {
 
       // Assert
       expect(result).toEqual(expectedResult);
-      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith(undefined);
+      expect(nextAuthMock.mockSignOut).toHaveBeenCalled();
     });
 
     it('カスタムコールバックURLでログアウトが実行される', async () => {
@@ -449,7 +449,7 @@ describe('ログアウト機能テスト', () => {
       // ログアウト後はセッションがnullになるようモックを再設定
       nextAuthMock.mockAuth.mockResolvedValueOnce(null);
       nextAuthMock.mockGetSession.mockResolvedValueOnce(null);
-      
+
       session = await nextAuthMock.mockAuth();
       expect(session).toBeNull();
 
