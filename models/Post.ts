@@ -4,7 +4,7 @@ export interface IPost extends Document {
   _id: string;
   title: string;
   content: string;
-  author: mongoose.Types.ObjectId;
+  author: string; // ObjectIdとUUIDの両方に対応
   authorName: string;
   createdAt: Date;
   updatedAt: Date;
