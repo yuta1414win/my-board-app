@@ -75,8 +75,8 @@ export default function PostForm({
 
     if (!formData.content.trim()) {
       newErrors.content = '内容は必須です';
-    } else if (formData.content.trim().length > 5000) {
-      newErrors.content = '内容は5000文字以内で入力してください';
+    } else if (formData.content.trim().length > 1000) {
+      newErrors.content = '内容は1000文字以内で入力してください';
     }
 
     setErrors(newErrors);
