@@ -49,26 +49,28 @@ interface PasswordStrength {
 }
 
 // バリデーションスキーマ
-const registerSchema = z.object({
-  name: z
-    .string()
-    .min(1, '名前は必須です')
-    .max(50, '名前は50文字以内で入力してください')
-    .trim(),
-  email: z
-    .string()
-    .email('正しいメールアドレスを入力してください')
-    .toLowerCase()
-    .trim(),
-  password: z
-    .string()
-    .min(8, 'パスワードは8文字以上で入力してください')
-    .max(100, 'パスワードは100文字以内で入力してください'),
-  confirmPassword: z.string().min(1, 'パスワード確認は必須です'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'パスワードが一致しません',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, '名前は必須です')
+      .max(50, '名前は50文字以内で入力してください')
+      .trim(),
+    email: z
+      .string()
+      .email('正しいメールアドレスを入力してください')
+      .toLowerCase()
+      .trim(),
+    password: z
+      .string()
+      .min(8, 'パスワードは8文字以上で入力してください')
+      .max(100, 'パスワードは100文字以内で入力してください'),
+    confirmPassword: z.string().min(1, 'パスワード確認は必須です'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'パスワードが一致しません',
+    path: ['confirmPassword'],
+  });
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -80,7 +82,9 @@ export default function SignUpForm() {
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'success' | 'error' | 'warning'>('error');
+  const [messageType, setMessageType] = useState<
+    'success' | 'error' | 'warning'
+  >('error');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -140,7 +144,9 @@ export default function SignUpForm() {
     // パスワード強度の追加チェック
     const hasNumber = /\d/.test(formData.password);
     const hasLetter = /[a-zA-Z]/.test(formData.password);
-    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+      formData.password
+    );
 
     if (!hasNumber || !hasLetter || !hasSpecial) {
       setErrors({
@@ -177,7 +183,10 @@ export default function SignUpForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message || '登録が完了しました。メールアドレスに確認メールを送信しました。');
+        setMessage(
+          data.message ||
+            '登録が完了しました。メールアドレスに確認メールを送信しました。'
+        );
         setMessageType('success');
         setFormData({
           name: '',
@@ -195,7 +204,9 @@ export default function SignUpForm() {
           setMessage(data.error);
           setMessageType('warning');
         } else if (data.code === 'EMAIL_ALREADY_VERIFIED') {
-          setMessage('このメールアドレスは既に登録されています。ログインしてください。');
+          setMessage(
+            'このメールアドレスは既に登録されています。ログインしてください。'
+          );
           setMessageType('warning');
         } else if (data.code === 'VERIFICATION_EMAIL_RESENT') {
           setMessage(data.message);
@@ -218,7 +229,9 @@ export default function SignUpForm() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setMessage('サーバーエラーが発生しました。しばらく時間を置いてお試しください。');
+      setMessage(
+        'サーバーエラーが発生しました。しばらく時間を置いてお試しください。'
+      );
       setMessageType('error');
     } finally {
       setLoading(false);
@@ -228,18 +241,18 @@ export default function SignUpForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
+
     // パスワード強度チェック
     if (name === 'password') {
       const strength = checkPasswordStrength(value);
       setPasswordStrength(strength);
     }
-    
+
     // エラーをクリア
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
-    
+
     // メッセージクリア
     if (message) {
       setMessage('');
@@ -268,8 +281,8 @@ export default function SignUpForm() {
         </Box>
 
         {message && (
-          <Alert 
-            severity={messageType} 
+          <Alert
+            severity={messageType}
             sx={{ mb: 2 }}
             icon={messageType === 'success' ? <CheckCircle /> : undefined}
           >
@@ -293,6 +306,7 @@ export default function SignUpForm() {
             helperText={errors.name}
             margin="normal"
             autoComplete="name"
+            required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -360,21 +374,21 @@ export default function SignUpForm() {
                 <Typography variant="caption" color="text.secondary">
                   パスワード強度:
                 </Typography>
-                <Typography 
-                  variant="caption" 
+                <Typography
+                  variant="caption"
                   color={passwordStrength.color}
                   fontWeight="bold"
                 >
                   {passwordStrength.label}
                 </Typography>
               </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={passwordStrength.score} 
+              <LinearProgress
+                variant="determinate"
+                value={passwordStrength.score}
                 color={passwordStrength.color as any}
                 sx={{ height: 6, borderRadius: 1 }}
               />
-              
+
               {/* パスワード要件 */}
               <Box mt={1}>
                 <List dense sx={{ py: 0 }}>
@@ -386,11 +400,13 @@ export default function SignUpForm() {
                         <Cancel fontSize="small" color="error" />
                       )}
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="8文字以上" 
-                      primaryTypographyProps={{ 
+                    <ListItemText
+                      primary="8文字以上"
+                      primaryTypographyProps={{
                         variant: 'caption',
-                        color: passwordRequirements.length ? 'success.main' : 'text.secondary'
+                        color: passwordRequirements.length
+                          ? 'success.main'
+                          : 'text.secondary',
                       }}
                     />
                   </ListItem>
@@ -402,11 +418,13 @@ export default function SignUpForm() {
                         <Cancel fontSize="small" color="error" />
                       )}
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="数字を含む" 
-                      primaryTypographyProps={{ 
+                    <ListItemText
+                      primary="数字を含む"
+                      primaryTypographyProps={{
                         variant: 'caption',
-                        color: passwordRequirements.number ? 'success.main' : 'text.secondary'
+                        color: passwordRequirements.number
+                          ? 'success.main'
+                          : 'text.secondary',
                       }}
                     />
                   </ListItem>
@@ -418,11 +436,13 @@ export default function SignUpForm() {
                         <Cancel fontSize="small" color="error" />
                       )}
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="英字を含む" 
-                      primaryTypographyProps={{ 
+                    <ListItemText
+                      primary="英字を含む"
+                      primaryTypographyProps={{
                         variant: 'caption',
-                        color: passwordRequirements.letter ? 'success.main' : 'text.secondary'
+                        color: passwordRequirements.letter
+                          ? 'success.main'
+                          : 'text.secondary',
                       }}
                     />
                   </ListItem>
@@ -434,11 +454,13 @@ export default function SignUpForm() {
                         <Cancel fontSize="small" color="error" />
                       )}
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="特殊文字を含む (!@#$%^&*など)" 
-                      primaryTypographyProps={{ 
+                    <ListItemText
+                      primary="特殊文字を含む (!@#$%^&*など)"
+                      primaryTypographyProps={{
                         variant: 'caption',
-                        color: passwordRequirements.special ? 'success.main' : 'text.secondary'
+                        color: passwordRequirements.special
+                          ? 'success.main'
+                          : 'text.secondary',
                       }}
                     />
                   </ListItem>
@@ -495,9 +517,9 @@ export default function SignUpForm() {
             <Typography variant="body2" color="text.secondary" gutterBottom>
               既にアカウントをお持ちですか？
             </Typography>
-            <Link 
-              component={NextLink} 
-              href="/auth/signin" 
+            <Link
+              component={NextLink}
+              href="/auth/signin"
               variant="body2"
               sx={{ color: 'primary.main' }}
             >
@@ -507,8 +529,15 @@ export default function SignUpForm() {
 
           {/* セキュリティ情報 */}
           <Box mt={3} p={2} bgcolor="grey.50" borderRadius={1}>
-            <Typography variant="caption" color="text.secondary" display="block">
-              <Security fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+            >
+              <Security
+                fontSize="small"
+                sx={{ mr: 1, verticalAlign: 'middle' }}
+              />
               登録後、メールアドレスの確認が必要です。24時間以内に確認メール内のリンクをクリックしてください。
             </Typography>
           </Box>
