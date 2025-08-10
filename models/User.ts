@@ -249,8 +249,8 @@ export class UserModel {
     data: ChangePasswordData
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // 現在のユーザー情報を取得
-      const user = await User.findById(id).select('+password').exec();
+      // 現在のユーザー情報を取得（NextAuthのUUID形式のIDに対応）
+      const user = await User.findOne({ _id: id }).select('+password').exec();
       if (!user) {
         return { success: false, error: 'ユーザーが見つかりません' };
       }
