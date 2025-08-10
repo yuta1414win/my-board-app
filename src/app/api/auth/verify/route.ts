@@ -64,14 +64,18 @@ export async function GET(request: NextRequest) {
         success: true,
         message: MESSAGES.EMAIL_VERIFIED,
         code: 'EMAIL_VERIFIED',
-        redirectUrl: '/auth/signin'
+        redirectUrl: '/auth/signin',
       },
       { status: 200 }
     );
   } catch (error: unknown) {
     console.error('Email verification error:', error);
     return NextResponse.json(
-      { error: 'メール確認中にエラーが発生しました' },
+      { 
+        success: false, 
+        error: MESSAGES.VERIFICATION_ERROR,
+        code: 'VERIFICATION_ERROR'
+      },
       { status: 500 }
     );
   }
