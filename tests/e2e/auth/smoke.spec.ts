@@ -189,7 +189,7 @@ test.describe('認証機能 スモークテスト', () => {
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
       await expect(page.getByLabel(/パスワード|Password/)).toBeVisible();
       await expect(
-        page.getByRole('button', { name: /ログイン|Sign In/ })
+        page.locator('form').getByRole('button', { name: 'ログイン' })
       ).toBeVisible();
 
       // 登録ページの確認
