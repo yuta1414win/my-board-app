@@ -157,7 +157,7 @@ export default function PostForm({
             value={formData.title}
             onChange={handleChange}
             error={!!errors.title}
-            helperText={errors.title}
+            helperText={errors.title || `${formData.title.length}/100文字`}
             margin="normal"
             disabled={loading}
           />
@@ -169,10 +169,10 @@ export default function PostForm({
             value={formData.content}
             onChange={handleChange}
             error={!!errors.content}
-            helperText={errors.content}
+            helperText={errors.content || `${formData.content.length}/1000文字`}
             margin="normal"
             multiline
-            rows={6}
+            rows={8}
             disabled={loading}
           />
         </DialogContent>
