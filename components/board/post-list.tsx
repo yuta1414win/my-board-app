@@ -105,15 +105,24 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   const handleDeleteConfirm = async () => {
     if (!selectedPost) return;
 
+    console.log('削除開始 - 投稿ID:', selectedPost._id);
+    console.log('選択された投稿:', selectedPost);
+    
     setDeleting(true);
     setError(''); // エラーをクリア
-    
+
     try {
-      const response = await fetch(`/api/posts/${selectedPost._id}`, {
+      const deleteUrl = `/api/posts/${selectedPost._id}`;
+      console.log('削除API呼び出し:', deleteUrl);
+      
+      const response = await fetch(deleteUrl, {
         method: 'DELETE',
       });
 
+      console.log('削除APIレスポンス status:', response.status);
+      
       if (response.ok) {
+        console.log('削除成功');
         // 削除成功時の処理
         setDeleteDialogOpen(false);
         setSelectedPost(null);
@@ -124,6 +133,7 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         const errorMessage = data.error || '削除に失敗しました';
         setError(errorMessage);
         console.error('削除エラー:', errorMessage);
+        console.error('エラーレスポンス:', data);
         // エラー時もダイアログを閉じる
         setDeleteDialogOpen(false);
       }
