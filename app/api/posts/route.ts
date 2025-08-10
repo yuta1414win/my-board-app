@@ -64,11 +64,34 @@ export async function POST(request: Request) {
       );
     }
 
+    if (title.length > 100) {
+      return NextResponse.json(
+        { error: 'タイトルは100文字以内で入力してください' },
+        { status: 400 }
+      );
+    }
+
+    if (content.length > 5000) {
+      return NextResponse.json(
+        { error: '内容は5000文字以内で入力してください' },
+        { status: 400 }
+      );
+    }
+
+    const validCategories = ['general', 'question', 'discussion', 'announcement', 'tech', 'hobby'];
+    if (category && !validCategories.includes(category)) {
+      return NextResponse.json(
+        { error: '無効なカテゴリーです' },
+        { status: 400 }
+      );
+    }
+
     await dbConnect();
 
     const post = await Post.create({
-      title,
-      content,
+      title: title.trim(),
+      content: content.trim(),
+      category: category || 'general',
       author: session.user.id,
       authorName: session.user.name,
     });
