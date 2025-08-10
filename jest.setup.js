@@ -48,8 +48,21 @@ jest.mock('next-auth/react', () => ({
 // Mock NextAuth.js server functions
 jest.mock('./auth', () => ({
   auth: jest.fn(),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
+  signIn: jest.fn().mockImplementation((provider, credentials, options) => {
+    // デフォルトの成功レスポンス
+    return Promise.resolve({
+      ok: true,
+      error: null,
+      url: null,
+      status: 200,
+    });
+  }),
+  signOut: jest.fn().mockImplementation((options) => {
+    // デフォルトのログアウトレスポンス
+    return Promise.resolve({
+      url: options?.callbackUrl || '/auth/signin',
+    });
+  }),
   handlers: {
     GET: jest.fn(),
     POST: jest.fn(),
