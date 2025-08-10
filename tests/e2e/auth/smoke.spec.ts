@@ -40,7 +40,7 @@ test.describe('認証機能 スモークテスト', () => {
       await page.goto('/auth/register');
 
       // ページタイトルの確認
-      await expect(page).toHaveTitle(/登録|Register|My Board App/);
+      await expect(page).toHaveTitle(/掲示板アプリ|登録/);
 
       // 主要要素の存在確認
       await expect(
