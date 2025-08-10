@@ -309,6 +309,7 @@ export default function SignInForm() {
             margin="normal"
             disabled={isBlocked}
             autoComplete="current-password"
+            required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
