@@ -207,6 +207,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
                     <Avatar
                       src={user.avatar || ''}
                       alt={user.name || ''}
+                      data-testid="user-avatar"
                       sx={{
                         width: 100,
                         height: 100,
