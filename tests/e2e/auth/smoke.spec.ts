@@ -153,9 +153,13 @@ test.describe('認証機能 スモークテスト', () => {
       const passwordField = page.locator('input[name="password"]').first();
 
       // エラーメッセージが表示されることを確認
-      await expect(page.getByText('正しいメールアドレスを入力してください')).toBeVisible();
+      await expect(
+        page.getByText('正しいメールアドレスを入力してください')
+      ).toBeVisible();
       await expect(page.getByText('名前は必須です')).toBeVisible();
-      await expect(page.getByText('パスワードは8文字以上で入力してください')).toBeVisible();
+      await expect(
+        page.getByText('パスワードは8文字以上で入力してください')
+      ).toBeVisible();
     });
 
     test('ログインフォームの必須フィールド検証が動作する', async ({ page }) => {
@@ -168,8 +172,12 @@ test.describe('認証機能 スモークテスト', () => {
         .click();
 
       // バリデーションエラーの確認（Material-UIではhelperTextでエラーが表示される）
-      await expect(page.getByText('正しいメールアドレスを入力してください')).toBeVisible();
-      await expect(page.getByText('パスワードを入力してください')).toBeVisible();
+      await expect(
+        page.getByText('正しいメールアドレスを入力してください')
+      ).toBeVisible();
+      await expect(
+        page.getByText('パスワードを入力してください')
+      ).toBeVisible();
     });
   });
 
@@ -196,7 +204,7 @@ test.describe('認証機能 スモークテスト', () => {
       ).toBeVisible();
       await expect(page.getByLabel(/名前|Name/)).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
-      await expect(page.getByLabel(/パスワード|Password/)).toBeVisible();
+      await expect(page.locator('input[name="password"]').first()).toBeVisible();
       await expect(
         page.getByRole('button', { name: /登録|Register/ })
       ).toBeVisible();
