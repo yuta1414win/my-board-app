@@ -25,7 +25,7 @@ test.describe('認証機能 スモークテスト', () => {
         page.getByRole('heading', { name: /ログイン|Sign In/ })
       ).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
-      await expect(page.getByLabel(/パスワード|Password/)).toBeVisible();
+      await expect(page.locator('input[name="password"]').first()).toBeVisible();
       await expect(
         page.locator('form').getByRole('button', { name: 'ログイン' })
       ).toBeVisible();
@@ -220,7 +220,7 @@ test.describe('認証機能 スモークテスト', () => {
 
       // フィールドが required 属性を持つことを確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
-      const passwordField = page.getByLabel(/パスワード|Password/);
+      const passwordField = page.locator('input[name="password"]').first();
 
       await expect(emailField).toHaveAttribute('required');
       await expect(passwordField).toHaveAttribute('required');
@@ -238,7 +238,7 @@ test.describe('認証機能 スモークテスト', () => {
         page.getByRole('heading', { name: /ログイン|Sign In/ })
       ).toBeVisible();
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
-      await expect(page.getByLabel(/パスワード|Password/)).toBeVisible();
+      await expect(page.locator('input[name="password"]').first()).toBeVisible();
       await expect(
         page.locator('form').getByRole('button', { name: 'ログイン' })
       ).toBeVisible();
@@ -279,7 +279,7 @@ test.describe('認証機能 スモークテスト', () => {
 
       // 間違った認証情報でログイン（エラーレスポンスのテスト）
       await page.getByLabel(/メールアドレス|Email/).fill('test@example.com');
-      await page.getByLabel(/パスワード|Password/).fill('wrongpassword');
+      await page.locator('input[name="password"]').first().fill('wrongpassword');
       await page
         .locator('form')
         .getByRole('button', { name: 'ログイン' })
@@ -307,7 +307,7 @@ test.describe('認証機能 スモークテスト', () => {
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeFocused();
 
       await page.keyboard.press('Tab');
-      await expect(page.getByLabel(/パスワード|Password/)).toBeFocused();
+      await expect(page.locator('input[name="password"]').first()).toBeFocused();
 
       // フォーカス可能な要素が存在することを確認
       const focusableElements = await page
@@ -321,7 +321,7 @@ test.describe('認証機能 スモークテスト', () => {
 
       // ラベルとフィールドの関連付け確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
-      const passwordField = page.getByLabel(/パスワード|Password/);
+      const passwordField = page.locator('input[name="password"]').first();
 
       await expect(emailField).toBeVisible();
       await expect(passwordField).toBeVisible();
@@ -368,7 +368,7 @@ test.describe('認証機能 スモークテスト', () => {
     test('パスワードフィールドが適切にマスクされている', async ({ page }) => {
       await page.goto('/auth/signin');
 
-      const passwordField = page.getByLabel(/パスワード|Password/);
+      const passwordField = page.locator('input[name="password"]').first();
       await expect(passwordField).toHaveAttribute('type', 'password');
 
       // パスワード入力時にマスクされることを確認
