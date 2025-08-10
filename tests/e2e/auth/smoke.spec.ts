@@ -121,7 +121,10 @@ test.describe('認証機能 スモークテスト', () => {
       // 間違った認証情報でログイン試行
       await page.getByLabel(/メールアドレス|Email/).fill(smokeTestUser.email);
       await page.getByLabel(/パスワード|Password/).fill('WrongPassword123!');
-      await page.locator('form').getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン' })
+        .click();
 
       // エラーメッセージの確認
       const errorMessage = page
@@ -139,7 +142,7 @@ test.describe('認証機能 スモークテスト', () => {
       await page.goto('/auth/register');
 
       // 空のフォームで送信
-      await page.getByRole('button', { name: /登録|Register/ }).click();
+      await page.locator('form').getByRole('button', { name: '登録する' }).click();
 
       // バリデーションエラーの確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
@@ -156,7 +159,10 @@ test.describe('認証機能 スモークテスト', () => {
       await page.goto('/auth/signin');
 
       // 空のフォームで送信
-      await page.locator('form').getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン' })
+        .click();
 
       // バリデーションエラーの確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
@@ -218,7 +224,10 @@ test.describe('認証機能 スモークテスト', () => {
       // 間違った認証情報でログイン（エラーレスポンスのテスト）
       await page.getByLabel(/メールアドレス|Email/).fill('test@example.com');
       await page.getByLabel(/パスワード|Password/).fill('wrongpassword');
-      await page.locator('form').getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン' })
+        .click();
 
       // エラーメッセージが表示されるまでの時間
       await page
