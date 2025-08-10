@@ -97,27 +97,36 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
     handleMenuClose();
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+    handleMenuClose();
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!selectedPost) return;
 
-    const confirmMessage = `「${selectedPost.title}」を削除しますか？\n\n※この操作は取り消せません`;
-    if (window.confirm(confirmMessage)) {
-      try {
-        const response = await fetch(`/api/posts/${selectedPost._id}`, {
-          method: 'DELETE',
-        });
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/posts/${selectedPost._id}`, {
+        method: 'DELETE',
+      });
 
-        if (response.ok) {
-          fetchPosts(page);
-        } else {
-          const data = await response.json();
-          setError(data.error || '削除に失敗しました');
-        }
-      } catch (error) {
-        setError('サーバーエラーが発生しました');
+      if (response.ok) {
+        fetchPosts(page);
+        setDeleteDialogOpen(false);
+      } else {
+        const data = await response.json();
+        setError(data.error || '削除に失敗しました');
       }
+    } catch (error) {
+      setError('サーバーエラーが発生しました');
+    } finally {
+      setDeleting(false);
     }
-    handleMenuClose();
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
   };
 
   if (loading && posts.length === 0) {
