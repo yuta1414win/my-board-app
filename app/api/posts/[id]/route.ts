@@ -15,6 +15,14 @@ export async function GET(
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
+    // ObjectIdの形式チェック
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json(
+        { error: '無効な投稿IDです' },
+        { status: 400 }
+      );
+    }
+
     await dbConnect();
 
     const post = await Post.findById(params.id).lean();
@@ -121,10 +129,7 @@ export async function DELETE(
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
       console.error('無効なID形式:', params.id);
-      return NextResponse.json(
-        { error: '無効な投稿IDです' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
     }
 
     await dbConnect();
@@ -142,9 +147,9 @@ export async function DELETE(
     console.log('投稿者チェック:', {
       postAuthor: post.author,
       sessionUserId: session.user.id,
-      match: post.author.toString() === session.user.id
+      match: post.author.toString() === session.user.id,
     });
-    
+
     if (post.author.toString() !== session.user.id) {
       return NextResponse.json({ error: '権限がありません' }, { status: 403 });
     }
