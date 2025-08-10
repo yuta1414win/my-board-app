@@ -23,7 +23,11 @@ export async function GET(request: NextRequest) {
 
     if (!token) {
       return NextResponse.json(
-        { error: '確認トークンが必要です' },
+        { 
+          success: false, 
+          error: MESSAGES.TOKEN_REQUIRED,
+          code: 'TOKEN_REQUIRED'
+        },
         { status: 400 }
       );
     }
