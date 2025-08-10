@@ -5,16 +5,24 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 保護されたページのパス
-  const protectedPaths = ['/board', '/profile', '/settings'];
+  const protectedPaths = [
+    '/board', 
+    '/profile', 
+    '/settings',
+    '/dashboard',
+    '/posts/new',
+    '/posts/edit',
+    '/posts/[id]/edit'
+  ];
   const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
 
   // 既にログインしている場合、認証ページにアクセスしたら /board にリダイレクト
   if (authPaths.some((path) => pathname.startsWith(path))) {
-    const token = await getToken({ 
+    const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET,
     });
-    
+
     if (token) {
       return NextResponse.redirect(new URL('/board', request.url));
     }
@@ -27,9 +35,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // NextAuth.jsのトークンを取得
-  const token = await getToken({ 
+  const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET 
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
   if (!token) {
