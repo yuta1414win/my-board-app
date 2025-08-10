@@ -237,6 +237,20 @@ export default function SignInForm() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const handleOAuthSignIn = async (provider: string) => {
+    if (isBlocked || loading) return;
+    
+    try {
+      await signIn(provider, {
+        callbackUrl: '/board',
+        redirect: true,
+      });
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+      setMessage(`${provider}ログインに失敗しました`);
+    }
+  };
+
   return (
     <Card sx={{ maxWidth: 420, width: '100%', boxShadow: 3 }}>
       <CardContent sx={{ p: 4 }}>
