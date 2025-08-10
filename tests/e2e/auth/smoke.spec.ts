@@ -27,7 +27,7 @@ test.describe('認証機能 スモークテスト', () => {
       await expect(page.getByLabel(/メールアドレス|Email/)).toBeVisible();
       await expect(page.getByLabel(/パスワード|Password/)).toBeVisible();
       await expect(
-        page.getByRole('button', { name: /ログイン|Sign In/ })
+        page.locator('form').getByRole('button', { name: 'ログイン' })
       ).toBeVisible();
 
       // 登録ページへのリンク確認
@@ -117,11 +117,15 @@ test.describe('認証機能 スモークテスト', () => {
         ).toBeVisible();
       } catch (error) {
         // ログイン失敗の場合（ユーザーが存在しない場合など）
-        console.log('User may not exist for smoke test, checking for error message');
+        console.log(
+          'User may not exist for smoke test, checking for error message'
+        );
         await expect(page).toHaveURL(/\/auth\/signin/);
-        
+
         // エラーメッセージが表示されることを確認
-        const errorAlert = page.locator('[role="alert"], .MuiAlert-root').first();
+        const errorAlert = page
+          .locator('[role="alert"], .MuiAlert-root')
+          .first();
         await expect(errorAlert).toBeVisible({ timeout: 5000 });
       }
     });
