@@ -56,9 +56,51 @@ export default function BoardPage() {
     }
   };
 
+  // ユーザー情報を取得
+  const fetchUser = async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      const data = await response.json();
+      if (data.success) {
+        setUser(data.user);
+      } else {
+        router.push('/auth/signin');
+      }
+    } catch (error) {
+      console.error('User fetch error:', error);
+      router.push('/auth/signin');
+    }
+  };
+
   useEffect(() => {
+    fetchUser();
     fetchPosts();
   }, []);
+
+  // ログアウト処理
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        router.push('/auth/signin');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    setAnchorEl(null);
+  };
+
+  // メニューの開閉
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   // 新規投稿
   const handleSubmit = async (e) => {
