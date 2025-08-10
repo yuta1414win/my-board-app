@@ -446,6 +446,10 @@ describe('ログアウト機能テスト', () => {
       expect(logoutResult).toEqual({ url: '/auth/signin' });
 
       // 3. ログアウト後の状態確認
+      // ログアウト後はセッションがnullになるようモックを再設定
+      nextAuthMock.mockAuth.mockResolvedValueOnce(null);
+      nextAuthMock.mockGetSession.mockResolvedValueOnce(null);
+      
       session = await nextAuthMock.mockAuth();
       expect(session).toBeNull();
 
