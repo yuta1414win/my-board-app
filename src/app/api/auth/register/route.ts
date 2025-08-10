@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
-import { checkPasswordStrength, validateEmail, generateVerificationToken } from '@/lib/validation';
+import {
+  checkPasswordStrength,
+  validateEmail,
+  generateVerificationToken,
+} from '@/lib/validation';
 import { sendVerificationEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
@@ -62,9 +66,9 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { 
+        {
           error: `パスワードは次の要件を満たす必要があります: ${missingRequirements.join('、')}`,
-          requirements: passwordStrength.requirements
+          requirements: passwordStrength.requirements,
         },
         { status: 400 }
       );
@@ -101,18 +105,22 @@ export async function POST(request: NextRequest) {
     });
 
     // 確認メールの送信
-    const emailResult = await sendVerificationEmail(user.email, verificationToken);
+    const emailResult = await sendVerificationEmail(
+      user.email,
+      verificationToken
+    );
 
     if (!emailResult.success) {
       // メール送信失敗時でもユーザーは作成されているため、エラーをログに記録
       console.error('Failed to send verification email:', emailResult.error);
-      
+
       return NextResponse.json(
         {
           success: true,
-          message: 'アカウントが作成されました。確認メールの送信に失敗しました。サポートにお問い合わせください。',
+          message:
+            'アカウントが作成されました。確認メールの送信に失敗しました。サポートにお問い合わせください。',
           userId: user._id,
-          emailSent: false
+          emailSent: false,
         },
         { status: 201 }
       );
@@ -121,16 +129,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'アカウントが作成されました。メールアドレスに送信された確認リンクをクリックしてください。',
+        message:
+          'アカウントが作成されました。メールアドレスに送信された確認リンクをクリックしてください。',
         userId: user._id,
-        emailSent: true
+        emailSent: true,
       },
       { status: 201 }
     );
-
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
-    
+
     if (error instanceof Error) {
       // MongoDBのエラー処理
       if (error.message.includes('E11000')) {
@@ -142,7 +150,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'アカウント作成中にエラーが発生しました。しばらく待ってから再度お試しください。' },
+      {
+        error:
+          'アカウント作成中にエラーが発生しました。しばらく待ってから再度お試しください。',
+      },
       { status: 500 }
     );
   }
