@@ -24,6 +24,8 @@ import {
   VisibilityOff,
   Security,
   AccountCircle,
+  Google as GoogleIcon,
+  GitHub as GitHubIcon,
 } from '@mui/icons-material';
 import NextLink from 'next/link';
 import { z } from 'zod';
