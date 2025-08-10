@@ -5,7 +5,7 @@ import Post from '../../../models/Post';
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
