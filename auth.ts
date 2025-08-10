@@ -1,5 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import GitHub from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
 import dbConnect from './lib/mongodb';
 import User from './models/User';
