@@ -34,6 +34,7 @@ declare module 'next-auth/jwt' {
     emailVerified?: boolean;
     role?: 'user' | 'admin';
     loginAt?: number;
+    provider?: string;
   }
 }
 
