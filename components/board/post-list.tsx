@@ -93,7 +93,8 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   const handleDelete = async () => {
     if (!selectedPost) return;
 
-    if (window.confirm('この投稿を削除しますか？')) {
+    const confirmMessage = `「${selectedPost.title}」を削除しますか？\n\n※この操作は取り消せません`;
+    if (window.confirm(confirmMessage)) {
       try {
         const response = await fetch(`/api/posts/${selectedPost._id}`, {
           method: 'DELETE',
