@@ -83,7 +83,7 @@ export default function BoardPage() {
       const response = await fetch('/api/auth/signout', {
         method: 'POST',
       });
-      
+
       if (response.ok) {
         router.push('/auth/signin');
       }
@@ -260,17 +260,45 @@ export default function BoardPage() {
   }
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: { xs: 2, sm: 4 }, px: { xs: 1, sm: 2 } }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          align="center"
-          sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}
-        >
-          オープン掲示板
-        </Typography>
+    <>
+      {/* ナビゲーションバー */}
+      <AppBar position="sticky" sx={{ mb: 2 }}>
+        <Toolbar>
+          <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
+            掲示板
+          </Typography>
+          {user && (
+            <>
+              <Button
+                color="inherit"
+                startIcon={<AccountCircleIcon />}
+                onClick={handleMenuClick}
+              >
+                {user.name}
+              </Button>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
+              </Menu>
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="md">
+        <Box sx={{ my: { xs: 2, sm: 4 }, px: { xs: 1, sm: 2 } }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            gutterBottom
+            align="center"
+            sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}
+          >
+            オープン掲示板
+          </Typography>
 
         {/* 投稿フォーム */}
         <Card sx={{ mb: 4 }}>
