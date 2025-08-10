@@ -7,6 +7,12 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 global.URL = URL;
 
+// Mock NextResponse
+jest.mock('next/server', () => ({
+  NextRequest: global.Request,
+  NextResponse: global.Response,
+}));
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
