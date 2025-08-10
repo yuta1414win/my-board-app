@@ -239,7 +239,7 @@ export default function SignInForm() {
 
   const handleOAuthSignIn = async (provider: string) => {
     if (isBlocked || loading) return;
-    
+
     try {
       await signIn(provider, {
         callbackUrl: '/board',
@@ -369,6 +369,60 @@ export default function SignInForm() {
               'ログイン'
             )}
           </Button>
+
+          <Divider sx={{ my: 2 }}>
+            <Typography variant="body2" color="textSecondary">
+              または
+            </Typography>
+          </Divider>
+
+          <Stack spacing={2} sx={{ mb: 3 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              size="large"
+              startIcon={<GoogleIcon />}
+              onClick={() => handleOAuthSignIn('google')}
+              disabled={loading || isBlocked}
+              sx={{
+                height: 48,
+                borderColor: '#db4437',
+                color: '#db4437',
+                '&:hover': {
+                  borderColor: '#c23321',
+                  backgroundColor: '#fdf2f2',
+                },
+                '&:disabled': {
+                  opacity: 0.6,
+                },
+              }}
+            >
+              Googleでログイン
+            </Button>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              size="large"
+              startIcon={<GitHubIcon />}
+              onClick={() => handleOAuthSignIn('github')}
+              disabled={loading || isBlocked}
+              sx={{
+                height: 48,
+                borderColor: '#333',
+                color: '#333',
+                '&:hover': {
+                  borderColor: '#000',
+                  backgroundColor: '#f5f5f5',
+                },
+                '&:disabled': {
+                  opacity: 0.6,
+                },
+              }}
+            >
+              GitHubでログイン
+            </Button>
+          </Stack>
 
           <Divider sx={{ my: 2 }} />
 
