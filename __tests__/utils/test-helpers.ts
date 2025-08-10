@@ -106,7 +106,7 @@ export async function parseApiResponse(response: NextResponse) {
 // MongoDB モックセットアップ
 export function setupMongoMock() {
   const User = require('../../models/User');
-  
+
   return {
     User,
     mockFindOne: User.findOne as jest.Mock,
@@ -126,7 +126,7 @@ export function setupMongoMock() {
 export function setupNextAuthMock() {
   const { signIn, signOut, getSession } = require('next-auth/react');
   const auth = require('../../auth');
-  
+
   return {
     mockSignIn: signIn as jest.Mock,
     mockSignOut: signOut as jest.Mock,
@@ -143,8 +143,11 @@ export function setupNextAuthMock() {
 
 // メール送信モックセットアップ
 export function setupEmailMock() {
-  const { generateEmailVerificationToken, sendVerificationEmail } = require('../../lib/email');
-  
+  const {
+    generateEmailVerificationToken,
+    sendVerificationEmail,
+  } = require('../../lib/email');
+
   return {
     mockGenerateToken: generateEmailVerificationToken as jest.Mock,
     mockSendEmail: sendVerificationEmail as jest.Mock,
@@ -205,7 +208,11 @@ export const invalidLoginData = {
 };
 
 // エラーアサーション
-export function expectApiError(response: any, expectedCode: string, expectedStatus: number) {
+export function expectApiError(
+  response: any,
+  expectedCode: string,
+  expectedStatus: number
+) {
   expect(response.status).toBe(expectedStatus);
   expect(response.data).toHaveProperty('error');
   expect(response.data).toHaveProperty('code', expectedCode);
@@ -224,9 +231,9 @@ export function expectValidationError(response: any, expectedFields: string[]) {
   expectApiError(response, 'VALIDATION_ERROR', 400);
   expect(response.data).toHaveProperty('details');
   expect(Array.isArray(response.data.details)).toBe(true);
-  
+
   const fieldNames = response.data.details.map((err: any) => err.field);
-  expectedFields.forEach(field => {
+  expectedFields.forEach((field) => {
     expect(fieldNames).toContain(field);
   });
 }
@@ -238,7 +245,7 @@ export function advanceTimersByTime(ms: number) {
 
 // Promise解決を待つ
 export function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve));
+  return new Promise((resolve) => setImmediate(resolve));
 }
 
 // コンソールスパイの設定
@@ -260,24 +267,28 @@ export function setupConsoleSpy() {
 }
 
 // 非同期操作の完了を待つ
-export async function waitFor(fn: () => boolean, timeout: number = 5000, interval: number = 100) {
+export async function waitFor(
+  fn: () => boolean,
+  timeout: number = 5000,
+  interval: number = 100
+) {
   return new Promise<void>((resolve, reject) => {
     const startTime = Date.now();
-    
+
     const checkCondition = () => {
       if (fn()) {
         resolve();
         return;
       }
-      
+
       if (Date.now() - startTime >= timeout) {
         reject(new Error('Timeout waiting for condition'));
         return;
       }
-      
+
       setTimeout(checkCondition, interval);
     };
-    
+
     checkCondition();
   });
 }

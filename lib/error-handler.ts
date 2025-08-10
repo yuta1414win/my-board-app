@@ -27,27 +27,27 @@ export const ERROR_CODES = {
   ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
   TOKEN_EXPIRED: 'TOKEN_EXPIRED',
   TOKEN_INVALID: 'TOKEN_INVALID',
-  
+
   // 登録エラー
   EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
   EMAIL_ALREADY_VERIFIED: 'EMAIL_ALREADY_VERIFIED',
   WEAK_PASSWORD: 'WEAK_PASSWORD',
-  
+
   // バリデーションエラー
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   MISSING_REQUIRED_FIELDS: 'MISSING_REQUIRED_FIELDS',
   INVALID_EMAIL_FORMAT: 'INVALID_EMAIL_FORMAT',
   INVALID_PASSWORD_FORMAT: 'INVALID_PASSWORD_FORMAT',
-  
+
   // サーバーエラー
   DATABASE_ERROR: 'DATABASE_ERROR',
   EMAIL_SEND_FAILED: 'EMAIL_SEND_FAILED',
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
-  
+
   // レート制限
   RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
   TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
-  
+
   // その他
   RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
   UNAUTHORIZED: 'UNAUTHORIZED',
@@ -57,28 +57,36 @@ export const ERROR_CODES = {
 // エラーメッセージマッピング
 export const ERROR_MESSAGES: Record<string, string> = {
   [ERROR_CODES.AUTHENTICATION_FAILED]: '認証に失敗しました',
-  [ERROR_CODES.INVALID_CREDENTIALS]: 'メールアドレスまたはパスワードが正しくありません',
-  [ERROR_CODES.EMAIL_NOT_VERIFIED]: 'メールアドレスが確認されていません。確認メールをご確認ください。',
-  [ERROR_CODES.ACCOUNT_LOCKED]: 'アカウントがロックされています。しばらく時間を置いてお試しください。',
+  [ERROR_CODES.INVALID_CREDENTIALS]:
+    'メールアドレスまたはパスワードが正しくありません',
+  [ERROR_CODES.EMAIL_NOT_VERIFIED]:
+    'メールアドレスが確認されていません。確認メールをご確認ください。',
+  [ERROR_CODES.ACCOUNT_LOCKED]:
+    'アカウントがロックされています。しばらく時間を置いてお試しください。',
   [ERROR_CODES.TOKEN_EXPIRED]: 'トークンの有効期限が切れています',
   [ERROR_CODES.TOKEN_INVALID]: '無効なトークンです',
-  
-  [ERROR_CODES.EMAIL_ALREADY_EXISTS]: 'このメールアドレスは既に登録されています',
-  [ERROR_CODES.EMAIL_ALREADY_VERIFIED]: 'このメールアドレスは既に登録され、認証されています',
-  [ERROR_CODES.WEAK_PASSWORD]: 'パスワードが弱すぎます。数字、英字、特殊文字を含む8文字以上で設定してください。',
-  
+
+  [ERROR_CODES.EMAIL_ALREADY_EXISTS]:
+    'このメールアドレスは既に登録されています',
+  [ERROR_CODES.EMAIL_ALREADY_VERIFIED]:
+    'このメールアドレスは既に登録され、認証されています',
+  [ERROR_CODES.WEAK_PASSWORD]:
+    'パスワードが弱すぎます。数字、英字、特殊文字を含む8文字以上で設定してください。',
+
   [ERROR_CODES.VALIDATION_ERROR]: '入力内容に誤りがあります',
   [ERROR_CODES.MISSING_REQUIRED_FIELDS]: '必須項目が入力されていません',
   [ERROR_CODES.INVALID_EMAIL_FORMAT]: '正しいメールアドレスを入力してください',
   [ERROR_CODES.INVALID_PASSWORD_FORMAT]: 'パスワードの形式が正しくありません',
-  
+
   [ERROR_CODES.DATABASE_ERROR]: 'データベースエラーが発生しました',
   [ERROR_CODES.EMAIL_SEND_FAILED]: 'メールの送信に失敗しました',
-  [ERROR_CODES.INTERNAL_SERVER_ERROR]: 'サーバーエラーが発生しました。しばらく時間を置いてお試しください。',
-  
-  [ERROR_CODES.RATE_LIMIT_EXCEEDED]: 'リクエスト制限に達しました。しばらく時間を置いてお試しください。',
+  [ERROR_CODES.INTERNAL_SERVER_ERROR]:
+    'サーバーエラーが発生しました。しばらく時間を置いてお試しください。',
+
+  [ERROR_CODES.RATE_LIMIT_EXCEEDED]:
+    'リクエスト制限に達しました。しばらく時間を置いてお試しください。',
   [ERROR_CODES.TOO_MANY_REQUESTS]: 'リクエスト回数が上限を超えました',
-  
+
   [ERROR_CODES.RESOURCE_NOT_FOUND]: 'リソースが見つかりません',
   [ERROR_CODES.UNAUTHORIZED]: '認証が必要です',
   [ERROR_CODES.FORBIDDEN]: 'アクセス権限がありません',
@@ -93,8 +101,9 @@ export function createErrorResponse(
   customMessage?: string,
   details?: any
 ): NextResponse {
-  const message = customMessage || ERROR_MESSAGES[code] || 'エラーが発生しました';
-  
+  const message =
+    customMessage || ERROR_MESSAGES[code] || 'エラーが発生しました';
+
   const errorResponse = {
     error: message,
     code,
@@ -121,7 +130,7 @@ export function createValidationErrorResponse(
   customMessage?: string
 ): NextResponse {
   const message = customMessage || ERROR_MESSAGES[ERROR_CODES.VALIDATION_ERROR];
-  
+
   const errorResponse = {
     error: message,
     code: ERROR_CODES.VALIDATION_ERROR,
@@ -143,10 +152,7 @@ export function handleMongoError(error: any): NextResponse {
   // 重複エラー（E11000）
   if (error.code === 11000) {
     if (error.keyPattern?.email) {
-      return createErrorResponse(
-        ERROR_CODES.EMAIL_ALREADY_EXISTS,
-        400
-      );
+      return createErrorResponse(ERROR_CODES.EMAIL_ALREADY_EXISTS, 400);
     }
     return createErrorResponse(
       ERROR_CODES.DATABASE_ERROR,
@@ -157,12 +163,14 @@ export function handleMongoError(error: any): NextResponse {
 
   // バリデーションエラー
   if (error.name === 'ValidationError') {
-    const validationErrors: ValidationError[] = Object.values(error.errors).map((err: any) => ({
-      field: err.path,
-      message: err.message,
-      code: 'VALIDATION_FAILED'
-    }));
-    
+    const validationErrors: ValidationError[] = Object.values(error.errors).map(
+      (err: any) => ({
+        field: err.path,
+        message: err.message,
+        code: 'VALIDATION_FAILED',
+      })
+    );
+
     return createValidationErrorResponse(validationErrors);
   }
 
@@ -176,10 +184,7 @@ export function handleMongoError(error: any): NextResponse {
   }
 
   // その他のデータベースエラー
-  return createErrorResponse(
-    ERROR_CODES.DATABASE_ERROR,
-    500
-  );
+  return createErrorResponse(ERROR_CODES.DATABASE_ERROR, 500);
 }
 
 /**
@@ -209,10 +214,7 @@ export function handleGenericError(error: any, context?: string): NextResponse {
   }
 
   // 不明なエラー
-  return createErrorResponse(
-    ERROR_CODES.INTERNAL_SERVER_ERROR,
-    500
-  );
+  return createErrorResponse(ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
 }
 
 /**
@@ -238,7 +240,7 @@ export function logError(
 
   // 本番環境では外部ログサービスに送信可能
   console.error('Error Log:', JSON.stringify(logData, null, 2));
-  
+
   // TODO: 外部ログサービス（Sentry、CloudWatch等）への送信
   // if (process.env.SENTRY_DSN) {
   //   Sentry.captureException(error, { extra: { context, additionalData } });

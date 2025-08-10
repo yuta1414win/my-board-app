@@ -56,7 +56,11 @@ describe('/api/auth/register', () => {
         save: jest.fn().mockResolvedValue(true),
       });
 
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData
+      );
 
       // Act
       const response = await POST(request);
@@ -125,7 +129,11 @@ describe('/api/auth/register', () => {
   describe('バリデーションエラーテスト', () => {
     it('弱いパスワードでバリデーションエラーが発生する', async () => {
       // Arrange
-      const request = createApiRequest('POST', '/api/auth/register', invalidRegistrationData.weakPassword);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        invalidRegistrationData.weakPassword
+      );
 
       // Act
       const response = await POST(request);
@@ -133,12 +141,18 @@ describe('/api/auth/register', () => {
 
       // Assert
       expectValidationError(result, ['password']);
-      expect(result.data.details[0].message).toContain('数字、英字、特殊文字を含む必要があります');
+      expect(result.data.details[0].message).toContain(
+        '数字、英字、特殊文字を含む必要があります'
+      );
     });
 
     it('無効なメールアドレスでバリデーションエラーが発生する', async () => {
       // Arrange
-      const request = createApiRequest('POST', '/api/auth/register', invalidRegistrationData.invalidEmail);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        invalidRegistrationData.invalidEmail
+      );
 
       // Act
       const response = await POST(request);
@@ -151,7 +165,11 @@ describe('/api/auth/register', () => {
 
     it('必須フィールド不足でバリデーションエラーが発生する', async () => {
       // Arrange
-      const request = createApiRequest('POST', '/api/auth/register', invalidRegistrationData.missingFields);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        invalidRegistrationData.missingFields
+      );
 
       // Act
       const response = await POST(request);
@@ -198,9 +216,14 @@ describe('/api/auth/register', () => {
     it('レート制限に達するとエラーが発生する', async () => {
       // Arrange
       // レート制限モック（実際の実装では複雑だが、ここでは簡略化）
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData, {
-        'x-forwarded-for': '127.0.0.1',
-      });
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData,
+        {
+          'x-forwarded-for': '127.0.0.1',
+        }
+      );
 
       // 同じIPから6回連続でリクエスト（制限は5回）
       const responses = [];
@@ -231,9 +254,15 @@ describe('/api/auth/register', () => {
         save: jest.fn(),
       };
       mongoMock.mockCreate.mockResolvedValue(createdUser);
-      emailMock.mockSendEmail.mockRejectedValue(new Error('Email service down'));
+      emailMock.mockSendEmail.mockRejectedValue(
+        new Error('Email service down')
+      );
 
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData
+      );
 
       // Act
       const response = await POST(request);
@@ -253,9 +282,15 @@ describe('/api/auth/register', () => {
   describe('データベースエラーテスト', () => {
     it('MongoDB接続エラーで500エラーが発生する', async () => {
       // Arrange
-      mongoMock.mockFindOne.mockRejectedValue(new Error('Database connection failed'));
+      mongoMock.mockFindOne.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData
+      );
 
       // Act
       const response = await POST(request);
@@ -274,7 +309,11 @@ describe('/api/auth/register', () => {
       duplicateError.keyPattern = { email: 1 };
       mongoMock.mockCreate.mockRejectedValue(duplicateError);
 
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData
+      );
 
       // Act
       const response = await POST(request);
@@ -301,7 +340,11 @@ describe('/api/auth/register', () => {
       };
       mongoMock.mockCreate.mockRejectedValue(validationError);
 
-      const request = createApiRequest('POST', '/api/auth/register', validRegistrationData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        validRegistrationData
+      );
 
       // Act
       const response = await POST(request);
@@ -357,9 +400,14 @@ describe('/api/auth/register', () => {
 
     it('不正なContent-Typeでエラーが適切に処理される', async () => {
       // Arrange
-      const request = createApiRequest('POST', '/api/auth/register', 'invalid-json-string', {
-        'content-type': 'text/plain',
-      });
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        'invalid-json-string',
+        {
+          'content-type': 'text/plain',
+        }
+      );
 
       // Act & Assert
       await expect(POST(request)).rejects.toThrow();
@@ -374,7 +422,11 @@ describe('/api/auth/register', () => {
         email: 'hacker@example.com',
         password: 'Password123!',
       };
-      const request = createApiRequest('POST', '/api/auth/register', maliciousData);
+      const request = createApiRequest(
+        'POST',
+        '/api/auth/register',
+        maliciousData
+      );
       mongoMock.mockFindOne.mockResolvedValue(null);
       mongoMock.mockCreate.mockResolvedValue({
         _id: '507f1f77bcf86cd799439011',

@@ -34,7 +34,12 @@ interface FormData {
   content: string;
 }
 
-export default function PostForm({ open, onClose, onSuccess, editPost }: PostFormProps) {
+export default function PostForm({
+  open,
+  onClose,
+  onSuccess,
+  editPost,
+}: PostFormProps) {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
@@ -80,7 +85,7 @@ export default function PostForm({ open, onClose, onSuccess, editPost }: PostFor
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -116,12 +121,14 @@ export default function PostForm({ open, onClose, onSuccess, editPost }: PostFor
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // エラーをクリア
     if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -133,10 +140,8 @@ export default function PostForm({ open, onClose, onSuccess, editPost }: PostFor
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {editPost ? '投稿を編集' : '新しい投稿'}
-      </DialogTitle>
-      
+      <DialogTitle>{editPost ? '投稿を編集' : '新しい投稿'}</DialogTitle>
+
       <form onSubmit={handleSubmit}>
         <DialogContent>
           {message && (
@@ -176,11 +181,7 @@ export default function PostForm({ open, onClose, onSuccess, editPost }: PostFor
           <Button onClick={handleClose} disabled={loading}>
             キャンセル
           </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={loading}
-          >
+          <Button type="submit" variant="contained" disabled={loading}>
             {loading ? (
               <CircularProgress size={20} />
             ) : editPost ? (

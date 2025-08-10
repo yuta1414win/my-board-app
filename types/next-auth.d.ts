@@ -39,6 +39,10 @@ declare module 'next-auth/jwt' {
 
 // エラー型定義
 export interface AuthError extends Error {
-  type?: 'AuthError' | 'CredentialsSignin' | 'EmailNotVerified' | 'AccountLocked';
+  type?:
+    | 'AuthError'
+    | 'CredentialsSignin'
+    | 'EmailNotVerified'
+    | 'AccountLocked';
   cause?: Error;
 }

@@ -248,8 +248,14 @@ export default function SignInForm() {
         </Box>
 
         {message && (
-          <Alert 
-            severity={message.includes('確認メール') ? 'warning' : isBlocked ? 'error' : 'error'} 
+          <Alert
+            severity={
+              message.includes('確認メール')
+                ? 'warning'
+                : isBlocked
+                  ? 'error'
+                  : 'error'
+            }
             sx={{ mb: 2 }}
             icon={isBlocked ? <Security /> : undefined}
           >
@@ -329,11 +335,11 @@ export default function SignInForm() {
             variant="contained"
             size="large"
             disabled={loading || isBlocked}
-            sx={{ 
-              mt: 3, 
-              mb: 2, 
+            sx={{
+              mt: 3,
+              mb: 2,
               py: 1.5,
-              bgcolor: isBlocked ? 'grey.400' : 'primary.main'
+              bgcolor: isBlocked ? 'grey.400' : 'primary.main',
             }}
           >
             {loading ? (
@@ -347,18 +353,23 @@ export default function SignInForm() {
 
           <Divider sx={{ my: 2 }} />
 
-          <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={1}>
-            <Link 
-              component={NextLink} 
-              href="/auth/register" 
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            flexWrap="wrap"
+            gap={1}
+          >
+            <Link
+              component={NextLink}
+              href="/auth/register"
               variant="body2"
               sx={{ color: 'primary.main' }}
             >
               新規登録
             </Link>
-            <Link 
-              component={NextLink} 
-              href="/auth/forgot-password" 
+            <Link
+              component={NextLink}
+              href="/auth/forgot-password"
               variant="body2"
               sx={{ color: 'text.secondary' }}
             >
@@ -368,8 +379,15 @@ export default function SignInForm() {
 
           {/* セキュリティ情報 */}
           <Box mt={3} p={2} bgcolor="grey.50" borderRadius={1}>
-            <Typography variant="caption" color="text.secondary" display="block">
-              <Security fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+            >
+              <Security
+                fontSize="small"
+                sx={{ mr: 1, verticalAlign: 'middle' }}
+              />
               セキュリティのため、5回連続でログインに失敗するとアカウントが5分間ロックされます。
             </Typography>
           </Box>

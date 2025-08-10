@@ -42,11 +42,9 @@ export function generateEmailVerificationToken(userId: string): string {
 }
 
 export function generatePasswordResetToken(userId: string): string {
-  return jwt.sign(
-    { userId, type: 'password-reset' },
-    process.env.JWT_SECRET!,
-    { expiresIn: '1h' }
-  );
+  return jwt.sign({ userId, type: 'password-reset' }, process.env.JWT_SECRET!, {
+    expiresIn: '1h',
+  });
 }
 
 export function verifyToken(token: string): any {
@@ -59,7 +57,7 @@ export function verifyToken(token: string): any {
 
 export async function sendVerificationEmail(email: string, token: string) {
   const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${token}`;
-  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333;">メールアドレスの確認</h2>
@@ -80,7 +78,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 
 export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
-  
+
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #333;">パスワードリセット</h2>

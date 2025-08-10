@@ -18,24 +18,27 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     Credentials({
       name: 'credentials',
       credentials: {
-        email: { 
-          label: 'メールアドレス', 
+        email: {
+          label: 'メールアドレス',
           type: 'email',
-          placeholder: 'example@email.com'
+          placeholder: 'example@email.com',
         },
-        password: { 
-          label: 'パスワード', 
+        password: {
+          label: 'パスワード',
           type: 'password',
-          placeholder: '8文字以上のパスワード'
+          placeholder: '8文字以上のパスワード',
         },
       },
       async authorize(credentials) {
         try {
           // 入力値の検証
           const validatedFields = credentialsSchema.safeParse(credentials);
-          
+
           if (!validatedFields.success) {
-            console.error('認証情報の検証に失敗:', validatedFields.error.errors);
+            console.error(
+              '認証情報の検証に失敗:',
+              validatedFields.error.errors
+            );
             return null;
           }
 
@@ -54,7 +57,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
           // メール認証チェック
           if (!user.emailVerified) {
-            throw new Error('メールアドレスが確認されていません。確認メールをご確認ください。');
+            throw new Error(
+              'メールアドレスが確認されていません。確認メールをご確認ください。'
+            );
           }
 
           const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -127,11 +132,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   },
   events: {
     async signIn({ user, account, isNewUser }) {
-      console.log('サインイン成功:', { 
-        userId: user.id, 
-        email: user.email, 
+      console.log('サインイン成功:', {
+        userId: user.id,
+        email: user.email,
         provider: account?.provider,
-        isNewUser 
+        isNewUser,
       });
     },
     async signOut({ token }) {

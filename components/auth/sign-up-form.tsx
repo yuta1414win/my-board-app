@@ -69,7 +69,7 @@ export default function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -113,10 +113,10 @@ export default function SignUpForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // エラーをクリア
     if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -126,7 +126,7 @@ export default function SignUpForm() {
         <Typography variant="h4" component="h1" gutterBottom textAlign="center">
           新規登録
         </Typography>
-        
+
         {message && (
           <Alert severity={messageType} sx={{ mb: 2 }}>
             {message}

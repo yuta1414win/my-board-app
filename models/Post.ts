@@ -42,6 +42,7 @@ const PostSchema = new Schema<IPost>(
 PostSchema.index({ author: 1, createdAt: -1 });
 PostSchema.index({ createdAt: -1 });
 
-const Post: Model<IPost> = mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);
+const Post: Model<IPost> =
+  mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);
 
 export default Post;

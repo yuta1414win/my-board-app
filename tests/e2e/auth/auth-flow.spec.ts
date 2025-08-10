@@ -39,7 +39,10 @@ class AuthPages {
   async fillRegistrationForm(userData: typeof testUser) {
     await this.page.getByLabel(/名前|Name/).fill(userData.name);
     await this.page.getByLabel(/メールアドレス|Email/).fill(userData.email);
-    await this.page.getByLabel(/パスワード|Password/).first().fill(userData.password);
+    await this.page
+      .getByLabel(/パスワード|Password/)
+      .first()
+      .fill(userData.password);
   }
 
   async submitRegistration() {
@@ -57,29 +60,41 @@ class AuthPages {
 
   async signOut() {
     // ナビゲーションまたはプロフィールメニューからログアウト
-    const signOutButton = this.page.getByRole('button', { name: /ログアウト|Sign Out|Logout/ });
+    const signOutButton = this.page.getByRole('button', {
+      name: /ログアウト|Sign Out|Logout/,
+    });
     if (await signOutButton.isVisible()) {
       await signOutButton.click();
     } else {
       // ドロップダウンメニューやハンバーガーメニューの場合
-      await this.page.getByRole('button', { name: /メニュー|Menu|Profile/ }).click();
-      await this.page.getByRole('menuitem', { name: /ログアウト|Sign Out/ }).click();
+      await this.page
+        .getByRole('button', { name: /メニュー|Menu|Profile/ })
+        .click();
+      await this.page
+        .getByRole('menuitem', { name: /ログアウト|Sign Out/ })
+        .click();
     }
   }
 
   async expectToBeOnSignInPage() {
     await expect(this.page).toHaveURL(/\/auth\/signin/);
-    await expect(this.page.getByRole('heading', { name: /ログイン|Sign In/ })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', { name: /ログイン|Sign In/ })
+    ).toBeVisible();
   }
 
   async expectToBeOnRegisterPage() {
     await expect(this.page).toHaveURL(/\/auth\/register/);
-    await expect(this.page.getByRole('heading', { name: /登録|Register/ })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', { name: /登録|Register/ })
+    ).toBeVisible();
   }
 
   async expectToBeOnBoardPage() {
     await expect(this.page).toHaveURL(/\/board/);
-    await expect(this.page.getByRole('heading', { name: /掲示板|Board/ })).toBeVisible();
+    await expect(
+      this.page.getByRole('heading', { name: /掲示板|Board/ })
+    ).toBeVisible();
   }
 
   async expectSuccessMessage(message?: string) {
@@ -87,7 +102,9 @@ class AuthPages {
       await expect(this.page.getByText(message)).toBeVisible();
     } else {
       // 成功を示すアラートやメッセージを探す
-      const successAlert = this.page.locator('[role="alert"], .success, .alert-success').first();
+      const successAlert = this.page
+        .locator('[role="alert"], .success, .alert-success')
+        .first();
       await expect(successAlert).toBeVisible();
     }
   }
@@ -97,7 +114,9 @@ class AuthPages {
       await expect(this.page.getByText(message)).toBeVisible();
     } else {
       // エラーを示すアラートやメッセージを探す
-      const errorAlert = this.page.locator('[role="alert"], .error, .alert-error').first();
+      const errorAlert = this.page
+        .locator('[role="alert"], .error, .alert-error')
+        .first();
       await expect(errorAlert).toBeVisible();
     }
   }
@@ -105,7 +124,7 @@ class AuthPages {
   async expectValidationError(field: string, message?: string) {
     const fieldElement = this.page.getByLabel(new RegExp(field, 'i'));
     await expect(fieldElement).toHaveAttribute('aria-invalid', 'true');
-    
+
     if (message) {
       await expect(this.page.getByText(message)).toBeVisible();
     }
@@ -128,10 +147,10 @@ test.describe('認証フロー E2E テスト', () => {
 
       // Assert
       await authPages.expectSuccessMessage('登録が完了しました');
-      
+
       // メール確認メッセージが表示される
       await expect(page.getByText(/確認メール.*送信/)).toBeVisible();
-      
+
       // ログインページへのリンクが表示される
       const signInLink = page.getByRole('link', { name: /ログイン|Sign In/ });
       await expect(signInLink).toBeVisible();
@@ -139,7 +158,7 @@ test.describe('認証フロー E2E テスト', () => {
 
     test('無効なデータで登録が失敗する', async ({ page }) => {
       await authPages.navigateToRegister();
-      
+
       // 弱いパスワードでテスト
       await authPages.fillRegistrationForm({
         ...testUser,
@@ -153,7 +172,7 @@ test.describe('認証フロー E2E テスト', () => {
 
     test('必須フィールドの検証が動作する', async ({ page }) => {
       await authPages.navigateToRegister();
-      
+
       // 空のフォームで送信
       await authPages.submitRegistration();
 
@@ -189,7 +208,7 @@ test.describe('認証フロー E2E テスト', () => {
 
       // Assert
       await authPages.expectToBeOnBoardPage();
-      
+
       // ユーザー情報が表示される
       await expect(page.getByText(existingUser.name)).toBeVisible();
     });
@@ -200,8 +219,10 @@ test.describe('認証フロー E2E テスト', () => {
       await authPages.submitSignIn();
 
       // エラーメッセージが表示される
-      await authPages.expectErrorMessage('メールアドレスまたはパスワードが正しくありません');
-      
+      await authPages.expectErrorMessage(
+        'メールアドレスまたはパスワードが正しくありません'
+      );
+
       // サインインページに留まる
       await authPages.expectToBeOnSignInPage();
     });
@@ -233,19 +254,21 @@ test.describe('認証フロー E2E テスト', () => {
       for (let i = 1; i <= 5; i++) {
         await authPages.fillSignInForm(existingUser.email, 'WrongPassword');
         await authPages.submitSignIn();
-        
+
         if (i < 5) {
           // 試行回数が表示される
-          await expect(page.getByText(new RegExp(`試行回数.*${i}/5`))).toBeVisible();
+          await expect(
+            page.getByText(new RegExp(`試行回数.*${i}/5`))
+          ).toBeVisible();
         }
-        
+
         // 次の試行のためにフォームをクリア
         await page.getByLabel(/パスワード/).clear();
       }
 
       // 5回目で アカウントロックメッセージが表示される
       await authPages.expectErrorMessage('ログイン試行回数が上限を超えました');
-      
+
       // ログインボタンが無効化される
       const loginButton = page.getByRole('button', { name: /ログイン/ });
       await expect(loginButton).toBeDisabled();
@@ -272,33 +295,37 @@ test.describe('認証フロー E2E テスト', () => {
       // 新しいタブを開く
       const newTab = await context.newPage();
       const newAuthPages = new AuthPages(newTab);
-      
+
       // 保護されたページに直接アクセス
       await newAuthPages.navigateToBoard();
-      
+
       // セッションが共有されているため、ログイン状態でアクセスできる
       await newAuthPages.expectToBeOnBoardPage();
       await expect(newTab.getByText(existingUser.name)).toBeVisible();
-      
+
       await newTab.close();
     });
 
-    test('ブラウザを閉じて再開してもセッションが維持される', async ({ browser }) => {
+    test('ブラウザを閉じて再開してもセッションが維持される', async ({
+      browser,
+    }) => {
       // 新しいブラウザコンテキストを作成（ストレージは保持）
-      const persistentContext = await browser.newContext({ 
-        storageState: 'tests/e2e/auth-state.json' // セッション状態を保存
+      const persistentContext = await browser.newContext({
+        storageState: 'tests/e2e/auth-state.json', // セッション状態を保存
       });
-      
+
       const newPage = await persistentContext.newPage();
       const newAuthPages = new AuthPages(newPage);
-      
+
       await newAuthPages.navigateToBoard();
       await newAuthPages.expectToBeOnBoardPage();
-      
+
       await persistentContext.close();
     });
 
-    test('未認証ユーザーは保護されたページにアクセスできない', async ({ context }) => {
+    test('未認証ユーザーは保護されたページにアクセスできない', async ({
+      context,
+    }) => {
       // 新しい匿名セッション
       const anonymousContext = await context.browser()!.newContext();
       const anonymousPage = await anonymousContext.newPage();
@@ -306,13 +333,13 @@ test.describe('認証フロー E2E テスト', () => {
 
       // 保護されたページへ直接アクセス
       await anonymousPage.goto('/board');
-      
+
       // ログインページにリダイレクトされる
       await anonymousAuthPages.expectToBeOnSignInPage();
-      
+
       // コールバックURLが設定されている
       await expect(anonymousPage).toHaveURL(/callbackUrl.*board/);
-      
+
       await anonymousContext.close();
     });
   });
@@ -333,7 +360,7 @@ test.describe('認証フロー E2E テスト', () => {
       // Assert
       // ログインページにリダイレクトされる
       await authPages.expectToBeOnSignInPage();
-      
+
       // ログアウトメッセージが表示される（オプション）
       const logoutMessage = page.getByText(/ログアウトしました|Signed out/);
       if (await logoutMessage.isVisible({ timeout: 1000 })) {
@@ -341,33 +368,38 @@ test.describe('認証フロー E2E テスト', () => {
       }
     });
 
-    test('ログアウト後に保護されたページにアクセスできない', async ({ page }) => {
+    test('ログアウト後に保護されたページにアクセスできない', async ({
+      page,
+    }) => {
       await authPages.signOut();
-      
+
       // 保護されたページへ直接アクセス
       await authPages.navigateToBoard();
-      
+
       // ログインページにリダイレクトされる
       await authPages.expectToBeOnSignInPage();
     });
 
-    test('ログアウト後に他のタブのセッションも無効化される', async ({ context, page }) => {
+    test('ログアウト後に他のタブのセッションも無効化される', async ({
+      context,
+      page,
+    }) => {
       // 新しいタブを開いてログイン状態を確認
       const secondTab = await context.newPage();
       const secondAuthPages = new AuthPages(secondTab);
-      
+
       await secondAuthPages.navigateToBoard();
       await secondAuthPages.expectToBeOnBoardPage();
-      
+
       // 最初のタブでログアウト
       await authPages.signOut();
-      
+
       // 2番目のタブでページを更新
       await secondTab.reload();
-      
+
       // 2番目のタブもログインページにリダイレクトされる
       await secondAuthPages.expectToBeOnSignInPage();
-      
+
       await secondTab.close();
     });
   });
@@ -390,7 +422,9 @@ test.describe('認証フロー E2E テスト', () => {
       await authPages.expectToBeOnBoardPage();
 
       // モバイルメニューからログアウト
-      const mobileMenuButton = page.getByRole('button', { name: /menu|メニュー/i });
+      const mobileMenuButton = page.getByRole('button', {
+        name: /menu|メニュー/i,
+      });
       if (await mobileMenuButton.isVisible()) {
         await mobileMenuButton.click();
       }
@@ -422,17 +456,21 @@ test.describe('認証フロー E2E テスト', () => {
 
       await page.keyboard.press('Tab'); // パスワード表示切替ボタン
       await page.keyboard.press('Tab'); // ログインボタン
-      await expect(page.getByRole('button', { name: /ログイン/ })).toBeFocused();
+      await expect(
+        page.getByRole('button', { name: /ログイン/ })
+      ).toBeFocused();
 
       // Enterキーでフォーム送信
       await authPages.fillSignInForm(existingUser.email, existingUser.password);
       await page.getByRole('button', { name: /ログイン/ }).focus();
       await page.keyboard.press('Enter');
-      
+
       await authPages.expectToBeOnBoardPage();
     });
 
-    test('スクリーンリーダー向けのラベルが適切に設定されている', async ({ page }) => {
+    test('スクリーンリーダー向けのラベルが適切に設定されている', async ({
+      page,
+    }) => {
       await authPages.navigateToRegister();
 
       // ARIAラベルの確認
@@ -445,7 +483,9 @@ test.describe('認証フロー E2E テスト', () => {
       expect(await requiredFields.count()).toBeGreaterThan(0);
     });
 
-    test('フォームエラーメッセージがスクリーンリーダーに適切に伝わる', async ({ page }) => {
+    test('フォームエラーメッセージがスクリーンリーダーに適切に伝わる', async ({
+      page,
+    }) => {
       await authPages.navigateToSignIn();
       await authPages.submitSignIn(); // 空のフォーム送信
 
@@ -463,9 +503,9 @@ test.describe('認証フロー E2E テスト', () => {
     test('認証フローのページ読み込み速度が適切である', async ({ page }) => {
       // ページ読み込み開始
       const startTime = Date.now();
-      
+
       await authPages.navigateToSignIn();
-      
+
       // ページが完全に読み込まれるまでの時間
       await page.waitForLoadState('networkidle');
       const loadTime = Date.now() - startTime;
@@ -482,11 +522,11 @@ test.describe('認証フロー E2E テスト', () => {
       // 複数回フォーム送信をテスト
       for (let i = 0; i < 5; i++) {
         const startTime = Date.now();
-        
+
         await authPages.fillSignInForm('test@example.com', 'wrongpassword');
         await authPages.submitSignIn();
         await authPages.expectErrorMessage();
-        
+
         const endTime = Date.now();
         times.push(endTime - startTime);
 
@@ -496,7 +536,7 @@ test.describe('認証フロー E2E テスト', () => {
       }
 
       // すべてのレスポンス時間が5秒以内
-      times.forEach(time => {
+      times.forEach((time) => {
         expect(time).toBeLessThan(5000);
       });
 

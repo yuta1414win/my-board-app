@@ -26,12 +26,12 @@ export default function EmotionRegistry({
       .map(([n]) => n);
     const styles = names.map((n) => cache.inserted[n]).join('');
     const rules = `@layer mui {${styles}}`;
-    
+
     // Clear the cache for this render
     names.forEach((n) => {
       cache.inserted[n] = true;
     });
-    
+
     return (
       <style
         key={cache.key}

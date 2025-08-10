@@ -102,12 +102,14 @@ LOG_LEVEL=info  # development時は debug
 #### 重要な設定値の説明
 
 **必須設定:**
+
 - `NEXTAUTH_SECRET`: 32文字以上のランダムな文字列（本番では必須）
 - `MONGODB_URI`: MongoDBの接続URL
 - `RESEND_API_KEY`: メール送信用のResend APIキー
 - `EMAIL_FROM`: 送信者メールアドレス
 
 **セキュリティ強化設定:**
+
 ```bash
 # 本番環境用の強力なシークレット生成例
 openssl rand -base64 32  # NEXTAUTH_SECRET用
@@ -117,12 +119,14 @@ openssl rand -hex 32     # JWT_SECRET用
 **メール設定オプション:**
 
 1. **Resend（推奨）**:
+
    ```bash
    RESEND_API_KEY=re_xxxxx
    EMAIL_FROM=noreply@yourdomain.com
    ```
 
 2. **Gmail SMTP**:
+
    ```bash
    SMTP_HOST=smtp.gmail.com
    SMTP_PORT=587

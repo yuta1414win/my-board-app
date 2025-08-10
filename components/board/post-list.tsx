@@ -66,7 +66,10 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
     fetchPosts(page);
   }, [page, refresh]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value);
   };
 
@@ -138,7 +141,11 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
       {posts.map((post) => (
         <Card key={post._id} sx={{ mb: 2 }}>
           <CardContent>
-            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="flex-start"
+            >
               <Box flex={1}>
                 <Typography variant="h6" component="h2" gutterBottom>
                   {post.title}
@@ -147,13 +154,14 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
                   {post.content}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {post.authorName} • {formatDistanceToNow(new Date(post.createdAt), {
+                  {post.authorName} •{' '}
+                  {formatDistanceToNow(new Date(post.createdAt), {
                     addSuffix: true,
                     locale: ja,
                   })}
                 </Typography>
               </Box>
-              
+
               {session?.user?.id === post.author && (
                 <IconButton
                   onClick={(e) => handleMenuOpen(e, post)}

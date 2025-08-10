@@ -51,7 +51,7 @@ describe('NextAuth.js 認証システム', () => {
 
       // bcrypt.compareのモック
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
-      
+
       // 最終ログイン時刻更新のモック
       mongoMock.mockFindByIdAndUpdate.mockResolvedValue(mockUserWithPassword);
 
@@ -410,7 +410,9 @@ describe('NextAuth.js 認証システム', () => {
   describe('データベースエラーテスト', () => {
     it('MongoDB接続エラーでログインが失敗する', async () => {
       // Arrange
-      mongoMock.mockFindOne.mockRejectedValue(new Error('Database connection failed'));
+      mongoMock.mockFindOne.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
       // Act
       const result = await signIn('credentials', {
@@ -443,7 +445,9 @@ describe('NextAuth.js 認証システム', () => {
       mongoMock.mockFindOne.mockReturnValue({
         select: jest.fn().mockResolvedValue(mockUserWithPassword),
       });
-      jest.spyOn(bcrypt, 'compare').mockRejectedValue(new Error('Hash comparison failed'));
+      jest
+        .spyOn(bcrypt, 'compare')
+        .mockRejectedValue(new Error('Hash comparison failed'));
 
       // Act
       const result = await signIn('credentials', {
@@ -564,7 +568,7 @@ describe('NextAuth.js 認証システム', () => {
       // Arrange
       const specialEmail = 'user+test@example.com';
       const specialPassword = 'Pass@#$%^&*()123!';
-      
+
       const mockUserWithSpecialEmail = {
         ...mockUser,
         email: specialEmail,
@@ -574,7 +578,9 @@ describe('NextAuth.js 認証システム', () => {
         select: jest.fn().mockResolvedValue(mockUserWithSpecialEmail),
       });
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
-      mongoMock.mockFindByIdAndUpdate.mockResolvedValue(mockUserWithSpecialEmail);
+      mongoMock.mockFindByIdAndUpdate.mockResolvedValue(
+        mockUserWithSpecialEmail
+      );
 
       // Act
       const result = await signIn('credentials', {

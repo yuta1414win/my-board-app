@@ -51,7 +51,9 @@ describe('ログアウト機能テスト', () => {
 
       // Assert
       expect(result).toEqual(expectedResult);
-      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({ redirect: false });
+      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({
+        redirect: false,
+      });
       expect(nextAuthMock.mockSignOut).toHaveBeenCalledTimes(1);
     });
 
@@ -75,9 +77,9 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockResolvedValue(expectedResult);
 
       // Act
-      const result = await signOut({ 
-        callbackUrl, 
-        redirect: true 
+      const result = await signOut({
+        callbackUrl,
+        redirect: true,
       });
 
       // Assert
@@ -94,10 +96,10 @@ describe('ログアウト機能テスト', () => {
       // Arrange
       // 初期状態では認証済み
       nextAuthMock.mockGetSession.mockResolvedValueOnce(mockSession);
-      
+
       // ログアウト実行
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
-      
+
       // ログアウト後はセッションなし
       nextAuthMock.mockGetSession.mockResolvedValueOnce(null);
 
@@ -116,7 +118,7 @@ describe('ログアウト機能テスト', () => {
     it('ログアウト後にuseSessionの状態が更新される', async () => {
       // Arrange
       const { useSession } = require('next-auth/react');
-      
+
       // 初期状態: 認証済み
       useSession.mockReturnValueOnce({
         data: mockSession,
@@ -187,8 +189,12 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockRejectedValue(networkError);
 
       // Act & Assert
-      await expect(signOut({ redirect: false })).rejects.toThrow('Network error');
-      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({ redirect: false });
+      await expect(signOut({ redirect: false })).rejects.toThrow(
+        'Network error'
+      );
+      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({
+        redirect: false,
+      });
     });
 
     it('サーバーエラー時は適切にエラーが伝播される', async () => {
@@ -206,9 +212,11 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockRejectedValue(timeoutError);
 
       // Act & Assert
-      await expect(signOut({ 
-        callbackUrl: '/timeout-test' 
-      })).rejects.toThrow('Request timeout');
+      await expect(
+        signOut({
+          callbackUrl: '/timeout-test',
+        })
+      ).rejects.toThrow('Request timeout');
     });
   });
 
@@ -216,7 +224,7 @@ describe('ログアウト機能テスト', () => {
     it('ログアウト時にクライアントサイドのトークンがクリアされる', async () => {
       // Arrange
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
-      
+
       // localStorage のモック（実際のブラウザ環境での動作をシミュレート）
       const mockLocalStorage = {
         getItem: jest.fn(),
@@ -234,7 +242,7 @@ describe('ログアウト機能テスト', () => {
 
       // Assert
       expect(nextAuthMock.mockSignOut).toHaveBeenCalled();
-      
+
       // Note: NextAuth.jsは内部でクッキーとストレージをクリアするが、
       // ここではモック環境なので直接の確認は困難
       // 実際のテストでは E2E テストで確認する
@@ -255,7 +263,7 @@ describe('ログアウト機能テスト', () => {
 
       // Assert
       expect(session).toBeNull();
-      
+
       // 実際のミドルウェアではリダイレクトが発生するが、
       // ここでは認証状態の確認のみ
       expect(nextAuthMock.mockAuth).toHaveBeenCalled();
@@ -265,19 +273,19 @@ describe('ログアウト機能テスト', () => {
       // Arrange
       // CSRF攻撃を防ぐためのテスト
       const suspiciousCallbackUrl = 'javascript:alert("xss")';
-      
+
       nextAuthMock.mockSignOut.mockImplementation((options) => {
         // NextAuth.js の内部実装では危険なURLをサニタイズ
-        const safeUrl = options?.callbackUrl?.startsWith('http') 
-          ? options.callbackUrl 
+        const safeUrl = options?.callbackUrl?.startsWith('http')
+          ? options.callbackUrl
           : '/auth/signin';
         return Promise.resolve({ url: safeUrl });
       });
 
       // Act
-      const result = await signOut({ 
+      const result = await signOut({
         callbackUrl: suspiciousCallbackUrl,
-        redirect: false 
+        redirect: false,
       });
 
       // Assert
@@ -291,14 +299,14 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
 
       // Act - 複数の同時ログアウト
-      const promises = Array.from({ length: 3 }, () => 
+      const promises = Array.from({ length: 3 }, () =>
         signOut({ redirect: false })
       );
       const results = await Promise.all(promises);
 
       // Assert
       expect(results).toHaveLength(3);
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result).toEqual({ url: '/auth/signin' });
       });
       expect(nextAuthMock.mockSignOut).toHaveBeenCalledTimes(3);
@@ -307,7 +315,7 @@ describe('ログアウト機能テスト', () => {
     it('ログアウト中の追加リクエストが適切に処理される', async () => {
       // Arrange
       let resolveLogout: (value: any) => void;
-      const logoutPromise = new Promise(resolve => {
+      const logoutPromise = new Promise((resolve) => {
         resolveLogout = resolve;
       });
 
@@ -324,7 +332,7 @@ describe('ログアウト機能テスト', () => {
 
       // Assert
       expect(results).toHaveLength(2);
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result).toEqual({ url: '/auth/signin' });
       });
     });
@@ -348,9 +356,9 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockResolvedValue({ url: longUrl });
 
       // Act
-      const result = await signOut({ 
-        callbackUrl: longUrl, 
-        redirect: false 
+      const result = await signOut({
+        callbackUrl: longUrl,
+        redirect: false,
       });
 
       // Assert
@@ -367,9 +375,9 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockResolvedValue({ url: specialUrl });
 
       // Act
-      const result = await signOut({ 
-        callbackUrl: specialUrl, 
-        redirect: false 
+      const result = await signOut({
+        callbackUrl: specialUrl,
+        redirect: false,
       });
 
       // Assert
@@ -398,7 +406,7 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
 
       // Act
-      const promises = Array.from({ length: 50 }, () => 
+      const promises = Array.from({ length: 50 }, () =>
         signOut({ redirect: false })
       );
       const results = await Promise.all(promises);
@@ -406,9 +414,9 @@ describe('ログアウト機能テスト', () => {
       // Assert
       expect(results).toHaveLength(50);
       expect(nextAuthMock.mockSignOut).toHaveBeenCalledTimes(50);
-      
+
       // すべてのリクエストが成功
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result).toEqual({ url: '/auth/signin' });
       });
     });

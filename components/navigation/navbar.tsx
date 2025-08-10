@@ -49,74 +49,74 @@ export default function Navbar() {
   return (
     <AppBar position="static">
       <Toolbar>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, cursor: 'pointer' }}
-            onClick={() => router.push(session ? '/board' : '/')}
-          >
-            掲示板アプリ
-          </Typography>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1, cursor: 'pointer' }}
+          onClick={() => router.push(session ? '/board' : '/')}
+        >
+          掲示板アプリ
+        </Typography>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton color="inherit" onClick={toggleDarkMode}>
-              {mounted && darkMode ? <LightMode /> : <DarkMode />}
-            </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <IconButton color="inherit" onClick={toggleDarkMode}>
+            {mounted && darkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
 
-            {mounted && session ? (
-              <>
-                <IconButton
-                  size="large"
-                  aria-label="account menu"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                    {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </Avatar>
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={handleProfile}>
-                    <AccountCircle sx={{ mr: 1 }} />
-                    プロフィール
-                  </MenuItem>
-                  <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
-                </Menu>
-              </>
-            ) : (
-              <>
-                <Button
-                  color="inherit"
-                  onClick={() => router.push('/auth/signin')}
-                >
-                  ログイン
-                </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => router.push('/auth/register')}
-                >
-                  新規登録
-                </Button>
-              </>
-            )}
-          </Box>
-        </Toolbar>
-      </AppBar>
+          {mounted && session ? (
+            <>
+              <IconButton
+                size="large"
+                aria-label="account menu"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </Avatar>
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleProfile}>
+                  <AccountCircle sx={{ mr: 1 }} />
+                  プロフィール
+                </MenuItem>
+                <MenuItem onClick={handleSignOut}>ログアウト</MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <>
+              <Button
+                color="inherit"
+                onClick={() => router.push('/auth/signin')}
+              >
+                ログイン
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => router.push('/auth/register')}
+              >
+                新規登録
+              </Button>
+            </>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
