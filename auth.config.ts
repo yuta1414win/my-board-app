@@ -6,7 +6,7 @@ export const authConfig = {
     signUp: '/auth/register',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
-    newUser: '/board',
+    newUser: '/dashboard',
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
@@ -28,7 +28,7 @@ export const authConfig = {
 
       // 認証済みユーザーが認証ページにアクセスした場合
       if (isLoggedIn && isOnAuth) {
-        return Response.redirect(new URL('/board', nextUrl));
+        return Response.redirect(new URL('/dashboard', nextUrl));
       }
 
       return true;
