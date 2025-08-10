@@ -85,7 +85,7 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
 
   const handleEdit = () => {
     if (selectedPost) {
-      onEditPost(selectedPost);
+      window.location.href = `/posts/${selectedPost._id}/edit`;
     }
     handleMenuClose();
   };
@@ -151,9 +151,9 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
                 <Typography variant="h6" component="h2" gutterBottom>
                   {post.title}
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  color="text.secondary" 
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
                   paragraph
                   sx={{
                     whiteSpace: 'pre-wrap',
