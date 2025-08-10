@@ -2,7 +2,7 @@
  * メール送信機能のJestテスト
  */
 
-import {
+const {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
@@ -11,7 +11,7 @@ import {
   generatePasswordResetToken,
   verifyToken,
   testEmailConnection,
-} from '../../lib/email';
+} = require('../../lib/email');
 
 // Nodemailerをモック化
 jest.mock('nodemailer');
@@ -136,14 +136,14 @@ describe('メール送信機能テスト', () => {
   describe('トークン生成・検証', () => {
     it('メール確認トークンが正しく生成されること', () => {
       const token = generateEmailVerificationToken('test-user-id');
-      
+
       expect(token).toBeTruthy();
       expect(typeof token).toBe('string');
     });
 
     it('パスワードリセットトークンが正しく生成されること', () => {
       const token = generatePasswordResetToken('test-user-id');
-      
+
       expect(token).toBeTruthy();
       expect(typeof token).toBe('string');
     });
@@ -217,7 +217,10 @@ describe('メール送信機能テスト', () => {
     });
 
     it('ウェルカムメールが正しく送信されること', async () => {
-      const result = await sendWelcomeEmail('test@example.com', 'テストユーザー');
+      const result = await sendWelcomeEmail(
+        'test@example.com',
+        'テストユーザー'
+      );
 
       expect(result.success).toBe(true);
       expect(mockTransporter.sendMail).toHaveBeenCalledWith(
