@@ -323,7 +323,7 @@ describe('セッション管理テスト', () => {
     it('SessionProviderがセッション状態を提供する', () => {
       // Arrange
       const mockSessionProvider = require('next-auth/react').SessionProvider;
-      const mockChildren = <div>Test Content</div>;
+      const mockChildren = 'Test Content';
 
       // Act
       const result = mockSessionProvider({ children: mockChildren });
