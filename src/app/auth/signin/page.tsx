@@ -16,7 +16,10 @@ import {
   Stack,
   Divider,
 } from '@mui/material';
-import { Google as GoogleIcon, GitHub as GitHubIcon } from '@mui/icons-material';
+import {
+  Google as GoogleIcon,
+  GitHub as GitHubIcon,
+} from '@mui/icons-material';
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({
@@ -75,6 +78,18 @@ export default function SignInPage() {
       setError('ネットワークエラーが発生しました');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOAuthSignIn = async (provider: string) => {
+    try {
+      await signIn(provider, {
+        callbackUrl: '/board',
+        redirect: true,
+      });
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+      setError(`${provider}ログインに失敗しました`);
     }
   };
 
