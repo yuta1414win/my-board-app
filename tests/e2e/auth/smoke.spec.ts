@@ -147,15 +147,15 @@ test.describe('認証機能 スモークテスト', () => {
         .getByRole('button', { name: '登録する' })
         .click();
 
-      // バリデーションエラーの確認
+      // バリデーションエラーの確認（Material-UIではhelperTextでエラーが表示される）
       const emailField = page.getByLabel(/メールアドレス|Email/);
       const nameField = page.getByLabel(/名前|Name/);
-      const passwordField = page.getByLabel(/パスワード|Password/);
+      const passwordField = page.locator('input[name="password"]').first();
 
-      // フィールドがエラー状態になることを確認
-      await expect(emailField).toHaveAttribute('aria-invalid', 'true');
-      await expect(nameField).toHaveAttribute('aria-invalid', 'true');
-      await expect(passwordField).toHaveAttribute('aria-invalid', 'true');
+      // エラーメッセージが表示されることを確認
+      await expect(page.getByText('正しいメールアドレスを入力してください')).toBeVisible();
+      await expect(page.getByText('名前は必須です')).toBeVisible();
+      await expect(page.getByText('パスワードは8文字以上で入力してください')).toBeVisible();
     });
 
     test('ログインフォームの必須フィールド検証が動作する', async ({ page }) => {
@@ -167,12 +167,9 @@ test.describe('認証機能 スモークテスト', () => {
         .getByRole('button', { name: 'ログイン' })
         .click();
 
-      // バリデーションエラーの確認
-      const emailField = page.getByLabel(/メールアドレス|Email/);
-      const passwordField = page.getByLabel(/パスワード|Password/);
-
-      await expect(emailField).toHaveAttribute('aria-invalid', 'true');
-      await expect(passwordField).toHaveAttribute('aria-invalid', 'true');
+      // バリデーションエラーの確認（Material-UIではhelperTextでエラーが表示される）
+      await expect(page.getByText('正しいメールアドレスを入力してください')).toBeVisible();
+      await expect(page.getByText('パスワードを入力してください')).toBeVisible();
     });
   });
 
