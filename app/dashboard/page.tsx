@@ -27,7 +27,7 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 
 export default function DashboardPage() {
   const { loading, authenticated, user, error } = useRequireAuth();
