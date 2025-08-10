@@ -255,7 +255,7 @@ export class UserModel {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // 現在のユーザー情報を取得（NextAuthのUUID形式のIDに対応）
-      const user = await User.findOne({ _id: id }).select('+password').exec();
+      const user = await User.findOne({ _id: id as any }).select('+password').exec();
       if (!user) {
         return { success: false, error: 'ユーザーが見つかりません' };
       }
