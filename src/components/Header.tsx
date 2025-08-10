@@ -93,6 +93,16 @@ export default function Header() {
             <Button
               color="inherit"
               component={Link}
+              href="/dashboard"
+              sx={{
+                textDecoration: pathname === '/dashboard' ? 'underline' : 'none',
+              }}
+            >
+              ダッシュボード
+            </Button>
+            <Button
+              color="inherit"
+              component={Link}
               href="/board"
               sx={{
                 textDecoration: pathname === '/board' ? 'underline' : 'none',
