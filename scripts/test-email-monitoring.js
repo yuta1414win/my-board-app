@@ -54,10 +54,14 @@ function logEmailSent(to, subject, messageId, duration = null) {
     duration: duration ? `${duration}ms` : null,
     timestamp: new Date().toISOString(),
   };
-  
-  const message = createLogMessage('SUCCESS', 'Email sent successfully', logData);
+
+  const message = createLogMessage(
+    'SUCCESS',
+    'Email sent successfully',
+    logData
+  );
   writeLog(EMAIL_LOG_FILE, message);
-  
+
   console.log('✅ メール送信成功:', {
     to,
     subject: subject.length > 50 ? subject.substring(0, 50) + '...' : subject,
@@ -79,10 +83,10 @@ function logEmailError(to, subject, error, duration = null) {
     duration: duration ? `${duration}ms` : null,
     timestamp: new Date().toISOString(),
   };
-  
+
   const message = createLogMessage('ERROR', 'Email sending failed', logData);
   writeLog(ERROR_LOG_FILE, message);
-  
+
   console.log('❌ メール送信失敗:', {
     to,
     subject: subject.length > 50 ? subject.substring(0, 50) + '...' : subject,
@@ -101,12 +105,12 @@ function logConnectionTest(success, error = null, config = null) {
     config,
     timestamp: new Date().toISOString(),
   };
-  
+
   const level = success ? 'SUCCESS' : 'ERROR';
   const message = createLogMessage(level, 'Email connection test', logData);
   const logFile = success ? EMAIL_LOG_FILE : ERROR_LOG_FILE;
   writeLog(logFile, message);
-  
+
   if (success) {
     console.log('✅ 接続テスト成功');
   } else {
@@ -128,21 +132,26 @@ function analyzeEmailLogs() {
 
     if (fs.existsSync(EMAIL_LOG_FILE)) {
       const successData = fs.readFileSync(EMAIL_LOG_FILE, 'utf8');
-      successLogs = successData.split('\\n').filter(line => line.trim());
+      successLogs = successData.split('\\n').filter((line) => line.trim());
     }
 
     if (fs.existsSync(ERROR_LOG_FILE)) {
       const errorData = fs.readFileSync(ERROR_LOG_FILE, 'utf8');
-      errorLogs = errorData.split('\\n').filter(line => line.trim());
+      errorLogs = errorData.split('\\n').filter((line) => line.trim());
     }
 
     // 統計情報
-    console.log(`📈 総メール送信試行数: ${successLogs.length + errorLogs.length}`);
+    console.log(
+      `📈 総メール送信試行数: ${successLogs.length + errorLogs.length}`
+    );
     console.log(`✅ 成功: ${successLogs.length}`);
     console.log(`❌ 失敗: ${errorLogs.length}`);
-    
+
     if (successLogs.length + errorLogs.length > 0) {
-      const successRate = ((successLogs.length / (successLogs.length + errorLogs.length)) * 100).toFixed(2);
+      const successRate = (
+        (successLogs.length / (successLogs.length + errorLogs.length)) *
+        100
+      ).toFixed(2);
       console.log(`📊 成功率: ${successRate}%`);
     }
 
@@ -150,7 +159,7 @@ function analyzeEmailLogs() {
     if (errorLogs.length > 0) {
       console.log('\\n🔍 最近のエラー分析:');
       console.log('------------------------------');
-      
+
       const recentErrors = errorLogs.slice(-5); // 最新5件
       recentErrors.forEach((logLine, index) => {
         try {
@@ -158,8 +167,10 @@ function analyzeEmailLogs() {
           if (match) {
             const [, timestamp, level, message, dataStr] = match;
             const data = JSON.parse(dataStr);
-            
-            console.log(`\\n${index + 1}. ${new Date(timestamp).toLocaleString('ja-JP')}`);
+
+            console.log(
+              `\\n${index + 1}. ${new Date(timestamp).toLocaleString('ja-JP')}`
+            );
             console.log(`   宛先: ${data.to}`);
             console.log(`   件名: ${data.subject?.substring(0, 50)}...`);
             console.log(`   エラー: ${data.error}`);
@@ -177,17 +188,17 @@ function analyzeEmailLogs() {
     if (successLogs.length > 0) {
       console.log('\\n📈 成功メール統計:');
       console.log('------------------------------');
-      
+
       const durations = [];
       const recipients = new Set();
-      
-      successLogs.forEach(logLine => {
+
+      successLogs.forEach((logLine) => {
         try {
           const match = logLine.match(/\\[(.*?)\\] \\[(.*?)\\] (.*?) \\| (.*)/);
           if (match) {
             const [, , , , dataStr] = match;
             const data = JSON.parse(dataStr);
-            
+
             if (data.to) recipients.add(data.to);
             if (data.duration) {
               const durationMs = parseInt(data.duration);
@@ -200,18 +211,19 @@ function analyzeEmailLogs() {
       });
 
       console.log(`📧 ユニーク受信者数: ${recipients.size}`);
-      
+
       if (durations.length > 0) {
-        const avgDuration = (durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(2);
+        const avgDuration = (
+          durations.reduce((a, b) => a + b, 0) / durations.length
+        ).toFixed(2);
         const minDuration = Math.min(...durations);
         const maxDuration = Math.max(...durations);
-        
+
         console.log(`⏱️  平均送信時間: ${avgDuration}ms`);
         console.log(`⚡ 最短送信時間: ${minDuration}ms`);
         console.log(`🐌 最長送信時間: ${maxDuration}ms`);
       }
     }
-
   } catch (error) {
     console.error('ログ分析エラー:', error);
   }
@@ -228,12 +240,12 @@ function clearEmailLogs() {
       fs.unlinkSync(EMAIL_LOG_FILE);
       console.log('✅ 成功ログをクリアしました');
     }
-    
+
     if (fs.existsSync(ERROR_LOG_FILE)) {
       fs.unlinkSync(ERROR_LOG_FILE);
       console.log('✅ エラーログをクリアしました');
     }
-    
+
     console.log('🧹 ログクリア完了');
   } catch (error) {
     console.error('ログクリアエラー:', error);
@@ -250,29 +262,33 @@ function watchEmailLogs() {
 
   // ファイル変更監視
   const watchFiles = [EMAIL_LOG_FILE, ERROR_LOG_FILE];
-  
-  watchFiles.forEach(filePath => {
+
+  watchFiles.forEach((filePath) => {
     if (fs.existsSync(filePath)) {
       fs.watchFile(filePath, (curr, prev) => {
         if (curr.mtime !== prev.mtime) {
           console.log(`📝 ログ更新検出: ${path.basename(filePath)}`);
-          
+
           // 新しいログエントリを表示
           try {
             const data = fs.readFileSync(filePath, 'utf8');
-            const lines = data.split('\\n').filter(line => line.trim());
+            const lines = data.split('\\n').filter((line) => line.trim());
             const lastLine = lines[lines.length - 1];
-            
+
             if (lastLine) {
-              const match = lastLine.match(/\\[(.*?)\\] \\[(.*?)\\] (.*?) \\| (.*)/);
+              const match = lastLine.match(
+                /\\[(.*?)\\] \\[(.*?)\\] (.*?) \\| (.*)/
+              );
               if (match) {
                 const [, timestamp, level, message, dataStr] = match;
                 const data = JSON.parse(dataStr);
-                
+
                 const time = new Date(timestamp).toLocaleTimeString('ja-JP');
                 const icon = level === 'SUCCESS' ? '✅' : '❌';
-                
-                console.log(`${icon} [${time}] ${data.to} - ${data.subject?.substring(0, 40)}...`);
+
+                console.log(
+                  `${icon} [${time}] ${data.to} - ${data.subject?.substring(0, 40)}...`
+                );
                 if (level === 'ERROR' && data.error) {
                   console.log(`   エラー: ${data.error}`);
                 }
@@ -298,7 +314,9 @@ function watchEmailLogs() {
     analyzeEmailLogs();
     console.log('\\n監視を開始しました...\\n');
   } else {
-    console.log('📝 ログファイルが見つかりません。メール送信後に監視を開始します...\\n');
+    console.log(
+      '📝 ログファイルが見つかりません。メール送信後に監視を開始します...\\n'
+    );
   }
 }
 
@@ -307,38 +325,53 @@ function watchEmailLogs() {
  */
 function generateTestLogs() {
   console.log('🧪 テスト用ログを生成中...');
-  
+
   ensureLogDirectory();
 
   // 成功ログのテストデータ
   const successTests = [
-    { to: 'test1@example.com', subject: 'ウェルカムメール', messageId: 'msg-001', duration: 1250 },
-    { to: 'test2@example.com', subject: 'パスワードリセット', messageId: 'msg-002', duration: 980 },
-    { to: 'test3@example.com', subject: 'メールアドレス確認', messageId: 'msg-003', duration: 1100 },
+    {
+      to: 'test1@example.com',
+      subject: 'ウェルカムメール',
+      messageId: 'msg-001',
+      duration: 1250,
+    },
+    {
+      to: 'test2@example.com',
+      subject: 'パスワードリセット',
+      messageId: 'msg-002',
+      duration: 980,
+    },
+    {
+      to: 'test3@example.com',
+      subject: 'メールアドレス確認',
+      messageId: 'msg-003',
+      duration: 1100,
+    },
   ];
 
   // エラーログのテストデータ
   const errorTests = [
-    { 
-      to: 'invalid@domain.invalid', 
-      subject: 'テストメール', 
+    {
+      to: 'invalid@domain.invalid',
+      subject: 'テストメール',
       error: new Error('DNS resolution failed'),
-      duration: 5000
+      duration: 5000,
     },
-    { 
-      to: 'test@example.com', 
-      subject: 'テストメール', 
+    {
+      to: 'test@example.com',
+      subject: 'テストメール',
       error: new Error('SMTP authentication failed'),
-      duration: 2000
+      duration: 2000,
     },
   ];
 
   // テストログ生成
-  successTests.forEach(test => {
+  successTests.forEach((test) => {
     logEmailSent(test.to, test.subject, test.messageId, test.duration);
   });
 
-  errorTests.forEach(test => {
+  errorTests.forEach((test) => {
     logEmailError(test.to, test.subject, test.error, test.duration);
   });
 
@@ -358,20 +391,20 @@ function main() {
     case 'stats':
       analyzeEmailLogs();
       break;
-      
+
     case 'clear':
       clearEmailLogs();
       break;
-      
+
     case 'watch':
     case 'monitor':
       watchEmailLogs();
       break;
-      
+
     case 'test':
       generateTestLogs();
       break;
-      
+
     case 'help':
     default:
       console.log('📧 メール送信ログモニタリングツール');

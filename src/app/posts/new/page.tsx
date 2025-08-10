@@ -88,9 +88,11 @@ export default function NewPostPage() {
     return null;
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -98,7 +100,7 @@ export default function NewPostPage() {
   };
 
   const handleCategoryChange = (event: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       category: event.target.value,
     }));
@@ -106,13 +108,13 @@ export default function NewPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // バリデーション
     if (!formData.title.trim()) {
       setSubmitError('タイトルを入力してください。');
       return;
     }
-    
+
     if (!formData.content.trim()) {
       setSubmitError('本文を入力してください。');
       return;
@@ -170,7 +172,7 @@ export default function NewPostPage() {
   };
 
   const getCategoryLabel = (value: string) => {
-    return POST_CATEGORIES.find(cat => cat.value === value)?.label || value;
+    return POST_CATEGORIES.find((cat) => cat.value === value)?.label || value;
   };
 
   return (
@@ -259,8 +261,20 @@ export default function NewPostPage() {
 
                 {/* プレビューモード */}
                 {preview && (
-                  <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 2 }}
+                    >
                       <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                         プレビュー
                       </Typography>
@@ -270,7 +284,11 @@ export default function NewPostPage() {
                         size="small"
                       />
                     </Stack>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      sx={{ fontWeight: 'bold' }}
+                    >
                       {formData.title || 'タイトル未入力'}
                     </Typography>
                     <Typography
@@ -278,7 +296,9 @@ export default function NewPostPage() {
                       sx={{
                         whiteSpace: 'pre-wrap',
                         lineHeight: 1.7,
-                        color: formData.content ? 'text.primary' : 'text.secondary',
+                        color: formData.content
+                          ? 'text.primary'
+                          : 'text.secondary',
                       }}
                     >
                       {formData.content || '本文未入力'}
@@ -290,7 +310,12 @@ export default function NewPostPage() {
                 {submitting && <LinearProgress />}
 
                 {/* アクションボタン */}
-                <Stack direction="row" spacing={2} justifyContent="flex-end" flexWrap="wrap">
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="flex-end"
+                  flexWrap="wrap"
+                >
                   <Button
                     startIcon={<PreviewIcon />}
                     variant="outlined"
@@ -299,7 +324,7 @@ export default function NewPostPage() {
                   >
                     {preview ? 'プレビュー終了' : 'プレビュー'}
                   </Button>
-                  
+
                   <Button
                     startIcon={<CancelIcon />}
                     variant="outlined"
@@ -308,13 +333,17 @@ export default function NewPostPage() {
                   >
                     キャンセル
                   </Button>
-                  
+
                   <Button
                     type="submit"
                     startIcon={<SaveIcon />}
                     variant="contained"
                     color="success"
-                    disabled={submitting || !formData.title.trim() || !formData.content.trim()}
+                    disabled={
+                      submitting ||
+                      !formData.title.trim() ||
+                      !formData.content.trim()
+                    }
                     sx={{ minWidth: 120 }}
                   >
                     {submitting ? '投稿中...' : '投稿する'}
@@ -328,11 +357,14 @@ export default function NewPostPage() {
         {/* ヒント */}
         <Box sx={{ mt: 3, p: 2, bgcolor: 'info.50', borderRadius: 1 }}>
           <Typography variant="body2" color="info.dark">
-            <strong>投稿のヒント:</strong><br />
-            • 明確で分かりやすいタイトルを付けましょう<br />
-            • 適切なカテゴリーを選択してください<br />
-            • 丁寧で建設的な内容を心がけましょう<br />
-            • 個人情報や機密情報は投稿しないでください
+            <strong>投稿のヒント:</strong>
+            <br />
+            • 明確で分かりやすいタイトルを付けましょう
+            <br />
+            • 適切なカテゴリーを選択してください
+            <br />
+            • 丁寧で建設的な内容を心がけましょう
+            <br />• 個人情報や機密情報は投稿しないでください
           </Typography>
         </Box>
       </Box>

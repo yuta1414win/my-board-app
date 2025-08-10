@@ -14,12 +14,12 @@ console.log('=========================');
 
 // 必要な環境変数のチェック
 const requiredEnvs = {
-  'EMAIL_SERVER_HOST': process.env.EMAIL_SERVER_HOST,
-  'EMAIL_SERVER_PORT': process.env.EMAIL_SERVER_PORT,
-  'EMAIL_SERVER_USER': process.env.EMAIL_SERVER_USER,
-  'EMAIL_SERVER_PASSWORD': process.env.EMAIL_SERVER_PASSWORD,
-  'JWT_SECRET': process.env.JWT_SECRET,
-  'NEXTAUTH_URL': process.env.NEXTAUTH_URL,
+  EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
+  EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
+  EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
+  EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
+  JWT_SECRET: process.env.JWT_SECRET,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
 };
 
 console.log('\n📋 環境変数チェック:');
@@ -48,7 +48,9 @@ console.log('---------------');
 if (process.env.EMAIL_SERVER_HOST === 'smtp.gmail.com') {
   console.log('✅ Gmail SMTP設定: 正常');
 } else {
-  console.log(`⚠️  Gmail SMTP設定: ${process.env.EMAIL_SERVER_HOST || '未設定'} (推奨: smtp.gmail.com)`);
+  console.log(
+    `⚠️  Gmail SMTP設定: ${process.env.EMAIL_SERVER_HOST || '未設定'} (推奨: smtp.gmail.com)`
+  );
 }
 
 // ポート設定チェック
@@ -57,13 +59,17 @@ if (process.env.EMAIL_SERVER_PORT === '587') {
 } else if (process.env.EMAIL_SERVER_PORT === '465') {
   console.log('✅ SMTPポート: 465 (SSL)');
 } else {
-  console.log(`❌ SMTPポート: ${process.env.EMAIL_SERVER_PORT || '未設定'} (推奨: 587)`);
+  console.log(
+    `❌ SMTPポート: ${process.env.EMAIL_SERVER_PORT || '未設定'} (推奨: 587)`
+  );
 }
 
 // Gmailアドレスチェック
 if (process.env.EMAIL_SERVER_USER) {
-  if (process.env.EMAIL_SERVER_USER.includes('@gmail.com') || 
-      process.env.EMAIL_SERVER_USER.includes('@')) {
+  if (
+    process.env.EMAIL_SERVER_USER.includes('@gmail.com') ||
+    process.env.EMAIL_SERVER_USER.includes('@')
+  ) {
     console.log('✅ メールアドレス形式: 正常');
   } else {
     console.log('❌ メールアドレス形式: 無効');
@@ -72,7 +78,10 @@ if (process.env.EMAIL_SERVER_USER) {
 
 // アプリパスワード長さチェック
 if (process.env.EMAIL_SERVER_PASSWORD) {
-  const passwordLength = process.env.EMAIL_SERVER_PASSWORD.replace(/\s/g, '').length;
+  const passwordLength = process.env.EMAIL_SERVER_PASSWORD.replace(
+    /\s/g,
+    ''
+  ).length;
   if (passwordLength === 16) {
     console.log('✅ アプリパスワード: 16文字 (正常)');
   } else {
@@ -88,7 +97,9 @@ if (process.env.JWT_SECRET) {
   if (process.env.JWT_SECRET.length >= 32) {
     console.log('✅ JWT_SECRET: 十分な長さ');
   } else {
-    console.log(`❌ JWT_SECRET: ${process.env.JWT_SECRET.length}文字 (推奨: 32文字以上)`);
+    console.log(
+      `❌ JWT_SECRET: ${process.env.JWT_SECRET.length}文字 (推奨: 32文字以上)`
+    );
   }
 }
 

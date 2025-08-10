@@ -92,7 +92,7 @@ export default function ProfilePage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -290,7 +290,9 @@ export default function ProfilePage() {
             {/* アバター */}
             <Card elevation={2} sx={{ mb: 3 }}>
               <CardContent sx={{ textAlign: 'center' }}>
-                <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
+                <Box
+                  sx={{ position: 'relative', display: 'inline-block', mb: 2 }}
+                >
                   <Avatar
                     src={user?.image || ''}
                     alt={user?.name || ''}
@@ -317,17 +319,17 @@ export default function ProfilePage() {
                 <Typography variant="h6" gutterBottom>
                   {user?.name || 'ユーザー'}
                 </Typography>
-                <Chip
-                  label="メンバー"
-                  color="primary"
-                  size="small"
-                />
+                <Chip label="メンバー" color="primary" size="small" />
               </CardContent>
             </Card>
 
             {/* アカウント情報 */}
             <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'medium' }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+              >
                 アカウント情報
               </Typography>
               <Divider sx={{ mb: 2 }} />
@@ -353,15 +355,17 @@ export default function ProfilePage() {
                     </Typography>
                   </Stack>
                   <Typography variant="body2" sx={{ mt: 0.5, ml: 3 }}>
-                    {user?.createdAt
-                      ? formatJoinDate(user.createdAt)
-                      : '不明'}
+                    {user?.createdAt ? formatJoinDate(user.createdAt) : '不明'}
                   </Typography>
                 </Box>
 
                 {/* メール確認状態 */}
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     メール確認状態
                   </Typography>
                   <Chip

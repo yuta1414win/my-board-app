@@ -13,14 +13,14 @@ if (!MONGODB_URI) {
 
 async function createTestUser() {
   const client = new MongoClient(MONGODB_URI);
-  
+
   try {
     console.log('🔄 Connecting to MongoDB...');
     await client.connect();
-    
+
     const db = client.db();
     const users = db.collection('users');
-    
+
     // テストユーザーデータ
     const testUser = {
       name: 'Smoke Test User',
@@ -30,15 +30,15 @@ async function createTestUser() {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     // 既存ユーザーチェック
     const existingUser = await users.findOne({ email: testUser.email });
     if (existingUser) {
       console.log('⚠️ Test user already exists, updating...');
-      
+
       // パスワードハッシュ化
       const hashedPassword = await bcrypt.hash(testUser.password, 10);
-      
+
       await users.updateOne(
         { email: testUser.email },
         {
@@ -47,27 +47,26 @@ async function createTestUser() {
             password: hashedPassword,
             emailVerified: true,
             updatedAt: new Date(),
-          }
+          },
         }
       );
       console.log('✅ Test user updated successfully!');
     } else {
       console.log('🔄 Creating new test user...');
-      
+
       // パスワードハッシュ化
       const hashedPassword = await bcrypt.hash(testUser.password, 10);
       testUser.password = hashedPassword;
-      
+
       await users.insertOne(testUser);
       console.log('✅ Test user created successfully!');
     }
-    
+
     console.log('📋 Test user info:');
     console.log(`  Email: ${testUser.email}`);
     console.log(`  Password: ExistingPassword123!`);
     console.log(`  Name: ${testUser.name}`);
     console.log(`  Email Verified: true`);
-    
   } catch (error) {
     console.error('❌ Error creating test user:');
     console.error(error.message);

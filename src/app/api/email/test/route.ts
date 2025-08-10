@@ -4,7 +4,7 @@ import { testEmailConnection } from '@/lib/email';
 export async function GET() {
   try {
     console.log('Testing email connection...');
-    
+
     const result = await testEmailConnection();
 
     if (result.success) {
@@ -34,10 +34,10 @@ export async function GET() {
   } catch (error) {
     console.error('Email test API error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'サーバーエラーが発生しました',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -110,10 +110,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Test email send error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         message: 'テストメール送信中にエラーが発生しました',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

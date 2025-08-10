@@ -70,7 +70,14 @@ export async function PUT(
       );
     }
 
-    const validCategories = ['general', 'question', 'discussion', 'announcement', 'tech', 'hobby'];
+    const validCategories = [
+      'general',
+      'question',
+      'discussion',
+      'announcement',
+      'tech',
+      'hobby',
+    ];
     if (category && !validCategories.includes(category)) {
       return NextResponse.json(
         { error: '無効なカテゴリーです' },
@@ -95,11 +102,11 @@ export async function PUT(
 
     const updatedPost = await Post.findByIdAndUpdate(
       params.id,
-      { 
-        title: title.trim(), 
-        content: content.trim(), 
+      {
+        title: title.trim(),
+        content: content.trim(),
         category: category || post.category,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       { new: true }
     );

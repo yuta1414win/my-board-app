@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     // NextAuth.jsのセッションクッキーを削除
     const cookieStore = await cookies();
-    
+
     // NextAuth.jsのデフォルトクッキー名
     const authCookieNames = [
       'authjs.session-token',
@@ -16,24 +16,24 @@ export async function POST(request: NextRequest) {
     ];
 
     // すべての認証関連クッキーを削除
-    authCookieNames.forEach(cookieName => {
+    authCookieNames.forEach((cookieName) => {
       cookieStore.delete(cookieName);
     });
 
     // ログアウト成功レスポンス
     return NextResponse.json(
-      { 
-        success: true, 
-        message: 'ログアウトしました' 
+      {
+        success: true,
+        message: 'ログアウトしました',
       },
       { status: 200 }
     );
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        message: 'ログアウト処理でエラーが発生しました' 
+      {
+        success: false,
+        message: 'ログアウト処理でエラーが発生しました',
       },
       { status: 500 }
     );

@@ -84,8 +84,13 @@ export default function DashboardPage() {
               ダッシュボード
             </Typography>
           </Stack>
-          
-          <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+
+          <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            flexWrap="wrap"
+          >
             <Avatar
               src={user?.image || ''}
               alt={user?.name || ''}
@@ -115,7 +120,9 @@ export default function DashboardPage() {
           <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
-                <PostAddIcon sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
+                <PostAddIcon
+                  sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
+                />
                 <Typography variant="h6" gutterBottom>
                   新規投稿
                 </Typography>
@@ -136,7 +143,9 @@ export default function DashboardPage() {
           <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
-                <ForumIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
+                <ForumIcon
+                  sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
+                />
                 <Typography variant="h6" gutterBottom>
                   掲示板
                 </Typography>
@@ -178,7 +187,9 @@ export default function DashboardPage() {
           <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
-                <SettingsIcon sx={{ fontSize: 48, color: 'warning.main', mb: 1 }} />
+                <SettingsIcon
+                  sx={{ fontSize: 48, color: 'warning.main', mb: 1 }}
+                />
                 <Typography variant="h6" gutterBottom>
                   設定
                 </Typography>
@@ -201,32 +212,48 @@ export default function DashboardPage() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'medium' }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+              >
                 最近のアクティビティ
               </Typography>
               <Divider sx={{ mb: 2 }} />
-              
+
               <Stack spacing={2}>
                 <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     2024年1月15日
                   </Typography>
                   <Typography variant="body1">
                     掲示板に投稿しました: 「新年の挨拶」
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     2024年1月14日
                   </Typography>
                   <Typography variant="body1">
                     プロフィールを更新しました
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     2024年1月13日
                   </Typography>
                   <Typography variant="body1">
@@ -239,17 +266,26 @@ export default function DashboardPage() {
 
           <Grid item xs={12} md={4}>
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mb: 2 }}
+              >
                 <TrendingUpIcon color="primary" />
                 <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                   統計
                 </Typography>
               </Stack>
               <Divider sx={{ mb: 2 }} />
-              
+
               <Stack spacing={2}>
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
                     <Typography variant="body2" color="text.secondary">
                       総投稿数
                     </Typography>
@@ -258,9 +294,13 @@ export default function DashboardPage() {
                     </Typography>
                   </Stack>
                 </Box>
-                
+
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
                     <Typography variant="body2" color="text.secondary">
                       総コメント数
                     </Typography>
@@ -269,9 +309,13 @@ export default function DashboardPage() {
                     </Typography>
                   </Stack>
                 </Box>
-                
+
                 <Box>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
                     <Typography variant="body2" color="text.secondary">
                       メンバー歴
                     </Typography>
@@ -284,14 +328,19 @@ export default function DashboardPage() {
             </Paper>
 
             <Paper elevation={2} sx={{ p: 3 }}>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mb: 2 }}
+              >
                 <NotificationsIcon color="warning" />
                 <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                   通知
                 </Typography>
               </Stack>
               <Divider sx={{ mb: 2 }} />
-              
+
               <Stack spacing={1}>
                 <Typography variant="body2" color="text.secondary">
                   新しい通知はありません

@@ -60,7 +60,15 @@ export function useRequireAuth(options: UseRequireAuthOptions = {}): AuthState {
         setError(undefined);
       }
     }
-  }, [status, session, router, redirectTo, requireEmailVerification, requiredRole, error]);
+  }, [
+    status,
+    session,
+    router,
+    redirectTo,
+    requireEmailVerification,
+    requiredRole,
+    error,
+  ]);
 
   return {
     loading: status === 'loading',
@@ -73,7 +81,7 @@ export function useRequireAuth(options: UseRequireAuthOptions = {}): AuthState {
 // より簡単な使用のためのヘルパーフック
 export function useAuth() {
   const { data: session, status } = useSession();
-  
+
   return {
     user: session?.user,
     loading: status === 'loading',

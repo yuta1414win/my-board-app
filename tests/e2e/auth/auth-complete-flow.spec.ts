@@ -28,7 +28,7 @@ test.describe('認証システム完全フロー', () => {
     // テスト前のセットアップ
     await context.clearCookies();
     await context.clearPermissions();
-    
+
     // コンソールエラーをキャッチ
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
@@ -44,22 +44,28 @@ test.describe('認証システム完全フロー', () => {
       await expect(page).toHaveTitle(/My Board App/);
 
       // 登録フォームの存在確認
-      await expect(page.getByRole('heading', { name: '新規登録' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: '新規登録' })
+      ).toBeVisible();
       await expect(page.getByLabel('名前')).toBeVisible();
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
-      await expect(page.getByLabel('パスワード', { exact: true })).toBeVisible();
+      await expect(
+        page.getByLabel('パスワード', { exact: true })
+      ).toBeVisible();
       await expect(page.getByLabel('パスワード確認')).toBeVisible();
 
       // フォーム入力
       await page.getByLabel('名前').fill(testUser.name);
       await page.getByLabel('メールアドレス').fill(testUser.email);
-      await page.getByLabel('パスワード', { exact: true }).fill(testUser.password);
+      await page
+        .getByLabel('パスワード', { exact: true })
+        .fill(testUser.password);
       await page.getByLabel('パスワード確認').fill(testUser.confirmPassword);
 
       // パスワード強度インジケーターの確認
       await expect(page.getByText('パスワード強度')).toBeVisible();
       await expect(page.getByText('非常に強い')).toBeVisible();
-      
+
       // パスワード要件チェックの確認
       await expect(page.getByText('8文字以上')).toBeVisible();
       await expect(page.getByText('数字を含む')).toBeVisible();
@@ -74,8 +80,10 @@ test.describe('認証システム完全フロー', () => {
       await expect(page.getByText('確認メールを送信しました')).toBeVisible();
 
       // 自動リダイレクトの確認（3秒後にログインページへ）
-      await expect(page.getByText('ログインページへリダイレクト')).toBeVisible();
-      
+      await expect(
+        page.getByText('ログインページへリダイレクト')
+      ).toBeVisible();
+
       // リダイレクト待機
       await page.waitForTimeout(3100);
       await expect(page).toHaveURL(/\/auth\/signin/);
@@ -94,31 +102,41 @@ test.describe('認証システム完全フロー', () => {
 
       // バリデーションエラーの確認
       await expect(page.getByText('8文字以上で入力してください')).toBeVisible();
-      
+
       // パスワード強度インジケーターの確認
       await expect(page.getByText('パスワード強度')).toBeVisible();
       await expect(page.getByText('弱い')).toBeVisible();
     });
 
-    test('無効なメールアドレスでバリデーションエラーが表示される', async ({ page }) => {
+    test('無効なメールアドレスでバリデーションエラーが表示される', async ({
+      page,
+    }) => {
       await page.goto('/auth/register');
 
       await page.getByLabel('名前').fill(testUser.name);
       await page.getByLabel('メールアドレス').fill(invalidEmail);
-      await page.getByLabel('パスワード', { exact: true }).fill(testUser.password);
+      await page
+        .getByLabel('パスワード', { exact: true })
+        .fill(testUser.password);
       await page.getByLabel('パスワード確認').fill(testUser.confirmPassword);
 
       await page.getByRole('button', { name: '登録する' }).click();
 
-      await expect(page.getByText('正しいメールアドレスを入力してください')).toBeVisible();
+      await expect(
+        page.getByText('正しいメールアドレスを入力してください')
+      ).toBeVisible();
     });
 
-    test('パスワード不一致でバリデーションエラーが表示される', async ({ page }) => {
+    test('パスワード不一致でバリデーションエラーが表示される', async ({
+      page,
+    }) => {
       await page.goto('/auth/register');
 
       await page.getByLabel('名前').fill(testUser.name);
       await page.getByLabel('メールアドレス').fill(testUser.email);
-      await page.getByLabel('パスワード', { exact: true }).fill(testUser.password);
+      await page
+        .getByLabel('パスワード', { exact: true })
+        .fill(testUser.password);
       await page.getByLabel('パスワード確認').fill('DifferentPassword123!');
 
       await page.getByRole('button', { name: '登録する' }).click();
@@ -141,15 +159,23 @@ test.describe('認証システム完全フロー', () => {
       await confirmPasswordInput.fill(testUser.confirmPassword);
 
       // パスワード表示ボタンをクリック
-      await page.locator('[aria-label="toggle password visibility"]').first().click();
+      await page
+        .locator('[aria-label="toggle password visibility"]')
+        .first()
+        .click();
       await expect(passwordInput).toHaveAttribute('type', 'text');
 
       // パスワード確認表示ボタンをクリック
-      await page.locator('[aria-label="toggle confirm password visibility"]').click();
+      await page
+        .locator('[aria-label="toggle confirm password visibility"]')
+        .click();
       await expect(confirmPasswordInput).toHaveAttribute('type', 'text');
 
       // 再度クリックで非表示に戻る
-      await page.locator('[aria-label="toggle password visibility"]').first().click();
+      await page
+        .locator('[aria-label="toggle password visibility"]')
+        .first()
+        .click();
       await expect(passwordInput).toHaveAttribute('type', 'password');
     });
   });
@@ -159,7 +185,9 @@ test.describe('認証システム完全フロー', () => {
       await page.goto('/auth/signin');
 
       // ログインフォームの存在確認
-      await expect(page.getByRole('heading', { name: 'ログイン' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'ログイン' })
+      ).toBeVisible();
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
       await expect(page.getByLabel('パスワード')).toBeVisible();
 
@@ -185,7 +213,9 @@ test.describe('認証システム完全フロー', () => {
       await page.getByRole('button', { name: 'ログイン' }).click();
 
       // エラーメッセージの確認
-      await expect(page.getByText('メールアドレスまたはパスワードが正しくありません')).toBeVisible();
+      await expect(
+        page.getByText('メールアドレスまたはパスワードが正しくありません')
+      ).toBeVisible();
       await expect(page.getByText('試行回数: 1/5')).toBeVisible();
     });
 
@@ -208,7 +238,9 @@ test.describe('認証システム完全フロー', () => {
       }
 
       // 5回目でブロック
-      await expect(page.getByText('ログインがブロックされています')).toBeVisible();
+      await expect(
+        page.getByText('ログインがブロックされています')
+      ).toBeVisible();
       await expect(page.getByText('残り時間:')).toBeVisible();
       await expect(page.getByRole('button')).toBeDisabled();
     });
@@ -217,17 +249,17 @@ test.describe('認証システム完全フロー', () => {
       await page.goto('/auth/signin');
 
       const passwordInput = page.getByLabel('パスワード');
-      
+
       // 初期状態でパスワードが隠されている
       await expect(passwordInput).toHaveAttribute('type', 'password');
-      
+
       // パスワードを入力
       await passwordInput.fill('TestPassword123!');
-      
+
       // パスワード表示ボタンをクリック
       await page.getByLabel('toggle password visibility').click();
       await expect(passwordInput).toHaveAttribute('type', 'text');
-      
+
       // 再度クリックで非表示に戻る
       await page.getByLabel('toggle password visibility').click();
       await expect(passwordInput).toHaveAttribute('type', 'password');
@@ -239,7 +271,9 @@ test.describe('認証システム完全フロー', () => {
       // 新規登録リンクをクリック
       await page.getByText('新規登録').click();
       await expect(page).toHaveURL(/\/auth\/register/);
-      await expect(page.getByRole('heading', { name: '新規登録' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: '新規登録' })
+      ).toBeVisible();
     });
 
     test('パスワードリセットリンクが表示される', async ({ page }) => {
@@ -247,7 +281,7 @@ test.describe('認証システム完全フロー', () => {
 
       // パスワードを忘れた場合のリンク確認
       await expect(page.getByText('パスワードを忘れた場合')).toBeVisible();
-      
+
       // リンクをクリック（実装されている場合）
       await page.getByText('パスワードを忘れた場合').click();
       // パスワードリセットページへの遷移確認
@@ -256,18 +290,22 @@ test.describe('認証システム完全フロー', () => {
   });
 
   test.describe('セッション管理フロー', () => {
-    test('認証済みユーザーは保護されたページにアクセスできる', async ({ page }) => {
+    test('認証済みユーザーは保護されたページにアクセスできる', async ({
+      page,
+    }) => {
       // ログイン状態をシミュレート（実際のテストでは事前にログインが必要）
       // await loginUser(page, 'existing-user@example.com', 'ExistingUser123!');
 
       // 保護されたページにアクセス
       await page.goto('/board');
-      
+
       // ログインしていない場合はログインページにリダイレクト
       await expect(page).toHaveURL(/\/auth\/signin/);
     });
 
-    test('未認証ユーザーは保護されたページにアクセスできない', async ({ page }) => {
+    test('未認証ユーザーは保護されたページにアクセスできない', async ({
+      page,
+    }) => {
       // 直接保護されたページにアクセス
       await page.goto('/board');
 
@@ -280,13 +318,14 @@ test.describe('認証システム完全フロー', () => {
       // セッションの有効期限テストは実装が複雑なため、
       // ここでは基本的な動作のみテスト
       await page.goto('/auth/signin');
-      
+
       // セッションクッキーの確認
       const cookies = await page.context().cookies();
-      const sessionCookie = cookies.find(cookie => 
-        cookie.name.includes('next-auth') || cookie.name.includes('session')
+      const sessionCookie = cookies.find(
+        (cookie) =>
+          cookie.name.includes('next-auth') || cookie.name.includes('session')
       );
-      
+
       // セッションクッキーが適切に設定されている（ログイン後）
       // if (sessionCookie) {
       //   expect(sessionCookie.httpOnly).toBe(true);
@@ -299,22 +338,21 @@ test.describe('認証システム完全フロー', () => {
     test('ログアウトが正常に動作する', async ({ page }) => {
       // 事前にログイン（実装に応じて調整）
       // await loginUser(page, 'existing-user@example.com', 'ExistingUser123!');
-      
       // ログアウト実行（ナビゲーションメニューから）
       // await page.getByText('ログアウト').click();
-      
       // ログインページにリダイレクトされる
       // await expect(page).toHaveURL(/\/auth\/signin/);
-      
       // セッションがクリアされている
       // await page.goto('/board');
       // await expect(page).toHaveURL(/\/auth\/signin/);
     });
 
-    test('ログアウト後に認証が必要なページにアクセスできない', async ({ page }) => {
+    test('ログアウト後に認証が必要なページにアクセスできない', async ({
+      page,
+    }) => {
       // ログアウト実行
       // await signOut(page);
-      
+
       // 保護されたページにアクセス試行
       await page.goto('/board');
       await expect(page).toHaveURL(/\/auth\/signin/);
@@ -322,7 +360,9 @@ test.describe('認証システム完全フロー', () => {
   });
 
   test.describe('エラーハンドリング', () => {
-    test('ネットワークエラー時に適切なエラーメッセージが表示される', async ({ page }) => {
+    test('ネットワークエラー時に適切なエラーメッセージが表示される', async ({
+      page,
+    }) => {
       // ネットワークリクエストをインターセプト
       await page.route('/api/auth/**', (route) => {
         route.abort('connectionrefused');
@@ -334,10 +374,14 @@ test.describe('認証システム完全フロー', () => {
       await page.getByRole('button', { name: 'ログイン' }).click();
 
       // ネットワークエラーメッセージの確認
-      await expect(page.getByText('サーバーエラーが発生しました')).toBeVisible();
+      await expect(
+        page.getByText('サーバーエラーが発生しました')
+      ).toBeVisible();
     });
 
-    test('サーバーエラー時に適切なエラーメッセージが表示される', async ({ page }) => {
+    test('サーバーエラー時に適切なエラーメッセージが表示される', async ({
+      page,
+    }) => {
       // サーバーエラーをシミュレート
       await page.route('/api/auth/**', (route) => {
         route.fulfill({
@@ -345,25 +389,31 @@ test.describe('認証システム完全フロー', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             error: 'Internal Server Error',
-            code: 'INTERNAL_SERVER_ERROR'
-          })
+            code: 'INTERNAL_SERVER_ERROR',
+          }),
         });
       });
 
       await page.goto('/auth/register');
       await page.getByLabel('名前').fill(testUser.name);
       await page.getByLabel('メールアドレス').fill(testUser.email);
-      await page.getByLabel('パスワード', { exact: true }).fill(testUser.password);
+      await page
+        .getByLabel('パスワード', { exact: true })
+        .fill(testUser.password);
       await page.getByLabel('パスワード確認').fill(testUser.confirmPassword);
       await page.getByRole('button', { name: '登録する' }).click();
 
       // サーバーエラーメッセージの確認
-      await expect(page.getByText('サーバーエラーが発生しました')).toBeVisible();
+      await expect(
+        page.getByText('サーバーエラーが発生しました')
+      ).toBeVisible();
     });
   });
 
   test.describe('アクセシビリティ', () => {
-    test('ログインフォームがアクセシビリティ要件を満たしている', async ({ page }) => {
+    test('ログインフォームがアクセシビリティ要件を満たしている', async ({
+      page,
+    }) => {
       await page.goto('/auth/signin');
 
       // フォームラベルの確認
@@ -373,30 +423,34 @@ test.describe('認証システム完全フロー', () => {
       // aria属性の確認
       const passwordInput = page.getByLabel('パスワード');
       const toggleButton = page.getByLabel('toggle password visibility');
-      
+
       await expect(toggleButton).toHaveAttribute('aria-label');
-      
+
       // キーボードナビゲーションの確認
       await passwordInput.press('Tab');
       await expect(toggleButton).toBeFocused();
     });
 
-    test('登録フォームがアクセシビリティ要件を満たしている', async ({ page }) => {
+    test('登録フォームがアクセシビリティ要件を満たしている', async ({
+      page,
+    }) => {
       await page.goto('/auth/register');
 
       // すべてのフォームフィールドにラベルが付いている
       await expect(page.getByLabel('名前')).toBeVisible();
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
-      await expect(page.getByLabel('パスワード', { exact: true })).toBeVisible();
+      await expect(
+        page.getByLabel('パスワード', { exact: true })
+      ).toBeVisible();
       await expect(page.getByLabel('パスワード確認')).toBeVisible();
 
       // エラーメッセージが適切に関連付けられている
       await page.getByLabel('名前').fill('');
       await page.getByRole('button', { name: '登録する' }).click();
-      
+
       const nameInput = page.getByLabel('名前');
       const errorMessage = page.getByText('名前は必須です');
-      
+
       // aria-describedby属性が設定されている（実装による）
       // await expect(nameInput).toHaveAttribute('aria-describedby');
     });
@@ -408,10 +462,14 @@ test.describe('認証システム完全フロー', () => {
       await page.goto('/auth/signin');
 
       // フォーム要素が表示される
-      await expect(page.getByRole('heading', { name: 'ログイン' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'ログイン' })
+      ).toBeVisible();
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
       await expect(page.getByLabel('パスワード')).toBeVisible();
-      await expect(page.getByRole('button', { name: 'ログイン' })).toBeVisible();
+      await expect(
+        page.getByRole('button', { name: 'ログイン' })
+      ).toBeVisible();
 
       // ボタンが適切なサイズで表示される
       const loginButton = page.getByRole('button', { name: 'ログイン' });
@@ -425,8 +483,10 @@ test.describe('認証システム完全フロー', () => {
       await page.goto('/auth/register');
 
       // フォーム要素が適切に配置される
-      await expect(page.getByRole('heading', { name: '新規登録' })).toBeVisible();
-      
+      await expect(
+        page.getByRole('heading', { name: '新規登録' })
+      ).toBeVisible();
+
       // フォームの幅が適切である
       const formCard = page.locator('.MuiCard-root').first();
       const cardBox = await formCard.boundingBox();

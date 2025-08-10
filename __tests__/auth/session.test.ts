@@ -65,7 +65,9 @@ describe('セッション管理テスト', () => {
 
     it('セッション取得エラー時は適切にハンドリングされる', async () => {
       // Arrange
-      nextAuthMock.mockAuth.mockRejectedValue(new Error('Session retrieval failed'));
+      nextAuthMock.mockAuth.mockRejectedValue(
+        new Error('Session retrieval failed')
+      );
 
       // Act & Assert
       await expect(auth()).rejects.toThrow('Session retrieval failed');
@@ -197,7 +199,9 @@ describe('セッション管理テスト', () => {
 
       // Act & Assert
       const { update } = useSession();
-      await expect(update({ name: 'New Name' })).rejects.toThrow('Update failed');
+      await expect(update({ name: 'New Name' })).rejects.toThrow(
+        'Update failed'
+      );
     });
   });
 
@@ -215,7 +219,9 @@ describe('セッション管理テスト', () => {
 
       // Assert
       expect(session).toBeTruthy();
-      expect(new Date(session?.expires || 0).getTime()).toBeGreaterThan(Date.now());
+      expect(new Date(session?.expires || 0).getTime()).toBeGreaterThan(
+        Date.now()
+      );
     });
 
     it('期限切れセッションは無効と判定される', async () => {
@@ -232,7 +238,9 @@ describe('セッション管理テスト', () => {
       // Assert
       // 期限切れセッションは通常NextAuth.jsが自動でnullにするが、
       // ここではモックなので期限切れかどうかを確認
-      expect(new Date(session?.expires || 0).getTime()).toBeLessThan(Date.now());
+      expect(new Date(session?.expires || 0).getTime()).toBeLessThan(
+        Date.now()
+      );
     });
 
     it('セッション有効期限が30日に設定されている', async () => {
@@ -251,7 +259,7 @@ describe('セッション管理テスト', () => {
       const expiresTime = new Date(session?.expires || 0).getTime();
       const expectedTime = thirtyDaysFromNow;
       const timeDifference = Math.abs(expiresTime - expectedTime);
-      
+
       // 1分以内の誤差を許容
       expect(timeDifference).toBeLessThan(60 * 1000);
     });
@@ -267,7 +275,9 @@ describe('セッション管理テスト', () => {
 
       // Assert
       expect(result).toEqual({ url: '/auth/signin' });
-      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({ redirect: false });
+      expect(nextAuthMock.mockSignOut).toHaveBeenCalledWith({
+        redirect: false,
+      });
     });
 
     it('リダイレクト付きログアウトが正常に実行される', async () => {
@@ -294,14 +304,16 @@ describe('セッション管理テスト', () => {
       nextAuthMock.mockSignOut.mockRejectedValue(new Error('Logout failed'));
 
       // Act & Assert
-      await expect(signOut({ redirect: false })).rejects.toThrow('Logout failed');
+      await expect(signOut({ redirect: false })).rejects.toThrow(
+        'Logout failed'
+      );
     });
 
     it('ログアウト後はセッションがクリアされる', async () => {
       // Arrange
       // 最初は認証済み
       nextAuthMock.mockAuth.mockResolvedValueOnce(mockSession);
-      
+
       // ログアウト後はセッションなし
       nextAuthMock.mockAuth.mockResolvedValueOnce(null);
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
@@ -382,7 +394,7 @@ describe('セッション管理テスト', () => {
         // セッションが24時間前に更新されたとする
         iat: Math.floor(twentyFourHoursAgo / 1000),
       };
-      
+
       nextAuthMock.mockAuth.mockResolvedValue(sessionLastUpdated);
 
       // Act
@@ -438,7 +450,7 @@ describe('セッション管理テスト', () => {
 
       // Assert
       expect(results).toHaveLength(5);
-      results.forEach(session => {
+      results.forEach((session) => {
         expect(session).toEqual(mockSession);
       });
       expect(nextAuthMock.mockAuth).toHaveBeenCalledTimes(5);
@@ -475,7 +487,7 @@ describe('セッション管理テスト', () => {
 
       // Act - 複数の更新リクエスト
       const { update } = useSession();
-      const promises = Array.from({ length: 10 }, (_, i) => 
+      const promises = Array.from({ length: 10 }, (_, i) =>
         update({ name: `User ${i}` })
       );
       const results = await Promise.all(promises);

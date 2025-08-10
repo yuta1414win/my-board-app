@@ -6,13 +6,13 @@ export async function middleware(request: NextRequest) {
 
   // 保護されたページのパス
   const protectedPaths = [
-    '/board', 
-    '/profile', 
+    '/board',
+    '/profile',
     '/settings',
     '/dashboard',
     '/posts/new',
     '/posts/edit',
-    '/posts/[id]/edit'
+    '/posts/[id]/edit',
   ];
   const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
 

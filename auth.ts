@@ -114,7 +114,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.name = user.name;
         token.emailVerified = user.emailVerified || true; // OAuthは認証済みとする
         token.loginAt = Date.now();
-        
+
         // OAuthプロバイダーの場合
         if (account?.provider !== 'credentials') {
           token.provider = account?.provider;

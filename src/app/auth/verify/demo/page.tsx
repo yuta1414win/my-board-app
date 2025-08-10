@@ -32,9 +32,12 @@ export default function VerifyEmailDemoPage() {
   const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleDemoRedirect = (tokenType: keyof typeof DEMO_TOKENS, delay = 1000) => {
+  const handleDemoRedirect = (
+    tokenType: keyof typeof DEMO_TOKENS,
+    delay = 1000
+  ) => {
     setIsRedirecting(true);
-    
+
     setTimeout(() => {
       const token = DEMO_TOKENS[tokenType];
       router.push(`/auth/verify?token=${token}&demo=true`);
@@ -46,15 +49,15 @@ export default function VerifyEmailDemoPage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography 
-            variant="h3" 
-            gutterBottom 
-            sx={{ 
+          <Typography
+            variant="h3"
+            gutterBottom
+            sx={{
               fontWeight: 'bold',
               background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
-              color: 'transparent'
+              color: 'transparent',
             }}
           >
             メール認証機能デモ
@@ -71,32 +74,46 @@ export default function VerifyEmailDemoPage() {
           </Typography>
         </Alert>
 
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ mb: 3, fontWeight: 'bold' }}
+        >
           テストシナリオ
         </Typography>
 
         <Stack spacing={3}>
           {/* 成功パターン */}
-          <Paper 
-            variant="outlined" 
+          <Paper
+            variant="outlined"
             sx={{ p: 3, borderColor: 'success.light', bgcolor: 'success.50' }}
           >
-            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
               <CheckCircle color="success" />
               <Typography variant="h6" color="success.dark">
                 成功パターン
               </Typography>
               <Chip label="推奨" color="success" size="small" />
             </Stack>
-            
+
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               有効なトークンでメール認証が成功するケース
             </Typography>
-            
-            <Typography variant="caption" display="block" sx={{ mb: 2, fontFamily: 'monospace' }}>
-              期待される結果: 成功メッセージ → 5秒後にログインページへリダイレクト
+
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ mb: 2, fontFamily: 'monospace' }}
+            >
+              期待される結果: 成功メッセージ →
+              5秒後にログインページへリダイレクト
             </Typography>
-            
+
             <Button
               variant="contained"
               color="success"
@@ -110,25 +127,34 @@ export default function VerifyEmailDemoPage() {
           </Paper>
 
           {/* エラーパターン1: 無効なトークン */}
-          <Paper 
-            variant="outlined" 
+          <Paper
+            variant="outlined"
             sx={{ p: 3, borderColor: 'error.light', bgcolor: 'error.50' }}
           >
-            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
               <Error color="error" />
               <Typography variant="h6" color="error.dark">
                 無効なトークン
               </Typography>
             </Stack>
-            
+
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               存在しないまたは無効なトークンでアクセスするケース
             </Typography>
-            
-            <Typography variant="caption" display="block" sx={{ mb: 2, fontFamily: 'monospace' }}>
+
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ mb: 2, fontFamily: 'monospace' }}
+            >
               期待される結果: エラーメッセージ → 再送信ボタン表示
             </Typography>
-            
+
             <Button
               variant="contained"
               color="error"
@@ -142,25 +168,34 @@ export default function VerifyEmailDemoPage() {
           </Paper>
 
           {/* エラーパターン2: 期限切れトークン */}
-          <Paper 
-            variant="outlined" 
+          <Paper
+            variant="outlined"
             sx={{ p: 3, borderColor: 'warning.light', bgcolor: 'warning.50' }}
           >
-            <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
               <Warning color="warning" />
               <Typography variant="h6" color="warning.dark">
                 期限切れトークン
               </Typography>
             </Stack>
-            
+
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               24時間を過ぎて期限切れになったトークンでアクセスするケース
             </Typography>
-            
-            <Typography variant="caption" display="block" sx={{ mb: 2, fontFamily: 'monospace' }}>
+
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ mb: 2, fontFamily: 'monospace' }}
+            >
               期待される結果: 期限切れエラー → 再送信ボタン表示
             </Typography>
-            
+
             <Button
               variant="contained"
               color="warning"
@@ -176,7 +211,11 @@ export default function VerifyEmailDemoPage() {
 
         <Divider sx={{ my: 4 }} />
 
-        <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ mb: 3, fontWeight: 'bold' }}
+        >
           実装された機能
         </Typography>
 
@@ -187,35 +226,35 @@ export default function VerifyEmailDemoPage() {
               Material UIを使用したモダンなユーザーインターフェース
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircle color="success" fontSize="small" />
             <Typography variant="body2">
               リアルタイムのトークン検証とエラーハンドリング
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircle color="success" fontSize="small" />
             <Typography variant="body2">
               自動リダイレクト機能（カウントダウン付き）
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircle color="success" fontSize="small" />
             <Typography variant="body2">
               メール再送信機能（ダイアログ形式）
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircle color="success" fontSize="small" />
             <Typography variant="body2">
               レスポンシブデザインとアクセシビリティ対応
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircle color="success" fontSize="small" />
             <Typography variant="body2">
@@ -230,7 +269,7 @@ export default function VerifyEmailDemoPage() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             テスト後は各シナリオの動作を確認してください
           </Typography>
-          
+
           <Stack direction="row" spacing={2} justifyContent="center">
             <Button
               variant="outlined"
@@ -238,10 +277,7 @@ export default function VerifyEmailDemoPage() {
             >
               ログインページへ
             </Button>
-            <Button
-              variant="outlined"
-              onClick={() => router.push('/')}
-            >
+            <Button variant="outlined" onClick={() => router.push('/')}>
               ホームへ戻る
             </Button>
           </Stack>

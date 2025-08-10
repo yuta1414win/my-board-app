@@ -49,6 +49,7 @@ NEXTAUTH_URL=http://localhost:3001
 ```
 
 **設定値の説明**:
+
 - `EMAIL_SERVER_USER`: あなたのGmailアドレス
 - `EMAIL_SERVER_PASSWORD`: 生成した16文字のアプリパスワード（スペース除去）
 - `JWT_SECRET`: 32文字以上のランダム文字列
@@ -82,20 +83,24 @@ node scripts/test-email.js your-email@gmail.com
 ### よくある問題と解決方法
 
 **1. 「アプリパスワード」が表示されない**
+
 - 2段階認証が有効化されていない可能性
 - Googleアカウント管理 → セキュリティで2段階認証を確認
 
 **2. 認証エラー (535 Authentication failed)**
+
 - アプリパスワードが正しく設定されていない
 - 16文字のパスワードからスペースを除去してください
 - 通常のGmailパスワードではなく、アプリパスワードを使用
 
 **3. 接続エラー (ECONNREFUSED)**
+
 - ネットワーク接続を確認
 - ファイアウォール設定を確認
 - ポート587が開放されているか確認
 
 **4. SSL/TLS エラー**
+
 - `EMAIL_SERVER_PORT=587` を使用（STARTTLSを推奨）
 - ポート465（SSL）の場合は `EMAIL_SERVER_PORT=465` に変更
 

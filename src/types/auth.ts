@@ -22,26 +22,27 @@ export const AUTH_ERROR_CODES = {
   TOKEN_REQUIRED: 'TOKEN_REQUIRED',
   TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
   INVALID_TOKEN: 'INVALID_TOKEN',
-  
+
   // メール認証関連
   EMAIL_VERIFIED: 'EMAIL_VERIFIED',
   EMAIL_REQUIRED: 'EMAIL_REQUIRED',
   ALREADY_VERIFIED: 'ALREADY_VERIFIED',
-  
+
   // ユーザー関連
   USER_NOT_FOUND: 'USER_NOT_FOUND',
-  
+
   // システムエラー
   VERIFICATION_ERROR: 'VERIFICATION_ERROR',
   NETWORK_ERROR: 'NETWORK_ERROR',
-  
+
   // 再送信関連
   RESEND_SUCCESS: 'RESEND_SUCCESS',
   RESEND_EMAIL_ERROR: 'RESEND_EMAIL_ERROR',
   RESEND_ERROR: 'RESEND_ERROR',
 } as const;
 
-export type AuthErrorCode = typeof AUTH_ERROR_CODES[keyof typeof AUTH_ERROR_CODES];
+export type AuthErrorCode =
+  (typeof AUTH_ERROR_CODES)[keyof typeof AUTH_ERROR_CODES];
 
 // エラーメッセージのマッピング
 export const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
@@ -60,10 +61,17 @@ export const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
 };
 
 // ユーザーフレンドリーなエラーメッセージの生成
-export function getUserFriendlyErrorMessage(code?: string, fallbackMessage?: string): string {
+export function getUserFriendlyErrorMessage(
+  code?: string,
+  fallbackMessage?: string
+): string {
   if (!code) return fallbackMessage || '不明なエラーが発生しました';
-  
-  return AUTH_ERROR_MESSAGES[code as AuthErrorCode] || fallbackMessage || '不明なエラーが発生しました';
+
+  return (
+    AUTH_ERROR_MESSAGES[code as AuthErrorCode] ||
+    fallbackMessage ||
+    '不明なエラーが発生しました'
+  );
 }
 
 // エラーレベルの定義

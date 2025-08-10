@@ -57,8 +57,13 @@ export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
-  
-  const { loading: authLoading, authenticated, user, error: authError } = useRequireAuth({
+
+  const {
+    loading: authLoading,
+    authenticated,
+    user,
+    error: authError,
+  } = useRequireAuth({
     requireEmailVerification: false,
   });
 
@@ -152,7 +157,7 @@ export default function EditPostPage() {
   }
 
   // 投稿が存在しない、または権限がない場合
-  if (!post || (post.authorId !== user?.id)) {
+  if (!post || post.authorId !== user?.id) {
     return (
       <Container maxWidth="md">
         <Box sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
@@ -174,9 +179,11 @@ export default function EditPostPage() {
     );
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -184,7 +191,7 @@ export default function EditPostPage() {
   };
 
   const handleCategoryChange = (event: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       category: event.target.value,
     }));
@@ -192,13 +199,13 @@ export default function EditPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // バリデーション
     if (!formData.title.trim()) {
       setSubmitError('タイトルを入力してください。');
       return;
     }
-    
+
     if (!formData.content.trim()) {
       setSubmitError('本文を入力してください。');
       return;
@@ -274,7 +281,7 @@ export default function EditPostPage() {
   };
 
   const handleCancel = () => {
-    const hasChanges = 
+    const hasChanges =
       formData.title !== post.title ||
       formData.content !== post.content ||
       formData.category !== post.category;
@@ -289,7 +296,7 @@ export default function EditPostPage() {
   };
 
   const getCategoryLabel = (value: string) => {
-    return POST_CATEGORIES.find(cat => cat.value === value)?.label || value;
+    return POST_CATEGORIES.find((cat) => cat.value === value)?.label || value;
   };
 
   const formatDate = (dateString: string) => {
@@ -389,8 +396,20 @@ export default function EditPostPage() {
 
                 {/* プレビューモード */}
                 {preview && (
-                  <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 2 }}
+                    >
                       <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
                         プレビュー
                       </Typography>
@@ -400,7 +419,11 @@ export default function EditPostPage() {
                         size="small"
                       />
                     </Stack>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      gutterBottom
+                      sx={{ fontWeight: 'bold' }}
+                    >
                       {formData.title || 'タイトル未入力'}
                     </Typography>
                     <Typography
@@ -408,7 +431,9 @@ export default function EditPostPage() {
                       sx={{
                         whiteSpace: 'pre-wrap',
                         lineHeight: 1.7,
-                        color: formData.content ? 'text.primary' : 'text.secondary',
+                        color: formData.content
+                          ? 'text.primary'
+                          : 'text.secondary',
                       }}
                     >
                       {formData.content || '本文未入力'}
@@ -420,7 +445,12 @@ export default function EditPostPage() {
                 {submitting && <LinearProgress />}
 
                 {/* アクションボタン */}
-                <Stack direction="row" spacing={2} justifyContent="space-between" flexWrap="wrap">
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                >
                   {/* 削除ボタン */}
                   <Button
                     startIcon={<DeleteIcon />}
@@ -442,7 +472,7 @@ export default function EditPostPage() {
                     >
                       {preview ? 'プレビュー終了' : 'プレビュー'}
                     </Button>
-                    
+
                     <Button
                       startIcon={<CancelIcon />}
                       variant="outlined"
@@ -451,13 +481,17 @@ export default function EditPostPage() {
                     >
                       キャンセル
                     </Button>
-                    
+
                     <Button
                       type="submit"
                       startIcon={<SaveIcon />}
                       variant="contained"
                       color="info"
-                      disabled={submitting || !formData.title.trim() || !formData.content.trim()}
+                      disabled={
+                        submitting ||
+                        !formData.title.trim() ||
+                        !formData.content.trim()
+                      }
                       sx={{ minWidth: 120 }}
                     >
                       {submitting ? '更新中...' : '更新する'}

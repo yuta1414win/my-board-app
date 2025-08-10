@@ -22,7 +22,7 @@ const TEST_DATA = {
  */
 function generateVerificationEmailHTML() {
   const verificationUrl = `${TEST_DATA.baseUrl}/auth/verify-email?token=${TEST_DATA.verificationToken}`;
-  
+
   return `
     <!DOCTYPE html>
     <html lang="ja">
@@ -57,7 +57,7 @@ function generateVerificationEmailHTML() {
  */
 function generatePasswordResetEmailHTML() {
   const resetUrl = `${TEST_DATA.baseUrl}/auth/reset-password?token=${TEST_DATA.resetToken}`;
-  
+
   return `
     <!DOCTYPE html>
     <html lang="ja">
@@ -95,7 +95,7 @@ function generatePasswordResetEmailHTML() {
  */
 function generateWelcomeEmailHTML() {
   const dashboardUrl = `${TEST_DATA.baseUrl}/board`;
-  
+
   return `
     <!DOCTYPE html>
     <html lang="ja">
@@ -316,7 +316,7 @@ function generateIndexHTML() {
  */
 function generateEmailTemplates() {
   console.log('📧 メールテンプレート生成開始...');
-  
+
   // 出力ディレクトリを作成
   const outputDir = path.join(__dirname, '../temp/email-templates');
   if (!fs.existsSync(path.dirname(outputDir))) {
@@ -328,14 +328,34 @@ function generateEmailTemplates() {
 
   // 各テンプレートを生成
   const templates = [
-    { name: 'verification-email.html', content: generateVerificationEmailHTML(), title: 'メール確認' },
-    { name: 'password-reset-email.html', content: generatePasswordResetEmailHTML(), title: 'パスワードリセット' },
-    { name: 'welcome-email.html', content: generateWelcomeEmailHTML(), title: 'ウェルカムメール' },
-    { name: 'test-email.html', content: generateTestEmailHTML(), title: 'テストメール' },
-    { name: 'index.html', content: generateIndexHTML(), title: 'テンプレート一覧' },
+    {
+      name: 'verification-email.html',
+      content: generateVerificationEmailHTML(),
+      title: 'メール確認',
+    },
+    {
+      name: 'password-reset-email.html',
+      content: generatePasswordResetEmailHTML(),
+      title: 'パスワードリセット',
+    },
+    {
+      name: 'welcome-email.html',
+      content: generateWelcomeEmailHTML(),
+      title: 'ウェルカムメール',
+    },
+    {
+      name: 'test-email.html',
+      content: generateTestEmailHTML(),
+      title: 'テストメール',
+    },
+    {
+      name: 'index.html',
+      content: generateIndexHTML(),
+      title: 'テンプレート一覧',
+    },
   ];
 
-  templates.forEach(template => {
+  templates.forEach((template) => {
     const filePath = path.join(outputDir, template.name);
     fs.writeFileSync(filePath, template.content, 'utf8');
     console.log(`✅ ${template.title}: ${filePath}`);
@@ -343,8 +363,11 @@ function generateEmailTemplates() {
 
   console.log('\\n🎉 テンプレート生成完了！');
   console.log('📁 出力先:', outputDir);
-  console.log('🌐 ブラウザで確認:', `file://${path.join(outputDir, 'index.html')}`);
-  
+  console.log(
+    '🌐 ブラウザで確認:',
+    `file://${path.join(outputDir, 'index.html')}`
+  );
+
   return outputDir;
 }
 
@@ -352,7 +375,7 @@ function generateEmailTemplates() {
 if (require.main === module) {
   try {
     const outputDir = generateEmailTemplates();
-    
+
     // ブラウザで開く（macOSの場合）
     if (process.platform === 'darwin') {
       const { exec } = require('child_process');

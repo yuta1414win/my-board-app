@@ -1,0 +1,21 @@
+
+> my-board-app@0.1.0 dev
+> next dev -p 3001
+
+ ⚠ Warning: Found multiple lockfiles. Selecting /Users/yamanouchiyuuta/package-lock.json.
+   Consider removing the lockfiles at:
+   * /Users/yamanouchiyuuta/Documents/projects/my-board-app/package-lock.json
+
+   ▲ Next.js 15.4.5
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.2.188:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1339ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1012ms (1426 modules)
+ GET /api/email/test 404 in 1261ms
+ POST /api/email/test 404 in 48ms
+ POST /api/email/test 404 in 26ms
+[?25h

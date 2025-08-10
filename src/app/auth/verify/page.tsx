@@ -65,9 +65,11 @@ export default function VerifyEmailPage() {
 
     const verifyEmail = async () => {
       try {
-        const res = await fetch(`/api/auth/verify?token=${encodeURIComponent(token)}`);
+        const res = await fetch(
+          `/api/auth/verify?token=${encodeURIComponent(token)}`
+        );
         const data: VerificationResponse = await res.json();
-        
+
         setResponse(data);
         setStatus(data.success ? 'success' : 'error');
 
@@ -77,7 +79,11 @@ export default function VerifyEmailPage() {
             setCountdown((prev) => {
               if (prev <= 1) {
                 clearInterval(timer);
-                router.push(data.redirectUrl + '?message=' + encodeURIComponent(data.message || ''));
+                router.push(
+                  data.redirectUrl +
+                    '?message=' +
+                    encodeURIComponent(data.message || '')
+                );
                 return 0;
               }
               return prev - 1;
@@ -117,8 +123,10 @@ export default function VerifyEmailPage() {
       });
 
       const data: VerificationResponse = await res.json();
-      setResendMessage(data.message || data.error || '不明なエラーが発生しました');
-      
+      setResendMessage(
+        data.message || data.error || '不明なエラーが発生しました'
+      );
+
       if (data.success) {
         setTimeout(() => {
           setResendDialogOpen(false);
@@ -151,21 +159,25 @@ export default function VerifyEmailPage() {
           <Fade in timeout={500}>
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <CheckCircle
-                sx={{ 
-                  fontSize: 80, 
-                  color: 'success.main', 
+                sx={{
+                  fontSize: 80,
+                  color: 'success.main',
                   mb: 2,
-                  filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))'
+                  filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
                 }}
               />
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: 'success.dark' }}>
+              <Typography
+                variant="h4"
+                sx={{ mb: 2, fontWeight: 'bold', color: 'success.dark' }}
+              >
                 確認完了！
               </Typography>
-              
-              <Alert severity="success" sx={{ mb: 3, maxWidth: 500, mx: 'auto' }}>
-                <Typography variant="body1">
-                  {response?.message}
-                </Typography>
+
+              <Alert
+                severity="success"
+                sx={{ mb: 3, maxWidth: 500, mx: 'auto' }}
+              >
+                <Typography variant="body1">{response?.message}</Typography>
               </Alert>
 
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
@@ -200,21 +212,22 @@ export default function VerifyEmailPage() {
           <Fade in timeout={500}>
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <Error
-                sx={{ 
-                  fontSize: 80, 
-                  color: 'error.main', 
+                sx={{
+                  fontSize: 80,
+                  color: 'error.main',
                   mb: 2,
-                  filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))'
+                  filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
                 }}
               />
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold', color: 'error.dark' }}>
+              <Typography
+                variant="h4"
+                sx={{ mb: 2, fontWeight: 'bold', color: 'error.dark' }}
+              >
                 確認に失敗しました
               </Typography>
-              
+
               <Alert severity="error" sx={{ mb: 3, maxWidth: 500, mx: 'auto' }}>
-                <Typography variant="body1">
-                  {response?.error}
-                </Typography>
+                <Typography variant="body1">{response?.error}</Typography>
               </Alert>
 
               <Stack spacing={2} sx={{ maxWidth: 400, mx: 'auto' }}>
@@ -269,37 +282,37 @@ export default function VerifyEmailPage() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
+      <Paper
+        elevation={3}
+        sx={{
           borderRadius: 3,
           overflow: 'hidden',
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+          background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
         }}
       >
         <Box sx={{ p: 4, backgroundColor: 'background.paper' }}>
-          <Typography 
-            variant="h3" 
-            align="center" 
-            sx={{ 
-              mb: 4, 
+          <Typography
+            variant="h3"
+            align="center"
+            sx={{
+              mb: 4,
               fontWeight: 'bold',
               background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
-              color: 'transparent'
+              color: 'transparent',
             }}
           >
             メールアドレス確認
           </Typography>
-          
+
           {renderContent()}
         </Box>
       </Paper>
 
       {/* 再送信ダイアログ */}
-      <Dialog 
-        open={resendDialogOpen} 
+      <Dialog
+        open={resendDialogOpen}
         onClose={() => setResendDialogOpen(false)}
         maxWidth="sm"
         fullWidth
@@ -310,12 +323,12 @@ export default function VerifyEmailPage() {
             <Typography variant="h6">確認メールの再送信</Typography>
           </Stack>
         </DialogTitle>
-        
+
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             確認メールを再送信するメールアドレスを入力してください
           </Typography>
-          
+
           <TextField
             autoFocus
             fullWidth
@@ -328,23 +341,25 @@ export default function VerifyEmailPage() {
           />
 
           {resendMessage && (
-            <Alert 
-              severity={resendMessage.includes('再送信しました') ? 'success' : 'error'}
+            <Alert
+              severity={
+                resendMessage.includes('再送信しました') ? 'success' : 'error'
+              }
               sx={{ mt: 2 }}
             >
               {resendMessage}
             </Alert>
           )}
         </DialogContent>
-        
+
         <DialogActions>
-          <Button 
-            onClick={() => setResendDialogOpen(false)} 
+          <Button
+            onClick={() => setResendDialogOpen(false)}
             disabled={isResending}
           >
             キャンセル
           </Button>
-          <Button 
+          <Button
             onClick={handleResendEmail}
             variant="contained"
             disabled={isResending || !resendEmail.trim()}

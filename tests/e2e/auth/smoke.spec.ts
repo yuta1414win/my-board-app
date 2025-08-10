@@ -367,9 +367,11 @@ test.describe('認証機能 スモークテスト', () => {
       page.on('pageerror', (error) => {
         const message = error.message;
         // NextAuthのapi/auth/sessionやフレームワーク固有のエラーは除外
-        if (!message.includes('api/auth/session') && 
-            !message.includes('access control checks') && 
-            !message.includes('__nextjs_original-stack-frames')) {
+        if (
+          !message.includes('api/auth/session') &&
+          !message.includes('access control checks') &&
+          !message.includes('__nextjs_original-stack-frames')
+        ) {
           jsErrors.push(message);
         }
       });

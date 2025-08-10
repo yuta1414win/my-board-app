@@ -18,13 +18,19 @@ test.describe('メール認証機能', () => {
     await expect(page.locator('h3')).toContainText('メール認証機能デモ');
 
     // 成功パターンのテストボタンをクリック
-    await page.locator('button').filter({ hasText: 'テスト実行' }).first().click();
+    await page
+      .locator('button')
+      .filter({ hasText: 'テスト実行' })
+      .first()
+      .click();
 
     // 認証ページにリダイレクトされることを確認
     await expect(page).toHaveURL(/\/auth\/verify\?token=/);
 
     // ローディング状態の確認
-    await expect(page.locator('text=メールアドレスを確認しています')).toBeVisible();
+    await expect(
+      page.locator('text=メールアドレスを確認しています')
+    ).toBeVisible();
 
     // 成功メッセージの確認（デモ用トークンの場合）
     // Note: 実際のデモ実装に応じて調整が必要
@@ -32,16 +38,20 @@ test.describe('メール認証機能', () => {
 
   test('無効なトークンでの認証エラー', async ({ page }) => {
     const invalidToken = 'invalid_token_12345';
-    
+
     // 無効なトークンで直接認証ページにアクセス
     await page.goto(`${baseUrl}/auth/verify?token=${invalidToken}`);
 
     // エラーメッセージの確認
     await expect(page.locator('text=確認に失敗しました')).toBeVisible();
-    await expect(page.locator('text=無効または期限切れのトークンです')).toBeVisible();
+    await expect(
+      page.locator('text=無効または期限切れのトークンです')
+    ).toBeVisible();
 
     // 再送信ボタンの存在確認
-    await expect(page.locator('button:has-text("確認メールを再送信")')).toBeVisible();
+    await expect(
+      page.locator('button:has-text("確認メールを再送信")')
+    ).toBeVisible();
   });
 
   test('トークンなしでのアクセス', async ({ page }) => {
@@ -50,12 +60,14 @@ test.describe('メール認証機能', () => {
 
     // エラーメッセージの確認
     await expect(page.locator('text=確認に失敗しました')).toBeVisible();
-    await expect(page.locator('text=確認トークンが見つかりません')).toBeVisible();
+    await expect(
+      page.locator('text=確認トークンが見つかりません')
+    ).toBeVisible();
   });
 
   test('再送信ダイアログの動作', async ({ page }) => {
     const invalidToken = 'invalid_token_12345';
-    
+
     // エラー状態の認証ページにアクセス
     await page.goto(`${baseUrl}/auth/verify?token=${invalidToken}`);
 
@@ -80,7 +92,7 @@ test.describe('メール認証機能', () => {
   test('レスポンシブデザインの確認', async ({ page }) => {
     // モバイル画面サイズに設定
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     const invalidToken = 'invalid_token_12345';
     await page.goto(`${baseUrl}/auth/verify?token=${invalidToken}`);
 
@@ -107,7 +119,9 @@ test.describe('メール認証機能', () => {
 
     // Tabキーでナビゲーション
     await page.keyboard.press('Tab');
-    await expect(page.locator('button:has-text("確認メールを再送信")')).toBeFocused();
+    await expect(
+      page.locator('button:has-text("確認メールを再送信")')
+    ).toBeFocused();
 
     await page.keyboard.press('Tab');
     await expect(page.locator('a:has-text("新規登録に戻る")')).toBeFocused();
@@ -123,12 +137,12 @@ test.describe('メール認証機能', () => {
   test('APIレスポンスの確認', async ({ page }) => {
     // ネットワークリクエストをモニタリング
     const responses: any[] = [];
-    
-    page.on('response', response => {
+
+    page.on('response', (response) => {
       if (response.url().includes('/api/auth/verify')) {
         responses.push({
           status: response.status(),
-          url: response.url()
+          url: response.url(),
         });
       }
     });
@@ -174,22 +188,28 @@ test.describe('メール認証機能', () => {
 
     // 実装された機能の説明が表示されていることを確認
     await expect(page.locator('text=実装された機能')).toBeVisible();
-    await expect(page.locator('text=Material UIを使用したモダンなユーザーインターフェース')).toBeVisible();
+    await expect(
+      page.locator('text=Material UIを使用したモダンなユーザーインターフェース')
+    ).toBeVisible();
   });
 
   test('認証完了後の自動リダイレクト機能', async ({ page }) => {
     // Note: このテストは有効なトークンが必要
     // 実際のテストでは、テスト用のトークンを生成する必要がある
-    
+
     // デモページの成功パターンを使用
     await page.goto(`${baseUrl}/auth/verify/demo`);
-    
+
     // 成功パターンのテストをクリック
-    await page.locator('button').filter({ hasText: 'テスト実行' }).first().click();
-    
+    await page
+      .locator('button')
+      .filter({ hasText: 'テスト実行' })
+      .first()
+      .click();
+
     // 成功メッセージが表示されることを確認（デモの場合）
     await expect(page).toHaveURL(/\/auth\/verify\?token=/);
-    
+
     // カウントダウンの表示を確認（実装に応じて）
     // await expect(page.locator('text=秒後にログインページへ')).toBeVisible();
   });

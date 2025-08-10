@@ -16,9 +16,7 @@ export async function POST(req: NextRequest) {
 
     // React Emailテンプレートをレンダリング
     const dashboardUrl = `${process.env.NEXTAUTH_URL}/board`;
-    const emailHtml = render(
-      WelcomeEmail({ userName, dashboardUrl })
-    );
+    const emailHtml = render(WelcomeEmail({ userName, dashboardUrl }));
 
     // メール送信
     const result = await sendEmail({

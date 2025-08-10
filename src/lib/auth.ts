@@ -34,5 +34,10 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export function createAuthResponse(redirectTo: string = '/auth/signin') {
-  return NextResponse.redirect(new URL(redirectTo, process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'));
+  return NextResponse.redirect(
+    new URL(
+      redirectTo,
+      process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    )
+  );
 }

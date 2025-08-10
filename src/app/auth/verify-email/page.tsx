@@ -67,7 +67,6 @@ export default function VerifyEmailPage() {
     verifyEmail(token);
   }, [token, router]);
 
-
   const handleResendEmail = async () => {
     const email = prompt(
       '確認メールを再送信するメールアドレスを入力してください:'

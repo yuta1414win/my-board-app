@@ -16,9 +16,9 @@ interface WelcomeEmailProps {
   dashboardUrl: string;
 }
 
-export default function WelcomeEmail({ 
-  userName = 'ユーザー様', 
-  dashboardUrl = 'http://localhost:3001/board'
+export default function WelcomeEmail({
+  userName = 'ユーザー様',
+  dashboardUrl = 'http://localhost:3001/board',
 }: WelcomeEmailProps) {
   return (
     <Html lang="ja">
@@ -40,9 +40,10 @@ export default function WelcomeEmail({
               <Heading className="text-gray-800 text-xl mb-5">
                 こんにちは、{userName}！
               </Heading>
-              
+
               <Text className="text-gray-700 text-base leading-relaxed mb-8">
-                My Board Appへのご登録ありがとうございます。アカウントが正常に作成されました。
+                My Board
+                Appへのご登録ありがとうございます。アカウントが正常に作成されました。
               </Text>
 
               {/* 機能紹介ボックス */}

@@ -78,7 +78,9 @@ export default function LoginPage() {
       if (result?.error) {
         // エラーメッセージの改善
         if (result.error.includes('メールアドレスが確認されていません')) {
-          setError('メールアドレスが確認されていません。確認メールをご確認ください。');
+          setError(
+            'メールアドレスが確認されていません。確認メールをご確認ください。'
+          );
         } else {
           setError('メールアドレスまたはパスワードが正しくありません。');
         }
@@ -88,7 +90,9 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('ネットワークエラーが発生しました。しばらく経ってから再度お試しください。');
+      setError(
+        'ネットワークエラーが発生しました。しばらく経ってから再度お試しください。'
+      );
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@
 NextAuth.jsでGoogle・GitHubのOAuth認証ボタンがサインインページに表示されない問題が発生していました。
 
 ### 症状
+
 - サインインページにアクセスしても、GoogleとGitHubのログインボタンが表示されない
 - 通常のメール・パスワード認証フォームのみが表示される
 - NextAuth.jsの設定は正しく行われているにも関わらず、OAuth機能が利用できない
@@ -40,6 +41,7 @@ your-project/
 ### 1. 使用されているコンポーネントの特定
 
 実際にレンダリングされているのは：
+
 - **ファイル**: `/app/auth/signin/page.tsx`
 - **コンポーネント**: `SignInForm` (`/components/auth/sign-in-form.tsx`)
 
@@ -84,7 +86,7 @@ import {
 ```typescript
 const handleOAuthSignIn = async (provider: string) => {
   if (isBlocked || loading) return;
-  
+
   try {
     await signIn(provider, {
       callbackUrl: '/board',
@@ -98,6 +100,7 @@ const handleOAuthSignIn = async (provider: string) => {
 ```
 
 **特徴**:
+
 - `isBlocked`と`loading`状態のチェックを含む
 - 既存のエラーハンドリングシステムと統合
 - `/board`への適切なリダイレクト設定
@@ -167,16 +170,19 @@ const handleOAuthSignIn = async (provider: string) => {
 ### 3. デザインの特徴
 
 #### Google ログインボタン
+
 - **色**: `#db4437` (Google Red)
 - **ホバー**: `#c23321` (濃い赤) + 薄い赤背景
 - **アイコン**: Material-UI の `Google` アイコン
 
 #### GitHub ログインボタン
+
 - **色**: `#333` (ダークグレー)
 - **ホバー**: `#000` (黒) + 薄いグレー背景
 - **アイコン**: Material-UI の `GitHub` アイコン
 
 #### 統合された状態管理
+
 - **ローディング中**: ボタンが無効化
 - **アカウントブロック中**: ボタンが無効化
 - **エラー時**: 既存のメッセージシステムでエラー表示
@@ -200,7 +206,7 @@ providers: [
     clientId: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
   }),
-]
+];
 ```
 
 ### 2. セッションコールバック
@@ -258,6 +264,7 @@ import { SessionProvider } from 'next-auth/react';
 ## 修正前後の比較
 
 ### 修正前
+
 ```
 📧 メールアドレス・パスワード フォーム
 🔒 ログインボタン
@@ -266,6 +273,7 @@ import { SessionProvider } from 'next-auth/react';
 ```
 
 ### 修正後
+
 ```
 📧 メールアドレス・パスワード フォーム
 🔒 ログインボタン
@@ -279,32 +287,39 @@ import { SessionProvider } from 'next-auth/react';
 ## 学んだ教訓
 
 ### 1. Next.js App Routerの優先順位を理解する
+
 - `srcDir`設定がない場合、ルートレベルの`/app`が優先される
 - 複数のページが存在する場合は、どちらが実際に使用されているか確認が必要
 
 ### 2. コンポーネント構造の把握
+
 - ページコンポーネントが直接レンダリングしているか
 - 他のコンポーネントを使用しているかを正確に把握する
 
 ### 3. デバッグのアプローチ
+
 - 設定ファイルよりも、実際にレンダリングされているコンポーネントを確認する
 - プロジェクト構造全体を俯瞰的に分析する
 
 ### 4. エラーハンドリングの統合
+
 - 既存のシステムと整合性を保つ
 - 新しい機能も既存の状態管理（loading, blocking）と連携させる
 
 ## 今後のメンテナンス
 
 ### 1. プロジェクト構造の統一
+
 - 必要に応じて`/src/app`の重複ページを削除
 - または`next.config.ts`で`srcDir: true`を設定
 
 ### 2. 環境変数の管理
+
 - Google・GitHub OAuth設定の適切な管理
 - 本番環境でのリダイレクトURL設定
 
 ### 3. テスト
+
 - OAuth認証フローのE2Eテスト追加
 - 各プロバイダーでのログイン・ログアウトテスト
 

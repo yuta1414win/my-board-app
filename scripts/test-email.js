@@ -29,20 +29,20 @@ console.log('================================\n');
 function checkEnvironmentVariables() {
   console.log('📋 環境変数チェック');
   console.log('--------------------------------');
-  
+
   const requiredVars = [
     'EMAIL_SERVER_HOST',
     'EMAIL_SERVER_PORT',
     'EMAIL_SERVER_USER',
     'EMAIL_SERVER_PASSWORD',
     'JWT_SECRET',
-    'NEXTAUTH_URL'
+    'NEXTAUTH_URL',
   ];
 
   const missingVars = [];
   const envStatus = {};
 
-  requiredVars.forEach(varName => {
+  requiredVars.forEach((varName) => {
     const value = process.env[varName];
     if (!value) {
       missingVars.push(varName);
@@ -62,7 +62,7 @@ function checkEnvironmentVariables() {
 
   if (missingVars.length > 0) {
     console.log('\n❌ 不足している環境変数:');
-    missingVars.forEach(varName => {
+    missingVars.forEach((varName) => {
       console.log(`  - ${varName}`);
     });
     console.log('\n.env.localファイルに必要な環境変数を設定してください。\n');
@@ -77,7 +77,7 @@ function checkEnvironmentVariables() {
 async function testConnection() {
   console.log('🔌 メール接続テスト');
   console.log('--------------------------------');
-  
+
   try {
     const response = await fetch(`${TEST_CONFIG.serverUrl}/api/email/test`);
     const result = await response.json();
@@ -107,7 +107,7 @@ async function testConnection() {
 async function sendTestEmail() {
   console.log('📧 テストメール送信');
   console.log('--------------------------------');
-  
+
   try {
     const response = await fetch(`${TEST_CONFIG.serverUrl}/api/email/test`, {
       method: 'POST',
@@ -142,7 +142,7 @@ async function sendTestEmail() {
 async function sendWelcomeEmail() {
   console.log('🎉 ウェルカムメール送信テスト');
   console.log('--------------------------------');
-  
+
   try {
     const response = await fetch(`${TEST_CONFIG.serverUrl}/api/email/welcome`, {
       method: 'POST',
@@ -178,11 +178,15 @@ async function sendWelcomeEmail() {
 async function testEmailLibraryDirect() {
   console.log('📚 直接ライブラリテスト');
   console.log('--------------------------------');
-  
+
   try {
     // dynamic importを使用してESモジュールを読み込み
-    const { sendVerificationEmail, sendPasswordResetEmail, generateEmailVerificationToken, generatePasswordResetToken } = 
-      await import('../lib/email.ts');
+    const {
+      sendVerificationEmail,
+      sendPasswordResetEmail,
+      generateEmailVerificationToken,
+      generatePasswordResetToken,
+    } = await import('../lib/email.ts');
 
     console.log('ライブラリのインポート成功');
 
@@ -196,7 +200,10 @@ async function testEmailLibraryDirect() {
 
     // メール送信テスト
     console.log('\n📧 確認メール送信テスト');
-    const verificationResult = await sendVerificationEmail(TEST_CONFIG.testEmail, verificationToken);
+    const verificationResult = await sendVerificationEmail(
+      TEST_CONFIG.testEmail,
+      verificationToken
+    );
     if (verificationResult.success) {
       console.log('✅ 確認メール送信成功');
       console.log(`   メッセージID: ${verificationResult.messageId}`);
@@ -206,7 +213,10 @@ async function testEmailLibraryDirect() {
     }
 
     console.log('\n📧 パスワードリセットメール送信テスト');
-    const resetResult = await sendPasswordResetEmail(TEST_CONFIG.testEmail, resetToken);
+    const resetResult = await sendPasswordResetEmail(
+      TEST_CONFIG.testEmail,
+      resetToken
+    );
     if (resetResult.success) {
       console.log('✅ パスワードリセットメール送信成功');
       console.log(`   メッセージID: ${resetResult.messageId}`);
@@ -228,25 +238,25 @@ async function testEmailLibraryDirect() {
 async function testErrorCases() {
   console.log('🚨 エラーケーステスト');
   console.log('--------------------------------');
-  
+
   const errorTests = [
     {
       name: '無効なメールアドレス',
       payload: { email: 'invalid-email' },
-      expectedError: true
+      expectedError: true,
     },
     {
       name: 'メールアドレス未指定',
       payload: {},
-      expectedError: true
-    }
+      expectedError: true,
+    },
   ];
 
   let allPassed = true;
 
   for (const test of errorTests) {
     console.log(`テスト: ${test.name}`);
-    
+
     try {
       const response = await fetch(`${TEST_CONFIG.serverUrl}/api/email/test`, {
         method: 'POST',
@@ -257,7 +267,7 @@ async function testErrorCases() {
       });
 
       const result = await response.json();
-      
+
       if (test.expectedError && !result.success) {
         console.log('✅ 期待通りエラーが発生');
         console.log(`   エラー: ${result.error || result.message}`);
@@ -274,7 +284,7 @@ async function testErrorCases() {
       console.log(`   エラー: ${error.message}`);
       allPassed = false;
     }
-    
+
     console.log('');
   }
 
@@ -317,7 +327,6 @@ async function runAllTests() {
 
     // 5. エラーケーステスト
     results.errorCases = await testErrorCases();
-
   } catch (error) {
     console.log('❌ テスト実行中にエラーが発生しました');
     console.log(`エラー: ${error.message}`);
@@ -329,28 +338,36 @@ async function runAllTests() {
   console.log(`環境変数チェック: ${results.envCheck ? '✅ 成功' : '❌ 失敗'}`);
   console.log(`接続テスト: ${results.connection ? '✅ 成功' : '❌ 失敗'}`);
   console.log(`テストメール送信: ${results.testEmail ? '✅ 成功' : '❌ 失敗'}`);
-  console.log(`ウェルカムメール送信: ${results.welcomeEmail ? '✅ 成功' : '❌ 失敗'}`);
-  console.log(`直接ライブラリテスト: ${results.directLibrary ? '✅ 成功' : '❌ 失敗'}`);
-  console.log(`エラーケーステスト: ${results.errorCases ? '✅ 成功' : '❌ 失敗'}`);
+  console.log(
+    `ウェルカムメール送信: ${results.welcomeEmail ? '✅ 成功' : '❌ 失敗'}`
+  );
+  console.log(
+    `直接ライブラリテスト: ${results.directLibrary ? '✅ 成功' : '❌ 失敗'}`
+  );
+  console.log(
+    `エラーケーステスト: ${results.errorCases ? '✅ 成功' : '❌ 失敗'}`
+  );
 
   const totalTests = Object.keys(results).length;
   const passedTests = Object.values(results).filter(Boolean).length;
-  
+
   console.log('----------------------------------------');
   console.log(`合計: ${passedTests}/${totalTests} テスト成功`);
-  
+
   if (passedTests === totalTests) {
     console.log('🎉 全テスト成功！メール送信機能は正常に動作しています。');
   } else {
-    console.log('⚠️  一部のテストが失敗しました。設定や実装を確認してください。');
+    console.log(
+      '⚠️  一部のテストが失敗しました。設定や実装を確認してください。'
+    );
   }
-  
+
   console.log('========================================');
 }
 
 // スクリプト実行
 if (require.main === module) {
-  runAllTests().catch(error => {
+  runAllTests().catch((error) => {
     console.error('テスト実行エラー:', error);
     process.exit(1);
   });

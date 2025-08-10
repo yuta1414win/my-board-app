@@ -51,10 +51,10 @@ async function createTestUsers() {
 
     for (const userData of testUsers) {
       const { password, description, ...userDoc } = userData;
-      
+
       // パスワードをハッシュ化
       const hashedPassword = await bcrypt.hash(password, 10);
-      
+
       // ユーザードキュメントを準備
       const user = {
         ...userDoc,
@@ -66,7 +66,7 @@ async function createTestUsers() {
 
       // 既存ユーザーチェック
       const existingUser = await users.findOne({ email: user.email });
-      
+
       if (existingUser) {
         // 既存ユーザーを更新
         await users.updateOne(
@@ -84,31 +84,34 @@ async function createTestUsers() {
         await users.insertOne(user);
         console.log(`✅ 作成: ${user.email}`);
       }
-      
+
       console.log(`   - 名前: ${user.name}`);
       console.log(`   - パスワード: ${password}`);
-      console.log(`   - メール認証: ${user.emailVerified ? '✅ 認証済み' : '❌ 未認証'}`);
+      console.log(
+        `   - メール認証: ${user.emailVerified ? '✅ 認証済み' : '❌ 未認証'}`
+      );
       console.log(`   - 用途: ${description}`);
       console.log('');
     }
 
-    console.log('=' .repeat(50));
+    console.log('='.repeat(50));
     console.log('\n🎉 テストユーザーの準備が完了しました！\n');
     console.log('📝 テスト用ログイン情報:');
-    console.log('=' .repeat(50));
-    
+    console.log('='.repeat(50));
+
     for (const userData of testUsers) {
       console.log(`\n【${userData.description}】`);
       console.log(`  メール: ${userData.email}`);
       console.log(`  パスワード: ${userData.password}`);
     }
-    
-    console.log('\n=' .repeat(50));
+
+    console.log('\n='.repeat(50));
     console.log('\n💡 ヒント:');
     console.log('  - 正常ログインテストには test-verified@example.com を使用');
-    console.log('  - メール未認証テストには test-unverified@example.com を使用');
+    console.log(
+      '  - メール未認証テストには test-unverified@example.com を使用'
+    );
     console.log('  - パスワードエラーテストには間違ったパスワードを入力');
-    
   } catch (error) {
     console.error('\n❌ エラーが発生しました:');
     console.error(error.message);

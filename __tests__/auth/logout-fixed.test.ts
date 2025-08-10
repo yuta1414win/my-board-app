@@ -75,7 +75,7 @@ describe('ログアウト機能テスト（修正版）', () => {
       nextAuthMock.mockAuth
         .mockResolvedValueOnce(mockSession) // 最初の確認でログイン状態
         .mockResolvedValueOnce(null); // ログアウト後の確認でnull
-      
+
       nextAuthMock.mockGetSession.mockResolvedValueOnce(null); // ログアウト後の確認でnull
       nextAuthMock.mockSignOut.mockResolvedValue({ url: '/auth/signin' });
 

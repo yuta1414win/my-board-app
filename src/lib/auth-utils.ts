@@ -1,10 +1,10 @@
-import { 
-  VerificationResponse, 
-  AuthErrorCode, 
-  AUTH_ERROR_CODES, 
+import {
+  VerificationResponse,
+  AuthErrorCode,
+  AUTH_ERROR_CODES,
   getUserFriendlyErrorMessage,
   ErrorLevel,
-  ERROR_LEVEL_MAP 
+  ERROR_LEVEL_MAP,
 } from '@/types/auth';
 
 /**
@@ -54,11 +54,13 @@ export async function safeAuthApiCall<T = VerificationResponse>(
 /**
  * エラーコードに基づいてMaterial UIのAlertのseverityを決定
  */
-export function getAlertSeverity(code?: string): 'success' | 'info' | 'warning' | 'error' {
+export function getAlertSeverity(
+  code?: string
+): 'success' | 'info' | 'warning' | 'error' {
   if (!code) return 'error';
-  
+
   const level = ERROR_LEVEL_MAP[code as AuthErrorCode];
-  
+
   switch (level) {
     case ErrorLevel.INFO:
       return code === AUTH_ERROR_CODES.EMAIL_VERIFIED ? 'success' : 'info';
@@ -110,7 +112,8 @@ export function createSuccessResponse(
 ): VerificationResponse {
   return {
     success: true,
-    message: message || getUserFriendlyErrorMessage(AUTH_ERROR_CODES.EMAIL_VERIFIED),
+    message:
+      message || getUserFriendlyErrorMessage(AUTH_ERROR_CODES.EMAIL_VERIFIED),
     code: AUTH_ERROR_CODES.EMAIL_VERIFIED,
     redirectUrl,
   };
@@ -120,11 +123,13 @@ export function createSuccessResponse(
  * レート制限チェック（簡易実装）
  */
 class RateLimiter {
-  private attempts: Map<string, { count: number; lastAttempt: number }> = new Map();
+  private attempts: Map<string, { count: number; lastAttempt: number }> =
+    new Map();
   private readonly maxAttempts: number;
   private readonly windowMs: number;
 
-  constructor(maxAttempts = 5, windowMs = 15 * 60 * 1000) { // 15分間で5回まで
+  constructor(maxAttempts = 5, windowMs = 15 * 60 * 1000) {
+    // 15分間で5回まで
     this.maxAttempts = maxAttempts;
     this.windowMs = windowMs;
   }
@@ -158,7 +163,7 @@ class RateLimiter {
   getRemainingTime(identifier: string): number {
     const record = this.attempts.get(identifier);
     if (!record || record.count < this.maxAttempts) return 0;
-    
+
     const elapsed = Date.now() - record.lastAttempt;
     return Math.max(0, this.windowMs - elapsed);
   }
@@ -171,7 +176,11 @@ export const emailResendRateLimiter = new RateLimiter();
  * ログ記録ユーティリティ
  */
 export function logAuthEvent(
-  event: 'verification_attempt' | 'verification_success' | 'verification_failure' | 'resend_request',
+  event:
+    | 'verification_attempt'
+    | 'verification_success'
+    | 'verification_failure'
+    | 'resend_request',
   details: {
     token?: string;
     email?: string;
@@ -190,7 +199,7 @@ export function logAuthEvent(
   };
 
   console.log('Auth Event:', logData);
-  
+
   // 本番環境では適切なログ収集サービスに送信
   //例: Sentry, LogRocket, DataDog等
 }
@@ -216,6 +225,8 @@ export class AuthMetrics {
 
   static getSuccessRate(): number {
     const { verificationAttempts, verificationSuccesses } = AuthMetrics.metrics;
-    return verificationAttempts > 0 ? verificationSuccesses / verificationAttempts : 0;
+    return verificationAttempts > 0
+      ? verificationSuccesses / verificationAttempts
+      : 0;
   }
 }

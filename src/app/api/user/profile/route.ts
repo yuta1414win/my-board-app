@@ -7,10 +7,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     // ここで実際のデータベースからユーザー情報を取得
@@ -41,10 +38,7 @@ export async function PUT(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -52,10 +46,7 @@ export async function PUT(request: NextRequest) {
 
     // バリデーション
     if (!name || name.trim().length === 0) {
-      return NextResponse.json(
-        { error: '名前は必須です' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '名前は必須です' }, { status: 400 });
     }
 
     if (name.length > 50) {

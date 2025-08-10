@@ -87,10 +87,10 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.EMAIL_REQUIRED,
-          code: 'EMAIL_REQUIRED'
+          code: 'EMAIL_REQUIRED',
         },
         { status: 400 }
       );
@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.USER_NOT_FOUND,
-          code: 'USER_NOT_FOUND'
+          code: 'USER_NOT_FOUND',
         },
         { status: 404 }
       );
@@ -117,10 +117,10 @@ export async function POST(request: NextRequest) {
 
     if (user.emailVerified) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.ALREADY_VERIFIED,
-          code: 'ALREADY_VERIFIED'
+          code: 'ALREADY_VERIFIED',
         },
         { status: 400 }
       );
@@ -147,10 +147,10 @@ export async function POST(request: NextRequest) {
 
     if (!emailResult.success) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.RESEND_EMAIL_ERROR,
-          code: 'RESEND_EMAIL_ERROR'
+          code: 'RESEND_EMAIL_ERROR',
         },
         { status: 500 }
       );
@@ -160,17 +160,17 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: MESSAGES.RESEND_SUCCESS,
-        code: 'RESEND_SUCCESS'
+        code: 'RESEND_SUCCESS',
       },
       { status: 200 }
     );
   } catch (error: unknown) {
     console.error('Resend verification email error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: MESSAGES.RESEND_ERROR,
-        code: 'RESEND_ERROR'
+        code: 'RESEND_ERROR',
       },
       { status: 500 }
     );

@@ -8,9 +8,13 @@ interface AlertProps {
   className?: string;
 }
 
-export default function Alert({ type = 'info', children, className = '' }: AlertProps) {
+export default function Alert({
+  type = 'info',
+  children,
+  className = '',
+}: AlertProps) {
   const baseStyles = 'px-4 py-3 rounded-md border text-sm font-medium';
-  
+
   const typeStyles = {
     success: 'bg-green-50 border-green-200 text-green-800',
     error: 'bg-red-50 border-red-200 text-red-800',

@@ -56,7 +56,12 @@ export default function Header() {
   };
 
   // 認証関連のページでは表示しない
-  const authPages = ['/auth/login', '/auth/signin', '/auth/register', '/auth/verify-email'];
+  const authPages = [
+    '/auth/login',
+    '/auth/signin',
+    '/auth/register',
+    '/auth/verify-email',
+  ];
   if (authPages.includes(pathname)) {
     return null;
   }

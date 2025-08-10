@@ -12,10 +12,15 @@ jest.mock('@/lib/auth', () => ({
 }));
 
 // APIルートをインポート
-import { GET as profileGET, PUT as profilePUT } from '@/app/api/user/profile/route';
+import {
+  GET as profileGET,
+  PUT as profilePUT,
+} from '@/app/api/user/profile/route';
 import { POST as postsCreate } from '../../app/api/posts/route';
 
-const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
+const mockGetServerSession = getServerSession as jest.MockedFunction<
+  typeof getServerSession
+>;
 
 describe('認証保護API テスト', () => {
   beforeEach(() => {
@@ -27,7 +32,9 @@ describe('認証保護API テスト', () => {
       it('未認証時は401エラーを返す', async () => {
         mockGetServerSession.mockResolvedValue(null);
 
-        const request = new NextRequest('http://localhost:3000/api/user/profile');
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile'
+        );
         const response = await profileGET(request);
         const data = await response.json();
 
@@ -51,7 +58,9 @@ describe('認証保護API テスト', () => {
 
         mockGetServerSession.mockResolvedValue(mockSession);
 
-        const request = new NextRequest('http://localhost:3000/api/user/profile');
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile'
+        );
         const response = await profileGET(request);
         const data = await response.json();
 
@@ -66,11 +75,14 @@ describe('認証保護API テスト', () => {
       it('未認証時は401エラーを返す', async () => {
         mockGetServerSession.mockResolvedValue(null);
 
-        const request = new NextRequest('http://localhost:3000/api/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ name: 'Updated Name', bio: 'Updated bio' }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ name: 'Updated Name', bio: 'Updated bio' }),
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         const response = await profilePUT(request);
         const data = await response.json();
@@ -89,11 +101,14 @@ describe('認証保護API テスト', () => {
 
         mockGetServerSession.mockResolvedValue(mockSession);
 
-        const request = new NextRequest('http://localhost:3000/api/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ name: '', bio: 'Bio' }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ name: '', bio: 'Bio' }),
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         const response = await profilePUT(request);
         const data = await response.json();
@@ -113,11 +128,14 @@ describe('認証保護API テスト', () => {
         mockGetServerSession.mockResolvedValue(mockSession);
 
         const longName = 'a'.repeat(51); // 51文字
-        const request = new NextRequest('http://localhost:3000/api/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ name: longName, bio: 'Bio' }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ name: longName, bio: 'Bio' }),
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         const response = await profilePUT(request);
         const data = await response.json();
@@ -137,11 +155,14 @@ describe('認証保護API テスト', () => {
         mockGetServerSession.mockResolvedValue(mockSession);
 
         const longBio = 'a'.repeat(501); // 501文字
-        const request = new NextRequest('http://localhost:3000/api/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ name: 'Valid Name', bio: longBio }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ name: 'Valid Name', bio: longBio }),
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         const response = await profilePUT(request);
         const data = await response.json();
@@ -166,11 +187,14 @@ describe('認証保護API テスト', () => {
 
         mockGetServerSession.mockResolvedValue(mockSession);
 
-        const request = new NextRequest('http://localhost:3000/api/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ name: 'New Name', bio: 'New bio' }),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const request = new NextRequest(
+          'http://localhost:3000/api/user/profile',
+          {
+            method: 'PUT',
+            body: JSON.stringify({ name: 'New Name', bio: 'New bio' }),
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
 
         const response = await profilePUT(request);
         const data = await response.json();
@@ -190,10 +214,10 @@ describe('認証保護API テスト', () => {
 
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: 'Test Title', 
+          body: JSON.stringify({
+            title: 'Test Title',
             content: 'Test Content',
-            category: 'general'
+            category: 'general',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -218,10 +242,10 @@ describe('認証保護API テスト', () => {
 
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: '', 
+          body: JSON.stringify({
+            title: '',
             content: 'Valid content',
-            category: 'general'
+            category: 'general',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -246,10 +270,10 @@ describe('認証保護API テスト', () => {
 
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: 'Valid title', 
+          body: JSON.stringify({
+            title: 'Valid title',
             content: '',
-            category: 'general'
+            category: 'general',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -275,10 +299,10 @@ describe('認証保護API テスト', () => {
         const longTitle = 'a'.repeat(101); // 101文字
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: longTitle, 
+          body: JSON.stringify({
+            title: longTitle,
             content: 'Valid content',
-            category: 'general'
+            category: 'general',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -304,10 +328,10 @@ describe('認証保護API テスト', () => {
         const longContent = 'a'.repeat(5001); // 5001文字
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: 'Valid title', 
+          body: JSON.stringify({
+            title: 'Valid title',
             content: longContent,
-            category: 'general'
+            category: 'general',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -332,10 +356,10 @@ describe('認証保護API テスト', () => {
 
         const request = new NextRequest('http://localhost:3000/api/posts', {
           method: 'POST',
-          body: JSON.stringify({ 
-            title: 'Valid title', 
+          body: JSON.stringify({
+            title: 'Valid title',
             content: 'Valid content',
-            category: 'invalid-category'
+            category: 'invalid-category',
           }),
           headers: { 'Content-Type': 'application/json' },
         });
@@ -389,18 +413,31 @@ export const ValidationTestCases = {
       { value: 'a'.repeat(51), expected: '名前は50文字以内で入力してください' },
     ],
     invalidBios: [
-      { value: 'a'.repeat(501), expected: '自己紹介は500文字以内で入力してください' },
+      {
+        value: 'a'.repeat(501),
+        expected: '自己紹介は500文字以内で入力してください',
+      },
     ],
   },
   posts: {
-    validData: { title: 'Valid Title', content: 'Valid content', category: 'general' },
+    validData: {
+      title: 'Valid Title',
+      content: 'Valid content',
+      category: 'general',
+    },
     invalidTitles: [
       { value: '', expected: 'タイトルと内容は必須です' },
-      { value: 'a'.repeat(101), expected: 'タイトルは100文字以内で入力してください' },
+      {
+        value: 'a'.repeat(101),
+        expected: 'タイトルは100文字以内で入力してください',
+      },
     ],
     invalidContents: [
       { value: '', expected: 'タイトルと内容は必須です' },
-      { value: 'a'.repeat(5001), expected: '内容は5000文字以内で入力してください' },
+      {
+        value: 'a'.repeat(5001),
+        expected: '内容は5000文字以内で入力してください',
+      },
     ],
     invalidCategories: [
       { value: 'invalid', expected: '無効なカテゴリーです' },

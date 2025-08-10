@@ -38,7 +38,9 @@ describe('NextAuth認証システム', () => {
   const mockAuth = auth as jest.MockedFunction<typeof auth>;
   const mockSignIn = signIn as jest.MockedFunction<typeof signIn>;
   const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
-  const mockBcryptCompare = bcrypt.compare as jest.MockedFunction<typeof bcrypt.compare>;
+  const mockBcryptCompare = bcrypt.compare as jest.MockedFunction<
+    typeof bcrypt.compare
+  >;
 
   beforeEach(() => {
     mongoMock = setupMongoMock();
@@ -135,7 +137,7 @@ describe('NextAuth認証システム', () => {
       it('無効なメールアドレスでエラーが発生する', async () => {
         // Arrange
         const invalidEmail = 'invalid-email';
-        
+
         mockSignIn.mockRejectedValue(new AuthError('バリデーションエラー'));
 
         // Act & Assert
@@ -151,7 +153,7 @@ describe('NextAuth認証システム', () => {
       it('パスワードが短すぎる場合エラーが発生する', async () => {
         // Arrange
         const shortPassword = '123';
-        
+
         mockSignIn.mockRejectedValue(new AuthError('バリデーションエラー'));
 
         // Act & Assert
@@ -183,7 +185,7 @@ describe('NextAuth認証システム', () => {
       it('存在しないユーザーでログインが失敗する', async () => {
         // Arrange
         mongoMock.mockFindOne.mockResolvedValue(null);
-        
+
         mockSignIn.mockResolvedValue({
           error: 'CredentialsSignin',
           status: 401,
@@ -208,9 +210,9 @@ describe('NextAuth認証システム', () => {
           ...mockUser,
           password: 'hashed-password',
         });
-        
+
         mockBcryptCompare.mockResolvedValue(false); // パスワード不一致
-        
+
         mockSignIn.mockResolvedValue({
           error: 'CredentialsSignin',
           status: 401,
@@ -237,7 +239,9 @@ describe('NextAuth認証システム', () => {
         });
 
         mockSignIn.mockRejectedValue(
-          new AuthError('メールアドレスが確認されていません。確認メールをご確認ください。')
+          new AuthError(
+            'メールアドレスが確認されていません。確認メールをご確認ください。'
+          )
         );
 
         // Act & Assert
@@ -344,8 +348,10 @@ describe('NextAuth認証システム', () => {
     describe('データベースエラー', () => {
       it('データベース接続エラーで認証が失敗する', async () => {
         // Arrange
-        mongoMock.mockFindOne.mockRejectedValue(new Error('Database connection failed'));
-        
+        mongoMock.mockFindOne.mockRejectedValue(
+          new Error('Database connection failed')
+        );
+
         mockSignIn.mockRejectedValue(new AuthError('認証に失敗しました。'));
 
         // Act & Assert
@@ -364,7 +370,7 @@ describe('NextAuth認証システム', () => {
           ...mockUser,
           password: 'hashed-password',
         });
-        
+
         mongoMock.mockFindByIdAndUpdate.mockRejectedValue(
           new Error('Update failed')
         );
@@ -515,7 +521,7 @@ describe('NextAuth認証システム', () => {
     it('ネットワークエラーが適切に処理される', async () => {
       // Arrange
       mongoMock.mockFindOne.mockRejectedValue(new Error('ECONNRESET'));
-      
+
       mockSignIn.mockRejectedValue(new AuthError('認証に失敗しました。'));
 
       // Act & Assert
@@ -533,7 +539,7 @@ describe('NextAuth認証システム', () => {
     it('SQLインジェクション攻撃が効果的でないことを確認', async () => {
       // Arrange
       const maliciousEmail = "'; DROP TABLE users; --";
-      
+
       mongoMock.mockFindOne.mockResolvedValue(null); // ユーザーが見つからない
 
       mockSignIn.mockResolvedValue({
@@ -562,7 +568,7 @@ describe('NextAuth認証システム', () => {
       // Arrange
       const password = 'SecretPassword123!';
       mongoMock.mockFindOne.mockResolvedValue(null);
-      
+
       mockSignIn.mockResolvedValue({
         error: 'CredentialsSignin',
         status: 401,
@@ -588,7 +594,7 @@ describe('NextAuth認証システム', () => {
       // Arrange
       const startTime = Date.now();
       mongoMock.mockFindOne.mockResolvedValue(null);
-      
+
       mockSignIn.mockResolvedValue({
         error: 'CredentialsSignin',
         status: 401,
@@ -606,7 +612,7 @@ describe('NextAuth認証システム', () => {
       // Assert
       const endTime = Date.now();
       const processingTime = endTime - startTime;
-      
+
       // 最低限の処理時間が確保されている
       // （実装によってはbcrypt.compareが時間を調整する）
       expect(processingTime).toBeGreaterThan(0);

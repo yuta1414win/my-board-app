@@ -17,13 +17,15 @@ test.describe('Member Page Protection', () => {
 
   test.describe('未ログイン状態でのアクセス制御', () => {
     for (const protectedPage of protectedPages) {
-      test(`${protectedPage.name}への未認証アクセス → ログインページリダイレクト`, async ({ page }) => {
+      test(`${protectedPage.name}への未認証アクセス → ログインページリダイレクト`, async ({
+        page,
+      }) => {
         // 保護されたページに直接アクセス
         await page.goto(`${baseURL}${protectedPage.path}`);
 
         // ログインページにリダイレクトされることを確認
         await expect(page).toHaveURL(/\/auth\/login/);
-        
+
         // callbackURLパラメータが正しく設定されていることを確認
         const url = new URL(page.url());
         expect(url.searchParams.get('callbackUrl')).toBe(protectedPage.path);
@@ -40,7 +42,7 @@ test.describe('Member Page Protection', () => {
     test('ログイン → 元ページ復帰フロー', async ({ page }) => {
       // 保護されたページ（ダッシュボード）にアクセス
       await page.goto(`${baseURL}/dashboard`);
-      
+
       // ログインページにリダイレクトされることを確認
       await expect(page).toHaveURL(/\/auth\/login.*callbackUrl=%2Fdashboard/);
 
@@ -52,11 +54,13 @@ test.describe('Member Page Protection', () => {
       await page.click('button[type="submit"]');
 
       // ローディング状態の確認
-      await expect(page.locator('button[type="submit"]')).toContainText('ログイン中');
+      await expect(page.locator('button[type="submit"]')).toContainText(
+        'ログイン中'
+      );
 
       // ログイン成功後、ダッシュボードページに遷移することを確認
       await expect(page).toHaveURL('/dashboard');
-      
+
       // ダッシュボードの要素が表示されることを確認
       await expect(page.locator('h1')).toContainText('ダッシュボード');
       await expect(page.locator('text=おかえりなさい')).toBeVisible();
@@ -68,13 +72,13 @@ test.describe('Member Page Protection', () => {
       await page.fill('input[name="email"]', 'test@example.com');
       await page.fill('input[name="password"]', 'password123');
       await page.click('button[type="submit"]');
-      
+
       // ログイン成功を確認
       await expect(page).toHaveURL('/board');
 
       // 認証ページにアクセスしてリダイレクトされることを確認
       const authPages = ['/auth/login', '/auth/signin', '/auth/register'];
-      
+
       for (const authPage of authPages) {
         await page.goto(`${baseURL}${authPage}`);
         await expect(page).toHaveURL('/board');
@@ -143,7 +147,9 @@ test.describe('Member Page Protection', () => {
       await page.fill('textarea[name="bio"]', '更新された自己紹介');
 
       // 文字数カウンターの確認
-      await expect(page.locator('text=更新された自己紹介').nth(0)).toBeVisible();
+      await expect(
+        page.locator('text=更新された自己紹介').nth(0)
+      ).toBeVisible();
 
       // キャンセルボタンのテスト
       await page.click('text=キャンセル');
@@ -215,9 +221,11 @@ test.describe('Member Page Protection', () => {
 
       // ローディング状態の要素が表示されることを確認
       await expect(page.locator('text=読み込み中')).toBeVisible();
-      
+
       // ローディング完了後の要素確認
-      await expect(page.locator('h1')).toContainText('ダッシュボード', { timeout: 10000 });
+      await expect(page.locator('h1')).toContainText('ダッシュボード', {
+        timeout: 10000,
+      });
     });
   });
 
@@ -237,7 +245,7 @@ test.describe('Member Page Protection', () => {
 
       // モバイルでの表示確認
       await expect(page.locator('h1')).toContainText('ダッシュボード');
-      
+
       // カードが縦に並んでいることを確認（レスポンシブ）
       const cards = page.locator('.MuiCard-root');
       await expect(cards).toHaveCount(4); // クイックアクションカード数

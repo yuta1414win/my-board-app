@@ -78,7 +78,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const validCategories = ['general', 'question', 'discussion', 'announcement', 'tech', 'hobby'];
+    const validCategories = [
+      'general',
+      'question',
+      'discussion',
+      'announcement',
+      'tech',
+      'hobby',
+    ];
     if (category && !validCategories.includes(category)) {
       return NextResponse.json(
         { error: '無効なカテゴリーです' },

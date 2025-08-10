@@ -300,185 +300,185 @@ export default function BoardPage() {
             オープン掲示板
           </Typography>
 
-        {/* 投稿フォーム */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <Stack spacing={2}>
+          {/* 投稿フォーム */}
+          <Card sx={{ mb: 4 }}>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                <Stack spacing={2}>
+                  <TextField
+                    fullWidth
+                    name="title"
+                    placeholder="タイトルを入力してください（50文字以内）"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    error={title.length > 50}
+                    helperText={`${title.length}/50文字`}
+                    label="タイトル"
+                    required
+                  />
+                  <TextField
+                    fullWidth
+                    name="content"
+                    multiline
+                    rows={3}
+                    placeholder="本文を入力してください（200文字以内）"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    error={content.length > 200}
+                    helperText={`${content.length}/200文字`}
+                    label="本文"
+                    required
+                  />
+                  {error && <Alert severity="error">{error}</Alert>}
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={
+                      !title.trim() ||
+                      title.length > 50 ||
+                      !content.trim() ||
+                      content.length > 200
+                    }
+                    fullWidth
+                    sx={{ height: 48 }}
+                  >
+                    投稿する
+                  </Button>
+                </Stack>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* 投稿一覧 */}
+          <Stack spacing={2}>
+            {posts.length === 0 ? (
+              <Typography align="center" color="textSecondary">
+                まだ投稿がありません
+              </Typography>
+            ) : (
+              posts.map((post) => (
+                <Card
+                  key={post._id}
+                  sx={{ transition: 'all 0.3s', '&:hover': { boxShadow: 3 } }}
+                >
+                  <CardContent>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                    >
+                      <Box flex={1} sx={{ minWidth: 0 }}>
+                        <Typography
+                          variant="h6"
+                          component="h2"
+                          gutterBottom
+                          sx={{
+                            wordBreak: 'break-word',
+                            fontWeight: 500,
+                            mb: 1,
+                          }}
+                        >
+                          {post.title}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            mb: 1,
+                          }}
+                        >
+                          {post.content}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="textSecondary"
+                          display="block"
+                        >
+                          {formatDate(post.createdAt)}
+                          {post.updatedAt !== post.createdAt && ' (編集済み)'}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: { xs: 'column', sm: 'row' },
+                          ml: 2,
+                        }}
+                      >
+                        <IconButton
+                          size="small"
+                          onClick={() => handleEditStart(post)}
+                          color="primary"
+                          sx={{ p: { xs: 0.5, sm: 1 } }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDelete(post._id)}
+                          color="error"
+                          sx={{ p: { xs: 0.5, sm: 1 } }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </Stack>
+
+          {/* 編集ダイアログ */}
+          <Dialog
+            open={openEditDialog}
+            onClose={handleEditCancel}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>投稿を編集</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 2 }}>
                 <TextField
                   fullWidth
-                  name="title"
-                  placeholder="タイトルを入力してください（50文字以内）"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  error={title.length > 50}
-                  helperText={`${title.length}/50文字`}
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  error={editTitle.length > 50}
+                  helperText={`${editTitle.length}/50文字`}
                   label="タイトル"
-                  required
                 />
                 <TextField
                   fullWidth
-                  name="content"
                   multiline
                   rows={3}
-                  placeholder="本文を入力してください（200文字以内）"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  error={content.length > 200}
-                  helperText={`${content.length}/200文字`}
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  error={editContent.length > 200}
+                  helperText={`${editContent.length}/200文字`}
                   label="本文"
-                  required
                 />
                 {error && <Alert severity="error">{error}</Alert>}
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={
-                    !title.trim() ||
-                    title.length > 50 ||
-                    !content.trim() ||
-                    content.length > 200
-                  }
-                  fullWidth
-                  sx={{ height: 48 }}
-                >
-                  投稿する
-                </Button>
               </Stack>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* 投稿一覧 */}
-        <Stack spacing={2}>
-          {posts.length === 0 ? (
-            <Typography align="center" color="textSecondary">
-              まだ投稿がありません
-            </Typography>
-          ) : (
-            posts.map((post) => (
-              <Card
-                key={post._id}
-                sx={{ transition: 'all 0.3s', '&:hover': { boxShadow: 3 } }}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleEditCancel}>キャンセル</Button>
+              <Button
+                onClick={handleEditSave}
+                variant="contained"
+                color="primary"
+                disabled={
+                  !editTitle.trim() ||
+                  editTitle.length > 50 ||
+                  !editContent.trim() ||
+                  editContent.length > 200
+                }
               >
-                <CardContent>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                  >
-                    <Box flex={1} sx={{ minWidth: 0 }}>
-                      <Typography
-                        variant="h6"
-                        component="h2"
-                        gutterBottom
-                        sx={{
-                          wordBreak: 'break-word',
-                          fontWeight: 500,
-                          mb: 1,
-                        }}
-                      >
-                        {post.title}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-word',
-                          mb: 1,
-                        }}
-                      >
-                        {post.content}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        color="textSecondary"
-                        display="block"
-                      >
-                        {formatDate(post.createdAt)}
-                        {post.updatedAt !== post.createdAt && ' (編集済み)'}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        ml: 2,
-                      }}
-                    >
-                      <IconButton
-                        size="small"
-                        onClick={() => handleEditStart(post)}
-                        color="primary"
-                        sx={{ p: { xs: 0.5, sm: 1 } }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleDelete(post._id)}
-                        color="error"
-                        sx={{ p: { xs: 0.5, sm: 1 } }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </Stack>
-
-        {/* 編集ダイアログ */}
-        <Dialog
-          open={openEditDialog}
-          onClose={handleEditCancel}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>投稿を編集</DialogTitle>
-          <DialogContent>
-            <Stack spacing={2} sx={{ mt: 2 }}>
-              <TextField
-                fullWidth
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                error={editTitle.length > 50}
-                helperText={`${editTitle.length}/50文字`}
-                label="タイトル"
-              />
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                error={editContent.length > 200}
-                helperText={`${editContent.length}/200文字`}
-                label="本文"
-              />
-              {error && <Alert severity="error">{error}</Alert>}
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleEditCancel}>キャンセル</Button>
-            <Button
-              onClick={handleEditSave}
-              variant="contained"
-              color="primary"
-              disabled={
-                !editTitle.trim() ||
-                editTitle.length > 50 ||
-                !editContent.trim() ||
-                editContent.length > 200
-              }
-            >
-              保存
-            </Button>
-          </DialogActions>
-        </Dialog>
+                保存
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Container>
     </>

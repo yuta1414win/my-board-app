@@ -437,10 +437,10 @@ describe('ログアウト機能テスト', () => {
       nextAuthMock.mockGetSession.mockResolvedValueOnce(null);
 
       // Act & Assert
-      // 1. ログイン状態の確認  
+      // 1. ログイン状態の確認
       nextAuthMock.mockAuth.mockResolvedValueOnce(mockSession);
       nextAuthMock.mockGetSession.mockResolvedValueOnce(mockSession);
-      
+
       let session = await nextAuthMock.mockAuth();
       expect(session).toEqual(mockSession);
 

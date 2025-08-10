@@ -5,14 +5,17 @@ import { SignJWT } from 'jose';
 
 export async function POST(request: Request) {
   let client: MongoClient | null = null;
-  
+
   try {
     const { email, password } = await request.json();
 
     // バリデーション
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'メールアドレスとパスワードを入力してください', success: false },
+        {
+          error: 'メールアドレスとパスワードを入力してください',
+          success: false,
+        },
         { status: 400 }
       );
     }
@@ -37,7 +40,10 @@ export async function POST(request: Request) {
     const user = await users.findOne({ email });
     if (!user) {
       return NextResponse.json(
-        { error: 'メールアドレスまたはパスワードが間違っています', success: false },
+        {
+          error: 'メールアドレスまたはパスワードが間違っています',
+          success: false,
+        },
         { status: 401 }
       );
     }
@@ -46,7 +52,10 @@ export async function POST(request: Request) {
     const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'メールアドレスまたはパスワードが間違っています', success: false },
+        {
+          error: 'メールアドレスまたはパスワードが間違っています',
+          success: false,
+        },
         { status: 401 }
       );
     }
@@ -54,7 +63,7 @@ export async function POST(request: Request) {
     // JWTトークンを生成
     const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
     const secret = new TextEncoder().encode(JWT_SECRET);
-    
+
     const token = await new SignJWT({
       userId: user._id.toString(),
       email: user.email,
@@ -87,7 +96,6 @@ export async function POST(request: Request) {
     });
 
     return response;
-    
   } catch (error) {
     console.error('Signin error:', error);
     return NextResponse.json(

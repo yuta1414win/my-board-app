@@ -38,7 +38,6 @@ interface EmailResult {
   error?: any;
 }
 
-
 export async function sendEmail({
   to,
   subject,

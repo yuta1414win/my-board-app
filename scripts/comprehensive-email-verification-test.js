@@ -15,7 +15,7 @@ const colors = {
   blue: '\x1b[34m',
   cyan: '\x1b[36m',
   reset: '\x1b[0m',
-  bold: '\x1b[1m'
+  bold: '\x1b[1m',
 };
 
 class ComprehensiveEmailVerificationTest {
@@ -51,38 +51,44 @@ class ComprehensiveEmailVerificationTest {
   // テスト1: 登録フローとメール送信機能
   async testRegistrationAndEmailSending() {
     this.log('\n🧪 テスト1: 登録フローとメール送信機能', 'blue');
-    
+
     const testEmail = `test-verify-${Date.now()}@example.com`;
     const registrationData = {
       name: 'Test User',
       email: testEmail,
       password: 'TestPassword123!',
-      confirmPassword: 'TestPassword123!'
+      confirmPassword: 'TestPassword123!',
     };
 
     try {
       const response = await fetch(`${this.baseUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registrationData)
+        body: JSON.stringify(registrationData),
       });
 
       const data = await response.json();
-      
+
       if (response.ok && data.success) {
         this.log('✅ ユーザー登録成功', 'green');
         this.log(`   - アカウント作成: ${data.userId}`, 'cyan');
-        this.log(`   - メール送信: ${data.emailSent ? '成功' : '失敗'}`, 'cyan');
-        
+        this.log(
+          `   - メール送信: ${data.emailSent ? '成功' : '失敗'}`,
+          'cyan'
+        );
+
         // データベースから作成されたユーザーを取得
-        const User = mongoose.model('User', new mongoose.Schema({
-          name: String,
-          email: String,
-          password: String,
-          emailVerified: { type: Boolean, default: false },
-          emailVerificationToken: String,
-          emailVerificationExpires: Date,
-        }));
+        const User = mongoose.model(
+          'User',
+          new mongoose.Schema({
+            name: String,
+            email: String,
+            password: String,
+            emailVerified: { type: Boolean, default: false },
+            emailVerificationToken: String,
+            emailVerificationExpires: Date,
+          })
+        );
 
         const user = await User.findOne({ email: testEmail }).select(
           '+emailVerificationToken +emailVerificationExpires'
@@ -94,24 +100,33 @@ class ComprehensiveEmailVerificationTest {
             email: user.email,
             emailVerified: user.emailVerified,
             token: user.emailVerificationToken,
-            expires: user.emailVerificationExpires
+            expires: user.emailVerificationExpires,
           };
 
           this.verificationToken = user.emailVerificationToken;
 
           this.log(`   - トークン生成: ✅`, 'cyan');
-          this.log(`   - 有効期限設定: ${user.emailVerificationExpires}`, 'cyan');
-          this.log(`   - 初期状態 emailVerified: ${user.emailVerified}`, 'cyan');
+          this.log(
+            `   - 有効期限設定: ${user.emailVerificationExpires}`,
+            'cyan'
+          );
+          this.log(
+            `   - 初期状態 emailVerified: ${user.emailVerified}`,
+            'cyan'
+          );
 
           this.testResults.push({
             test: '登録フローとメール送信',
             success: true,
-            details: { userId: data.userId, emailSent: data.emailSent }
+            details: { userId: data.userId, emailSent: data.emailSent },
           });
 
           return true;
         } else {
-          this.log('❌ 作成されたユーザーがデータベースに見つかりません', 'red');
+          this.log(
+            '❌ 作成されたユーザーがデータベースに見つかりません',
+            'red'
+          );
           return false;
         }
       } else {
@@ -134,7 +149,9 @@ class ComprehensiveEmailVerificationTest {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/api/auth/verify?token=${this.verificationToken}`);
+      const response = await fetch(
+        `${this.baseUrl}/api/auth/verify?token=${this.verificationToken}`
+      );
       const data = await response.json();
 
       if (response.ok && data.success) {
@@ -154,9 +171,18 @@ class ComprehensiveEmailVerificationTest {
           const expiresCleared = !user.emailVerificationExpires;
 
           this.log('\n📊 データベース状態変更:', 'bold');
-          this.log(`   - emailVerified: ${emailVerified} ✅`, emailVerified ? 'green' : 'red');
-          this.log(`   - トークン削除: ${tokenCleared} ✅`, tokenCleared ? 'green' : 'red');
-          this.log(`   - 有効期限削除: ${expiresCleared} ✅`, expiresCleared ? 'green' : 'red');
+          this.log(
+            `   - emailVerified: ${emailVerified} ✅`,
+            emailVerified ? 'green' : 'red'
+          );
+          this.log(
+            `   - トークン削除: ${tokenCleared} ✅`,
+            tokenCleared ? 'green' : 'red'
+          );
+          this.log(
+            `   - 有効期限削除: ${expiresCleared} ✅`,
+            expiresCleared ? 'green' : 'red'
+          );
 
           const allSuccess = emailVerified && tokenCleared && expiresCleared;
 
@@ -166,8 +192,8 @@ class ComprehensiveEmailVerificationTest {
             details: {
               emailVerified,
               tokenCleared,
-              expiresCleared
-            }
+              expiresCleared,
+            },
           });
 
           // ユーザー状態を更新
@@ -202,13 +228,13 @@ class ComprehensiveEmailVerificationTest {
       // ログインテスト（パスワードで認証）
       const loginData = {
         email: this.testUser.email,
-        password: 'TestPassword123!'
+        password: 'TestPassword123!',
       };
 
       const response = await fetch(`${this.baseUrl}/api/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(loginData),
       });
 
       const data = await response.json();
@@ -221,22 +247,25 @@ class ComprehensiveEmailVerificationTest {
         this.testResults.push({
           test: '認証後ログイン可能',
           success: true,
-          details: data.user
+          details: data.user,
         });
 
         return true;
       } else {
         this.log(`❌ ログイン失敗: ${data.error}`, 'red');
-        
+
         // メール未認証が原因かチェック
         if (data.error && data.error.includes('確認')) {
-          this.log('   → メール認証が正しく完了していない可能性があります', 'yellow');
+          this.log(
+            '   → メール認証が正しく完了していない可能性があります',
+            'yellow'
+          );
         }
 
         this.testResults.push({
           test: '認証後ログイン可能',
           success: false,
-          details: { error: data.error }
+          details: { error: data.error },
         });
 
         return false;
@@ -255,24 +284,32 @@ class ComprehensiveEmailVerificationTest {
       'invalid_token_123',
       'expired_token_456',
       'short',
-      ''
+      '',
     ];
 
     let allTestsPassed = true;
 
     for (const token of invalidTokens) {
       try {
-        const url = token ? `${this.baseUrl}/api/auth/verify?token=${token}` : `${this.baseUrl}/api/auth/verify`;
+        const url = token
+          ? `${this.baseUrl}/api/auth/verify?token=${token}`
+          : `${this.baseUrl}/api/auth/verify`;
         const response = await fetch(url);
         const data = await response.json();
 
         const expectedError = response.status === 400 && !data.success;
-        
+
         if (expectedError) {
-          this.log(`✅ 無効トークン "${token || 'なし'}" → 正しくエラー表示`, 'green');
+          this.log(
+            `✅ 無効トークン "${token || 'なし'}" → 正しくエラー表示`,
+            'green'
+          );
           this.log(`   - エラーメッセージ: ${data.error}`, 'cyan');
         } else {
-          this.log(`❌ 無効トークン "${token || 'なし'}" → エラーが適切でない`, 'red');
+          this.log(
+            `❌ 無効トークン "${token || 'なし'}" → エラーが適切でない`,
+            'red'
+          );
           allTestsPassed = false;
         }
       } catch (error) {
@@ -284,7 +321,7 @@ class ComprehensiveEmailVerificationTest {
     this.testResults.push({
       test: '無効トークンエラー表示',
       success: allTestsPassed,
-      details: { testedTokens: invalidTokens.length }
+      details: { testedTokens: invalidTokens.length },
     });
 
     return allTestsPassed;
@@ -295,8 +332,11 @@ class ComprehensiveEmailVerificationTest {
     this.log('\n🧪 テスト5: 使用済みトークン再利用防止', 'blue');
 
     if (!this.verificationToken) {
-      this.log('⚠️  使用済みトークンが利用できません（既にクリアされている）', 'yellow');
-      
+      this.log(
+        '⚠️  使用済みトークンが利用できません（既にクリアされている）',
+        'yellow'
+      );
+
       // 代替テスト: 新しいユーザーを作成してトークンを使用後、再利用テスト
       try {
         const User = mongoose.model('User');
@@ -310,20 +350,24 @@ class ComprehensiveEmailVerificationTest {
           password: 'hashedpassword',
           emailVerified: false,
           emailVerificationToken: testToken,
-          emailVerificationExpires: testExpires
+          emailVerificationExpires: testExpires,
         });
 
         this.log(`   新規テストユーザー作成: ${testEmail}`, 'cyan');
 
         // 1回目の使用
-        const firstResponse = await fetch(`${this.baseUrl}/api/auth/verify?token=${testToken}`);
+        const firstResponse = await fetch(
+          `${this.baseUrl}/api/auth/verify?token=${testToken}`
+        );
         const firstData = await firstResponse.json();
 
         if (firstResponse.ok && firstData.success) {
           this.log('✅ 1回目の使用: 成功', 'green');
 
           // 2回目の使用（再利用テスト）
-          const secondResponse = await fetch(`${this.baseUrl}/api/auth/verify?token=${testToken}`);
+          const secondResponse = await fetch(
+            `${this.baseUrl}/api/auth/verify?token=${testToken}`
+          );
           const secondData = await secondResponse.json();
 
           if (secondResponse.status === 400 && !secondData.success) {
@@ -333,17 +377,17 @@ class ComprehensiveEmailVerificationTest {
             this.testResults.push({
               test: '使用済みトークン再利用防止',
               success: true,
-              details: { message: '再利用が正しく防止された' }
+              details: { message: '再利用が正しく防止された' },
             });
 
             return true;
           } else {
             this.log('❌ 2回目の使用: 不正に成功してしまいました', 'red');
-            
+
             this.testResults.push({
               test: '使用済みトークン再利用防止',
               success: false,
-              details: { error: '再利用が防止されていない' }
+              details: { error: '再利用が防止されていない' },
             });
 
             return false;
@@ -359,17 +403,22 @@ class ComprehensiveEmailVerificationTest {
     } else {
       // 既に使用済みのトークンで再利用テスト
       try {
-        const response = await fetch(`${this.baseUrl}/api/auth/verify?token=${this.verificationToken}`);
+        const response = await fetch(
+          `${this.baseUrl}/api/auth/verify?token=${this.verificationToken}`
+        );
         const data = await response.json();
 
         if (response.status === 400 && !data.success) {
-          this.log('✅ 使用済みトークンの再利用が正しく防止されました', 'green');
+          this.log(
+            '✅ 使用済みトークンの再利用が正しく防止されました',
+            'green'
+          );
           this.log(`   - エラーメッセージ: ${data.error}`, 'cyan');
 
           this.testResults.push({
             test: '使用済みトークン再利用防止',
             success: true,
-            details: { message: '再利用が正しく防止された' }
+            details: { message: '再利用が正しく防止された' },
           });
 
           return true;
@@ -385,7 +434,8 @@ class ComprehensiveEmailVerificationTest {
   }
 
   generateToken(length = 32) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let token = '';
     for (let i = 0; i < length; i++) {
       token += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -397,51 +447,77 @@ class ComprehensiveEmailVerificationTest {
   printComprehensiveResults() {
     this.log('\n📊 完全メール認証フロー検証結果', 'bold');
     this.log('='.repeat(50), 'blue');
-    
-    const successCount = this.testResults.filter(r => r.success).length;
+
+    const successCount = this.testResults.filter((r) => r.success).length;
     const totalCount = this.testResults.length;
-    
+
     this.testResults.forEach((result, index) => {
       const status = result.success ? '✅ 成功' : '❌ 失敗';
       const color = result.success ? 'green' : 'red';
       this.log(`${index + 1}. ${result.test}: ${status}`, color);
     });
-    
+
     this.log('='.repeat(50), 'blue');
-    this.log(`総合結果: ${successCount}/${totalCount} 確認ポイント合格`, 
-      successCount === totalCount ? 'green' : 'red');
-    
+    this.log(
+      `総合結果: ${successCount}/${totalCount} 確認ポイント合格`,
+      successCount === totalCount ? 'green' : 'red'
+    );
+
     if (successCount === totalCount) {
       this.log('\n🎉 すべての確認ポイントが完璧に動作しています！', 'green');
       this.log('メール認証機能は本格運用準備完了です。', 'green');
     } else {
-      this.log(`\n⚠️  ${totalCount - successCount}件の確認ポイントで問題が見つかりました`, 'red');
+      this.log(
+        `\n⚠️  ${totalCount - successCount}件の確認ポイントで問題が見つかりました`,
+        'red'
+      );
       this.log('問題の詳細を確認して修正してください。', 'yellow');
     }
 
     // 各確認ポイントの詳細結果
     this.log('\n📋 確認ポイント詳細:', 'bold');
-    this.log('1. 登録後メール送信: ' + (this.testResults[0]?.success ? '✅' : '❌'), this.testResults[0]?.success ? 'green' : 'red');
-    this.log('2. 認証成功画面: ' + (this.testResults[1]?.success ? '✅' : '❌'), this.testResults[1]?.success ? 'green' : 'red');
-    this.log('3. データベース更新: ' + (this.testResults[1]?.success ? '✅' : '❌'), this.testResults[1]?.success ? 'green' : 'red');
-    this.log('4. 認証後ログイン: ' + (this.testResults[2]?.success ? '✅' : '❌'), this.testResults[2]?.success ? 'green' : 'red');
-    this.log('5. 無効トークンエラー: ' + (this.testResults[3]?.success ? '✅' : '❌'), this.testResults[3]?.success ? 'green' : 'red');
-    this.log('6. 使用済み再利用防止: ' + (this.testResults[4]?.success ? '✅' : '❌'), this.testResults[4]?.success ? 'green' : 'red');
+    this.log(
+      '1. 登録後メール送信: ' + (this.testResults[0]?.success ? '✅' : '❌'),
+      this.testResults[0]?.success ? 'green' : 'red'
+    );
+    this.log(
+      '2. 認証成功画面: ' + (this.testResults[1]?.success ? '✅' : '❌'),
+      this.testResults[1]?.success ? 'green' : 'red'
+    );
+    this.log(
+      '3. データベース更新: ' + (this.testResults[1]?.success ? '✅' : '❌'),
+      this.testResults[1]?.success ? 'green' : 'red'
+    );
+    this.log(
+      '4. 認証後ログイン: ' + (this.testResults[2]?.success ? '✅' : '❌'),
+      this.testResults[2]?.success ? 'green' : 'red'
+    );
+    this.log(
+      '5. 無効トークンエラー: ' + (this.testResults[3]?.success ? '✅' : '❌'),
+      this.testResults[3]?.success ? 'green' : 'red'
+    );
+    this.log(
+      '6. 使用済み再利用防止: ' + (this.testResults[4]?.success ? '✅' : '❌'),
+      this.testResults[4]?.success ? 'green' : 'red'
+    );
   }
 
   // クリーンアップ
   async cleanup() {
     this.log('\n🧹 テストデータのクリーンアップ', 'yellow');
-    
+
     try {
       const User = mongoose.model('User');
-      
+
       // テストで作成したユーザーを削除
       const result = await User.deleteMany({
-        email: { $regex: /^test-(verify-|reuse-).*@example\.com$/ }
+        email: { $regex: /^test-(verify-|reuse-).*@example\.com$/ },
       });
-      
-      this.log(`✅ ${result.deletedCount}件のテストデータを削除しました`, 'green');
+
+      this.log(
+        `✅ ${result.deletedCount}件のテストデータを削除しました`,
+        'green'
+      );
     } catch (error) {
       this.log(`❌ クリーンアップ失敗: ${error.message}`, 'red');
     }
@@ -450,7 +526,7 @@ class ComprehensiveEmailVerificationTest {
   // メインテスト実行
   async runComprehensiveTest() {
     this.log('🚀 完全メール認証フロー検証を開始します...', 'bold');
-    
+
     // 環境確認
     if (!this.mongoUri) {
       this.log('❌ MONGODB_URI環境変数が設定されていません', 'red');
@@ -476,9 +552,11 @@ class ComprehensiveEmailVerificationTest {
 
       // クリーンアップ
       await this.cleanup();
-
     } catch (error) {
-      this.log(`❌ テスト実行中にエラーが発生しました: ${error.message}`, 'red');
+      this.log(
+        `❌ テスト実行中にエラーが発生しました: ${error.message}`,
+        'red'
+      );
     } finally {
       await this.disconnectDatabase();
     }
