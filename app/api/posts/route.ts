@@ -79,11 +79,24 @@ export async function POST(request: Request) {
 
     await dbConnect();
 
+    // デバッグ: ユーザーID形式を確認
+    console.log('投稿作成 - ユーザー情報:', {
+      userId: session.user.id,
+      userIdType: typeof session.user.id,
+      userName: session.user.name,
+    });
+
     const post = await Post.create({
       title: title.trim(),
       content: content.trim(),
       author: session.user.id,
       authorName: session.user.name,
+    });
+
+    console.log('作成された投稿:', {
+      postId: post._id,
+      postAuthor: post.author,
+      postAuthorType: typeof post.author,
     });
 
     return NextResponse.json({
