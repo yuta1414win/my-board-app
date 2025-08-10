@@ -238,7 +238,7 @@ export class UserModel {
     try {
       // NextAuthのUUID形式のIDに対応するため、_idフィールドで検索
       const result = await User.findOneAndUpdate(
-        { _id: id },
+        { _id: id as any },
         { $set: data },
         { new: true }
       ).exec();
