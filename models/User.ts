@@ -77,6 +77,19 @@ const UserSchema = new Schema<IUser>(
       minlength: [8, 'パスワードは8文字以上で入力してください'],
       select: false,
     },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [200, '自己紹介は200文字以内で入力してください'],
+    },
+    quickComment: {
+      type: String,
+      trim: true,
+      maxlength: [50, '一言コメントは50文字以内で入力してください'],
+    },
+    avatar: {
+      type: String,
+    },
     emailVerified: {
       type: Boolean,
       default: false,
@@ -111,6 +124,10 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {
