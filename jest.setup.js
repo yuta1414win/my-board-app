@@ -5,6 +5,36 @@ import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
+// Mock URL constructor for Node.js environment
+if (!global.URL) {
+  global.URL = class URL {
+    constructor(url, base) {
+      if (base) {
+        this._url = new URL(url, base);
+      } else {
+        this._url = new URL(url);
+      }
+      
+      this.href = this._url.href;
+      this.origin = this._url.origin;
+      this.protocol = this._url.protocol;
+      this.username = this._url.username;
+      this.password = this._url.password;
+      this.host = this._url.host;
+      this.hostname = this._url.hostname;
+      this.port = this._url.port;
+      this.pathname = this._url.pathname;
+      this.search = this._url.search;
+      this.searchParams = this._url.searchParams;
+      this.hash = this._url.hash;
+    }
+    
+    toString() {
+      return this.href;
+    }
+  };
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -91,7 +121,7 @@ global.fetch = jest.fn();
 global.Headers = class Headers {
   constructor(init) {
     this.headers = new Map();
-    
+
     if (init) {
       if (init instanceof Headers) {
         for (const [key, value] of init.headers) {
