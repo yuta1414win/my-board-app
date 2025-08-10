@@ -113,7 +113,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
           </div>
         </Fade>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} data-testid="profile-layout">
           {/* プロフィール情報カード */}
           <Grid item xs={12} md={8}>
             <Card elevation={2}>
