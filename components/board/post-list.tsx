@@ -47,6 +47,8 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   const [error, setError] = useState('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchPosts = async (currentPage: number) => {
     try {
