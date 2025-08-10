@@ -74,8 +74,9 @@ export function createApiRequest(
     },
   });
 
-  // NextRequest互換のオブジェクトを作成
-  const nextReq = new NextRequest(url, {
+  // NextRequest互換のオブジェクトを作成（絶対URLが必要）
+  const fullUrl = url.startsWith('http') ? url : `http://localhost:3001${url}`;
+  const nextReq = new NextRequest(fullUrl, {
     method,
     body: body ? JSON.stringify(body) : undefined,
     headers: {
