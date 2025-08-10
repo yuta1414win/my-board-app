@@ -45,13 +45,18 @@ async function sendEmail({
 
 export async function sendVerificationEmail(
   email: string,
-  userName: string,
-  verificationUrl: string
+  token: string
 ) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
+  const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
+  
   return sendEmail({
     to: email,
     subject: 'メールアドレスを確認してください',
-    react: VerificationEmail({ userName, verificationUrl }),
+    react: VerificationEmail({ 
+      userName: email.split('@')[0], // メールアドレスから名前を推定
+      verificationUrl 
+    }),
   });
 }
 
