@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '../../../../auth';
 import dbConnect from '../../../../lib/mongodb';
 import Post from '../../../../models/Post';
-import { ObjectId } from 'mongodb';
+import mongoose from 'mongoose';
 
 // GET関数を追加
 export async function GET(
