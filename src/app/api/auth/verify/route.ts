@@ -71,10 +71,10 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Email verification error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: MESSAGES.VERIFICATION_ERROR,
-        code: 'VERIFICATION_ERROR'
+        code: 'VERIFICATION_ERROR',
       },
       { status: 500 }
     );
@@ -87,7 +87,11 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { error: 'メールアドレスが必要です' },
+        { 
+          success: false, 
+          error: MESSAGES.EMAIL_REQUIRED,
+          code: 'EMAIL_REQUIRED'
+        },
         { status: 400 }
       );
     }
@@ -102,14 +106,22 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'ユーザーが見つかりません' },
+        { 
+          success: false, 
+          error: MESSAGES.USER_NOT_FOUND,
+          code: 'USER_NOT_FOUND'
+        },
         { status: 404 }
       );
     }
 
     if (user.emailVerified) {
       return NextResponse.json(
-        { error: 'メールアドレスは既に確認済みです' },
+        { 
+          success: false, 
+          error: MESSAGES.ALREADY_VERIFIED,
+          code: 'ALREADY_VERIFIED'
+        },
         { status: 400 }
       );
     }
@@ -135,7 +147,11 @@ export async function POST(request: NextRequest) {
 
     if (!emailResult.success) {
       return NextResponse.json(
-        { error: '確認メールの送信に失敗しました' },
+        { 
+          success: false, 
+          error: MESSAGES.RESEND_EMAIL_ERROR,
+          code: 'RESEND_EMAIL_ERROR'
+        },
         { status: 500 }
       );
     }
@@ -143,14 +159,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: '確認メールを再送信しました',
+        message: MESSAGES.RESEND_SUCCESS,
+        code: 'RESEND_SUCCESS'
       },
       { status: 200 }
     );
   } catch (error: unknown) {
     console.error('Resend verification email error:', error);
     return NextResponse.json(
-      { error: '確認メール再送信中にエラーが発生しました' },
+      { 
+        success: false, 
+        error: MESSAGES.RESEND_ERROR,
+        code: 'RESEND_ERROR'
+      },
       { status: 500 }
     );
   }
