@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { UserProfile } from '@/models/User';
+import { useSession } from 'next-auth/react';
 
 interface ProfileEditFormProps {
   user: UserProfile;
