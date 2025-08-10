@@ -9,24 +9,32 @@ import Link from 'next/link';
 import Alert from '@/components/ui/Alert';
 
 // バリデーションスキーマ
-const registerSchema = z.object({
-  name: z.string()
-    .min(2, '名前は2文字以上で入力してください')
-    .max(50, '名前は50文字以内で入力してください'),
-  email: z.string()
-    .email('有効なメールアドレスを入力してください')
-    .toLowerCase(),
-  password: z.string()
-    .min(8, 'パスワードは8文字以上で入力してください')
-    .regex(/(?=.*[a-z])/, 'パスワードには小文字を含めてください')
-    .regex(/(?=.*[A-Z])/, 'パスワードには大文字を含めてください')
-    .regex(/(?=.*\d)/, 'パスワードには数字を含めてください')
-    .regex(/(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/, 'パスワードには特殊文字を含めてください'),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'パスワードが一致しません',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, '名前は2文字以上で入力してください')
+      .max(50, '名前は50文字以内で入力してください'),
+    email: z
+      .string()
+      .email('有効なメールアドレスを入力してください')
+      .toLowerCase(),
+    password: z
+      .string()
+      .min(8, 'パスワードは8文字以上で入力してください')
+      .regex(/(?=.*[a-z])/, 'パスワードには小文字を含めてください')
+      .regex(/(?=.*[A-Z])/, 'パスワードには大文字を含めてください')
+      .regex(/(?=.*\d)/, 'パスワードには数字を含めてください')
+      .regex(
+        /(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+        'パスワードには特殊文字を含めてください'
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'パスワードが一致しません',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -40,14 +48,17 @@ function PasswordStrength({ password }: PasswordStrengthProps) {
     { test: /[a-z]/.test(password), label: '小文字を含む' },
     { test: /[A-Z]/.test(password), label: '大文字を含む' },
     { test: /\d/.test(password), label: '数字を含む' },
-    { test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password), label: '特殊文字を含む' },
+    {
+      test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      label: '特殊文字を含む',
+    },
   ];
 
-  const score = requirements.filter(req => req.test).length;
-  
+  const score = requirements.filter((req) => req.test).length;
+
   let strengthText = '';
   let strengthColor = '';
-  
+
   if (score === 0) {
     strengthText = '';
     strengthColor = '';
@@ -93,9 +104,7 @@ function PasswordStrength({ password }: PasswordStrengthProps) {
               req.test ? 'text-green-600' : 'text-gray-400'
             }`}
           >
-            <span className="mr-2">
-              {req.test ? '✓' : '○'}
-            </span>
+            <span className="mr-2">{req.test ? '✓' : '○'}</span>
             {req.label}
           </li>
         ))}
@@ -144,7 +153,7 @@ export default function RegisterForm() {
           type: 'success',
           text: result.message,
         });
-        
+
         // 3秒後にログインページへリダイレクト
         setTimeout(() => {
           router.push('/auth/signin');
@@ -155,7 +164,7 @@ export default function RegisterForm() {
           text: result.error || '登録に失敗しました',
         });
       }
-    } catch (error) {
+    } catch {
       setMessage({
         type: 'error',
         text: 'ネットワークエラーが発生しました',
@@ -177,7 +186,10 @@ export default function RegisterForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             名前
           </label>
           <input
@@ -193,7 +205,10 @@ export default function RegisterForm() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
             メールアドレス
           </label>
           <input
@@ -209,7 +224,10 @@ export default function RegisterForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
             パスワード
           </label>
           <input
@@ -220,13 +238,18 @@ export default function RegisterForm() {
             placeholder="パスワードを入力"
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
           )}
           <PasswordStrength password={password} />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
             パスワード（確認）
           </label>
           <input
@@ -237,7 +260,9 @@ export default function RegisterForm() {
             placeholder="パスワードを再入力"
           />
           {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
@@ -253,7 +278,10 @@ export default function RegisterForm() {
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
           既にアカウントをお持ちの方は{' '}
-          <Link href="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
+          <Link
+            href="/auth/signin"
+            className="font-medium text-blue-600 hover:text-blue-500"
+          >
             ログイン
           </Link>
         </p>
