@@ -482,6 +482,7 @@ export default function SignUpForm() {
             helperText={errors.confirmPassword}
             margin="normal"
             autoComplete="new-password"
+            required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
