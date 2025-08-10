@@ -18,7 +18,7 @@ test.describe('認証機能 スモークテスト', () => {
       await page.goto('/auth/signin');
 
       // ページタイトルの確認
-      await expect(page).toHaveTitle(/ログイン|Sign In|My Board App/);
+      await expect(page).toHaveTitle(/掲示板アプリ|ログイン/);
 
       // 主要要素の存在確認
       await expect(
@@ -142,7 +142,10 @@ test.describe('認証機能 スモークテスト', () => {
       await page.goto('/auth/register');
 
       // 空のフォームで送信
-      await page.locator('form').getByRole('button', { name: '登録する' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: '登録する' })
+        .click();
 
       // バリデーションエラーの確認
       const emailField = page.getByLabel(/メールアドレス|Email/);
