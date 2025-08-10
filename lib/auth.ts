@@ -167,7 +167,7 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-import { getServerSession } from 'next-auth';
+import NextAuth from 'next-auth';
 
 export interface User {
   id: string;
@@ -175,9 +175,11 @@ export interface User {
   name: string;
 }
 
+const { auth } = NextAuth(authOptions);
+
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return null;
