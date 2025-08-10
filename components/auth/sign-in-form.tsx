@@ -287,6 +287,7 @@ export default function SignInForm() {
             margin="normal"
             disabled={isBlocked}
             autoComplete="email"
+            required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
