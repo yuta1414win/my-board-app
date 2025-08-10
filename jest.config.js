@@ -36,8 +36,10 @@ const customJestConfig = {
     '!**/.next/**',
   ],
   testMatch: [
-    '<rootDir>/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/**/__tests__/**/*.{spec,test}.{js,jsx,ts,tsx}',
     '<rootDir>/**/?(*.)(spec|test).{js,jsx,ts,tsx}',
+    '!<rootDir>/**/__tests__/**/test-helpers.{js,jsx,ts,tsx}',
+    '!<rootDir>/**/__tests__/**/helpers.{js,jsx,ts,tsx}',
   ],
 };
 
