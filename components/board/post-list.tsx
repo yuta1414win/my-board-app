@@ -151,7 +151,20 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
                 <Typography variant="h6" component="h2" gutterBottom>
                   {post.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  paragraph
+                  sx={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    maxHeight: '150px',
+                    overflow: 'hidden',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 6,
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
                   {post.content}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
