@@ -64,7 +64,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
       type: 'success',
       text: 'プロフィールを更新しました',
     });
-    
+
     // メッセージを3秒後に非表示
     setTimeout(() => {
       setUpdateMessage(null);
@@ -76,7 +76,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
       type: 'error',
       text: error,
     });
-    
+
     // メッセージを5秒後に非表示
     setTimeout(() => {
       setUpdateMessage(null);
@@ -207,12 +207,12 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
                     <Avatar
                       src={user.avatar || ''}
                       alt={user.name || ''}
-                      sx={{ 
-                        width: 100, 
-                        height: 100, 
+                      sx={{
+                        width: 100,
+                        height: 100,
                         mx: 'auto',
                         fontSize: '2rem',
-                        bgcolor: 'primary.main'
+                        bgcolor: 'primary.main',
                       }}
                     >
                       {user.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -292,7 +292,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
 
                 <Button
                   component={Link}
-                  href="/profile/change-password"
+                  href="/profile/change-credentials"
                   startIcon={<LockIcon />}
                   variant="outlined"
                   fullWidth
