@@ -18,6 +18,45 @@ export default function VerifyEmailPage() {
   const router = useRouter();
   const token = searchParams.get('token');
 
+  const verifyEmail = async (token: string) => {
+    try {
+      const response = await fetch(
+        `/api/auth/verify?token=${encodeURIComponent(token)}`,
+        {
+          method: 'GET',
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setStatus('success');
+        setMessage(result.message);
+
+        // 3秒後にログインページへリダイレクト
+        setTimeout(() => {
+          router.push(
+            '/auth/signin?message=メール認証が完了しました。ログインしてください。'
+          );
+        }, 3000);
+      } else {
+        setStatus('error');
+        setMessage(result.error);
+
+        // トークンが期限切れまたは無効な場合は再送信を提案
+        if (
+          result.error.includes('無効') ||
+          result.error.includes('期限切れ')
+        ) {
+          setCanResend(true);
+        }
+      }
+    } catch {
+      setStatus('error');
+      setMessage('メール確認中にエラーが発生しました');
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       setStatus('error');
@@ -26,7 +65,7 @@ export default function VerifyEmailPage() {
     }
 
     verifyEmail(token);
-  }, [token]);
+  }, [token, verifyEmail]);
 
   const verifyEmail = async (token: string) => {
     try {
