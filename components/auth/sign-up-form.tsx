@@ -327,6 +327,7 @@ export default function SignUpForm() {
             helperText={errors.email}
             margin="normal"
             autoComplete="email"
+            required
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
