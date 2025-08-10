@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
 
     if (!token) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: MESSAGES.TOKEN_REQUIRED,
-          code: 'TOKEN_REQUIRED'
+          code: 'TOKEN_REQUIRED',
         },
         { status: 400 }
       );
@@ -43,7 +43,12 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: '無効または期限切れのトークンです' },
+        { 
+          success: false, 
+          error: MESSAGES.INVALID_TOKEN,
+          code: 'INVALID_TOKEN',
+          canResend: true
+        },
         { status: 400 }
       );
     }
