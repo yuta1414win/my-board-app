@@ -1,50 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
+import { getToken } from 'next-auth/jwt';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 保護されたページのパス
-  const protectedPaths = ['/board'];
-  const authPaths = ['/auth/signin', '/auth/register'];
+  const protectedPaths = ['/board', '/profile', '/settings'];
+  const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
 
-  // 認証が不要なパス
-  if (!protectedPaths.some(path => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
-  // 認証トークンを取得
-  const token = request.cookies.get('auth-token')?.value;
-
-  if (!token) {
-    // トークンがない場合はログインページにリダイレクト
-    return NextResponse.redirect(new URL('/auth/signin', request.url));
-  }
-
-  try {
-    // JWTトークンを検証
-    const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
-    const secret = new TextEncoder().encode(JWT_SECRET);
-    
-    await jwtVerify(token, secret);
-    
-    // トークンが有効な場合はそのまま続行
-    return NextResponse.next();
-  } catch (error) {
-    console.error('JWT verification failed:', error);
-    
-    // トークンが無効な場合はクッキーをクリアしてログインページにリダイレクト
-    const response = NextResponse.redirect(new URL('/auth/signin', request.url));
-    response.cookies.set('auth-token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 0,
-      path: '/',
+  // 既にログインしている場合、認証ページにアクセスしたら /board にリダイレクト
+  if (authPaths.some((path) => pathname.startsWith(path))) {
+    const token = await getToken({ 
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET 
     });
     
-    return response;
+    if (token) {
+      return NextResponse.redirect(new URL('/board', request.url));
+    }
+    return NextResponse.next();
   }
+
+  // 認証が不要なパス
+  if (!protectedPaths.some((path) => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
+  // NextAuth.jsのトークンを取得
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET 
+  });
+
+  if (!token) {
+    // トークンがない場合はログインページにリダイレクト（callbackUrlを含む）
+    const url = new URL('/auth/login', request.url);
+    url.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // メール確認チェック（必要に応じて）
+  if (!token.emailVerified && pathname !== '/auth/verify-email') {
+    // メール未確認の場合、確認ページへリダイレクト（オプション）
+    // return NextResponse.redirect(new URL('/auth/verify-email', request.url));
+  }
+
+  // トークンが有効な場合はそのまま続行
+  return NextResponse.next();
 }
 
 export const config = {
