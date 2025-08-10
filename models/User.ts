@@ -239,8 +239,9 @@ export class UserModel {
     data: UpdateUserProfileData
   ): Promise<boolean> {
     try {
-      const result = await User.findByIdAndUpdate(
-        id,
+      // NextAuthのUUID形式のIDに対応するため、_idフィールドで検索
+      const result = await User.findOneAndUpdate(
+        { _id: id },
         { $set: data },
         { new: true }
       ).exec();
