@@ -18,11 +18,13 @@ interface Post {
 }
 
 export default function BoardPage() {
+  const { data: session } = useSession();
   const [postFormOpen, setPostFormOpen] = useState(false);
   const [editPost, setEditPost] = useState<Post | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleCreatePost = () => {
+    if (!session) return;
     setEditPost(null);
     setPostFormOpen(true);
   };
@@ -42,14 +44,22 @@ export default function BoardPage() {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
-        掲示板
-      </Typography>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          📝 掲示板
+        </Typography>
 
-      <Typography variant="body1" color="text.secondary" paragraph>
-        みんなで情報を共有しましょう！
-      </Typography>
+        <Typography variant="body1" color="text.secondary" paragraph>
+          会員同士で情報を共有し、交流を深めましょう！
+        </Typography>
+
+        {session && (
+          <Typography variant="body2" color="text.secondary">
+            こんにちは、{session.user?.name}さん 👋
+          </Typography>
+        )}
+      </Paper>
 
       <PostList onEditPost={handleEditPost} refresh={refreshTrigger} />
 
@@ -60,18 +70,24 @@ export default function BoardPage() {
         editPost={editPost}
       />
 
-      <Fab
-        color="primary"
-        aria-label="新規投稿"
-        onClick={handleCreatePost}
-        sx={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-        }}
-      >
-        <Add />
-      </Fab>
-    </Box>
+      {session && (
+        <Fab
+          color="primary"
+          aria-label="新規投稿"
+          onClick={handleCreatePost}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            '&:hover': {
+              transform: 'scale(1.1)',
+            },
+            transition: 'transform 0.2s ease-in-out',
+          }}
+        >
+          <Add />
+        </Fab>
+      )}
+    </Container>
   );
 }
