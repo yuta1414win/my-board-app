@@ -62,4 +62,5 @@ if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN)
 
   // デバッグモード
   debug: process.env.NODE_ENV === 'development',
-});
+  });
+}
