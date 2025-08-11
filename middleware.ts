@@ -19,11 +19,12 @@ export async function middleware(request: NextRequest) {
     pathname.endsWith('.css') ||
     pathname.endsWith('.js');
 
-  // レート制限チェック（APIルートと重要なページのみ）
+  // レート制限チェック（アプリ独自のAPIのみ対象。Auth.jsやページは除外）
   let rateLimitResult = null;
   if (
     !isStaticResource &&
-    (pathname.startsWith('/api/') || pathname.startsWith('/auth/'))
+    pathname.startsWith('/api/') &&
+    !pathname.startsWith('/api/auth')
   ) {
     const rateLimiter = getEdgeRateLimiter();
     rateLimitResult = rateLimiter.checkLimit(ip);
@@ -117,7 +118,7 @@ export async function middleware(request: NextRequest) {
     '/posts',
   ];
   const authPaths = ['/auth/signin', '/auth/register'];
-  
+
   const isProtectedRoute = protectedPaths.some((path) =>
     pathname.startsWith(path)
   );
@@ -128,7 +129,7 @@ export async function middleware(request: NextRequest) {
     try {
       const token = await getToken({
         req: request,
-        secret: process.env.NEXTAUTH_SECRET,
+        secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
       });
 
       // 保護されたルートで認証されていない場合
@@ -142,7 +143,10 @@ export async function middleware(request: NextRequest) {
       if (isAuthPage && token) {
         // callbackUrlがある場合はそこにリダイレクト
         const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
-        if (callbackUrl && !authPaths.some(path => callbackUrl.startsWith(path))) {
+        if (
+          callbackUrl &&
+          !authPaths.some((path) => callbackUrl.startsWith(path))
+        ) {
           return NextResponse.redirect(new URL(callbackUrl, request.url));
         }
         // デフォルトはダッシュボードへ
