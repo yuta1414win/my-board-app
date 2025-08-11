@@ -15,8 +15,8 @@ import {
   Paper,
   Stack,
   Divider,
+  Grid,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import {
   Dashboard as DashboardIcon,
   PostAdd as PostAddIcon,
