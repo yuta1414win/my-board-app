@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { render } from '@react-email/render';
-import { sendEmail } from '@/lib/email';
+import { sendEmail } from '../../../../lib/email';
 import WelcomeEmail from '@/src/emails/welcome-email';
 
 export async function POST(req: NextRequest) {
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     // React Emailテンプレートをレンダリング
     const dashboardUrl = `${process.env.NEXTAUTH_URL}/board`;
-    const emailHtml = render(WelcomeEmail({ userName, dashboardUrl }));
+    const emailHtml = await render(WelcomeEmail({ userName, dashboardUrl }));
 
     // メール送信
     const result = await sendEmail({
