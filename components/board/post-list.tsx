@@ -114,11 +114,14 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   const handleDeleteClick = () => {
     if (!selectedPost) return;
     // 権限チェック - 管理者または投稿者のみ削除可能
-    const canDelete = session?.user?.role === 'admin' || session?.user?.id === selectedPost.author;
+    const canDelete =
+      session?.user?.role === 'admin' ||
+      session?.user?.id === selectedPost.author;
     if (!canDelete) {
-      const errorMessage = session?.user?.role === 'admin' 
-        ? '削除権限がありません'
-        : '自分が投稿した内容のみ削除できます';
+      const errorMessage =
+        session?.user?.role === 'admin'
+          ? '削除権限がありません'
+          : '自分が投稿した内容のみ削除できます';
       setError(errorMessage);
       handleMenuClose();
       return;
@@ -154,15 +157,31 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         // 一覧を再取得
         await fetchPosts(page);
       } else {
-        const data = await response.json();
+        const data = await response.json() as APIError;
         let errorMessage = data.error || '削除に失敗しました';
-        if (response.status === 403) {
-          errorMessage = 'この投稿を削除する権限がありません';
-        } else if (response.status === 404) {
-          errorMessage = '投稿が見つかりません';
-        } else if (response.status === 400) {
-          errorMessage = '無効な投稿IDです';
+        
+        // APIエラーコードに基づく詳細なエラーメッセージ
+        switch (response.status) {
+          case 403:
+            errorMessage = data.code === 'PERMISSION_DENIED' 
+              ? (data.error || 'この投稿を削除する権限がありません')
+              : 'アクセスが拒否されました';
+            break;
+          case 404:
+            errorMessage = '投稿が見つかりません';
+            break;
+          case 400:
+            errorMessage = data.code === 'INVALID_POST_ID' 
+              ? '無効な投稿IDです' 
+              : '入力内容に問題があります';
+            break;
+          case 401:
+            errorMessage = '認証が必要です。再度ログインしてください';
+            break;
+          default:
+            errorMessage = data.error || 'サーバーエラーが発生しました';
         }
+        
         setError(errorMessage);
         console.error('削除エラー:', errorMessage);
         console.error('エラーレスポンス:', data);
