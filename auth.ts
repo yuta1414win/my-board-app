@@ -80,7 +80,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             id: user._id.toString(),
             email: user.email,
             name: user.name,
-            emailVerified: user.emailVerified,
+            emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
           };
         } catch (error) {
           console.error('認証エラー:', error);
