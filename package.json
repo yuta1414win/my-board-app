@@ -4,10 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
+    "dev:safe": "zsh ./scripts/dev.sh",
     "dev:turbo": "next dev --turbopack -p 3001",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "build:prod": "npm run lint && npm run test && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -15,7 +19,10 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:all": "npm run test && npm run test:e2e",
-    "test:mongodb": "node scripts/test-mongodb.js"
+    "test:mongodb": "node scripts/test-mongodb.js",
+    "deploy:check": "node scripts/deploy-check.js",
+    "deploy:prod": "npm run build:prod && vercel --prod",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
