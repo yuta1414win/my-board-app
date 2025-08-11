@@ -67,7 +67,7 @@ const nextConfig: NextConfig = {
       : undefined,
   poweredByHeader: false,
   compress: true,
-  
+
   // CI環境でのビルド最適化
   ...(process.env.CI && {
     eslint: {

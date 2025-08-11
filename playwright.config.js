@@ -88,8 +88,8 @@ export default defineConfig({
           AUTH_TRUST_HOST: 'true',
           NEXTAUTH_URL: 'http://localhost:3000',
           NODE_ENV: 'production',
-          CI: 'true'
-        }
+          CI: 'true',
+        },
       }
     : undefined, // ローカルでは既存のサーバーを使用
 });
