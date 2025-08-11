@@ -20,6 +20,11 @@
       }
     ],
     "paths": {
+      "@/components/*": ["src/components/*", "components/*"],
+      "@/emails/*": ["src/emails/*", "emails/*"],
+      "@/lib/*": ["src/lib/*", "lib/*"],
+      "@/models/*": ["src/models/*", "models/*"],
+      "@/app/*": ["src/app/*", "app/*"],
       "@/*": ["./*"]
     }
   },

@@ -3,16 +3,19 @@
 ## デプロイ手順
 
 ### 1. Vercel CLIでログイン（初回のみ）
+
 ```bash
 vercel login
 ```
 
 ### 2. デプロイコマンド実行
+
 ```bash
 vercel
 ```
 
 初回は以下の質問に答えます：
+
 - Set up and deploy? → **Y**
 - Which scope? → 個人アカウントを選択
 - Link to existing project? → **N**（新規プロジェクト）
@@ -48,6 +51,7 @@ CSRF_SECRET=（32文字のランダム文字列）
 ```
 
 #### 環境変数生成コマンド
+
 ```bash
 # ランダム文字列の生成
 openssl rand -base64 32
@@ -66,11 +70,13 @@ openssl rand -base64 32
 さくらのコントロールパネルで以下を設定：
 
 **Aレコード**
+
 ```
 nouchinho.com A 76.76.21.21
 ```
 
 **CNAMEレコード**
+
 ```
 www.nouchinho.com CNAME cname.vercel-dns.com
 ```
@@ -86,7 +92,9 @@ vercel --prod
 ## デプロイ後の確認
 
 ### 1. デプロイURLの確認
+
 デプロイ完了後、以下のようなURLが表示されます：
+
 - Preview: `https://my-board-app-xxxxx.vercel.app`
 - Production: `https://nouchinho.com`（ドメイン設定後）
 
@@ -105,6 +113,7 @@ vercel --prod
 
 1. package.jsonのビルドコマンドを確認
 2. Node.jsバージョンを指定（package.jsonに追加）：
+
 ```json
 {
   "engines": {
@@ -136,13 +145,16 @@ GitHubリポジトリと連携すると、mainブランチへのプッシュで�
 ## セキュリティ設定
 
 ### 1. 環境変数の保護
+
 - Production環境の変数は暗号化して保存
 - Preview環境では開発用の値を使用
 
 ### 2. アクセス制限
+
 - Preview環境にパスワード保護を設定可能
 - Settings → Deployment Protection
 
 ### 3. ログとモニタリング
+
 - Functions → Logsでエラーログを確認
 - Analytics → Web Vitalsでパフォーマンス監視

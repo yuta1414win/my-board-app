@@ -80,7 +80,9 @@ export const authOptions: any = {
             email: user.email,
             name: user.name,
             emailVerified: user.emailVerified
-              ? (typeof user.emailVerified === 'boolean' ? new Date() : new Date(user.emailVerified))
+              ? typeof user.emailVerified === 'boolean'
+                ? new Date()
+                : new Date(user.emailVerified)
               : undefined,
           };
         } catch (error) {

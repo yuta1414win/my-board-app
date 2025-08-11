@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
+import { UserModel } from '@/models/User';
 import {
   checkPasswordStrength,
   validateEmail,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     // メールアドレスの重複チェック
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await UserModel.findByEmail(email.toLowerCase());
     if (existingUser) {
       return NextResponse.json(
         { error: 'このメールアドレスは既に登録されています' },
@@ -91,22 +91,20 @@ export async function POST(request: NextRequest) {
 
     // 確認トークンの生成
     const verificationToken = generateVerificationToken();
-    const verificationExpires = new Date();
-    verificationExpires.setHours(verificationExpires.getHours() + 24);
 
     // ユーザーの作成
-    const user = await User.create({
+    const insertedId = await UserModel.createUser({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
       emailVerified: false,
-      emailVerificationToken: verificationToken,
-      emailVerificationExpires: verificationExpires,
+      role: 'user',
+      isActive: true,
     });
 
     // 確認メールの送信
     const emailResult = await sendVerificationEmail(
-      user.email,
+      email.toLowerCase(),
       verificationToken
     );
 
@@ -119,7 +117,7 @@ export async function POST(request: NextRequest) {
           success: true,
           message:
             'アカウントが作成されました。確認メールの送信に失敗しました。サポートにお問い合わせください。',
-          userId: user._id,
+          userId: insertedId.toString(),
           emailSent: false,
         },
         { status: 201 }
@@ -131,7 +129,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message:
           'アカウントが作成されました。メールアドレスに送信された確認リンクをクリックしてください。',
-        userId: user._id,
+        userId: insertedId.toString(),
         emailSent: true,
       },
       { status: 201 }

@@ -36,3 +36,5 @@ export async function connectDB(): Promise<Db> {
 }
 
 export { clientPromise };
+
+export default connectDB;

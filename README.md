@@ -31,7 +31,7 @@ Next.js 15、NextAuth、MongoDB、MUIを使用した会員制の掲示板シス�
 
 ## 技術スタック
 
-- **フロントエンド**: Next.js 15 (App Router)
+- **フロントエンド**: ext.js 15 (App Router)
 - **認証**: NextAuth v5
 - **データベース**: MongoDB + Mongoose
 - **UI フレームワーク**: Material-UI (MUI)

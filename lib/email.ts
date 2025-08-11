@@ -132,7 +132,6 @@ export async function testEmailConnection(): Promise<EmailResult> {
   }
 }
 
-
 export async function sendVerificationEmail(
   email: string,
   token: string

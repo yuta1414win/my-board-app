@@ -13,6 +13,7 @@
 さくらのレンタルサーバーはNode.jsの直接実行をサポートしていない場合が多いため、静的サイトとしてエクスポートする方法を推奨します。
 
 #### 制限事項
+
 - APIルート（`/api/*`）は使用不可
 - サーバーサイドレンダリング（SSR）は使用不可
 - 認証機能は外部サービス（Supabase、Firebase Auth等）への移行が必要
@@ -63,6 +64,7 @@ chmod +x deploy-static.sh
 ### 4. ファイルのアップロード
 
 #### FTPを使用する場合:
+
 ```bash
 # FTP接続情報（さくらコントロールパネルで確認）
 # ホスト: username.sakura.ne.jp
@@ -74,6 +76,7 @@ chmod +x deploy-static.sh
 ```
 
 #### SSHを使用する場合:
+
 ```bash
 # SSHでサーバーに接続
 ssh username@username.sakura.ne.jp
@@ -112,13 +115,13 @@ header('Access-Control-Allow-Origin: https://nouchinho.com');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    
+
     // メール送信処理
     $to = 'admin@nouchinho.com';
     $subject = 'お問い合わせ';
     $message = $data['message'];
     $headers = 'From: ' . $data['email'];
-    
+
     if (mail($to, $subject, $message, $headers)) {
         echo json_encode(['success' => true]);
     } else {
@@ -134,16 +137,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ### DNS設定（さくらコントロールパネル）
 
 1. **MXレコード**
+
    ```
    MX 10 mail.nouchinho.com.
    ```
 
 2. **Aレコード（メールサーバー用）**
+
    ```
    mail.nouchinho.com. A 133.167.8.159
    ```
 
 3. **SPFレコード**
+
    ```
    TXT "v=spf1 include:spf.sakura.ne.jp ~all"
    ```
@@ -162,6 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ### 403 Forbiddenエラーが続く場合
 
 1. **ファイルパーミッションを確認**
+
    ```bash
    chmod 755 ~/www/nouchinho/
    chmod 644 ~/www/nouchinho/index.html
@@ -169,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    ```
 
 2. **index.htmlが存在することを確認**
+
    ```bash
    ls -la ~/www/nouchinho/index.html
    ```
