@@ -81,7 +81,7 @@ export const authOptions: any = {
             name: user.name,
             emailVerified: user.emailVerified
               ? new Date(user.emailVerified)
-              : null,
+              : undefined,
           };
         } catch (error) {
           console.error('認証エラー:', error);
