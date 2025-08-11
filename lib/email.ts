@@ -271,18 +271,3 @@ export async function sendWelcomeEmail(
   });
 }
 
-// メール送信のテスト関数
-export async function testEmailConnection(): Promise<EmailResult> {
-  const transporter = createTransporter();
-
-  try {
-    await transporter.verify();
-    console.log('Email connection test successful');
-    return { success: true };
-  } catch (error) {
-    console.error('Email connection test failed:', error);
-    return { success: false, error };
-  } finally {
-    transporter.close();
-  }
-}
