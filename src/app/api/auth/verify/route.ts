@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import { UserModel } from '@/models/User';
+import dbConnect from '../../../../lib/mongodb';
+import { UserModel } from '../../../../models/User';
 
 // 日本語エラーメッセージの定数
 const MESSAGES = {
