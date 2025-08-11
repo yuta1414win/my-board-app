@@ -9,23 +9,27 @@ export async function middleware(request: NextRequest) {
   console.log('🔥 MIDDLEWARE RUNNING:', pathname, 'IP:', ip);
 
   // 静的リソースに対してはレート制限をスキップ
-  const isStaticResource = pathname.startsWith('/_next/') || 
-                          pathname.endsWith('.ico') || 
-                          pathname.endsWith('.png') || 
-                          pathname.endsWith('.jpg') || 
-                          pathname.endsWith('.jpeg') || 
-                          pathname.endsWith('.svg') || 
-                          pathname.endsWith('.css') || 
-                          pathname.endsWith('.js');
+  const isStaticResource =
+    pathname.startsWith('/_next/') ||
+    pathname.endsWith('.ico') ||
+    pathname.endsWith('.png') ||
+    pathname.endsWith('.jpg') ||
+    pathname.endsWith('.jpeg') ||
+    pathname.endsWith('.svg') ||
+    pathname.endsWith('.css') ||
+    pathname.endsWith('.js');
 
   // レート制限チェック（APIルートと重要なページのみ）
   let rateLimitResult = null;
-  if (!isStaticResource && (pathname.startsWith('/api/') || pathname.startsWith('/auth/'))) {
+  if (
+    !isStaticResource &&
+    (pathname.startsWith('/api/') || pathname.startsWith('/auth/'))
+  ) {
     const rateLimiter = getEdgeRateLimiter();
     rateLimitResult = rateLimiter.checkLimit(ip);
   }
 
-  if (!rateLimitResult.allowed) {
+  if (rateLimitResult && !rateLimitResult.allowed) {
     console.log('🚨 RATE LIMIT EXCEEDED for IP:', ip);
     return new NextResponse(
       JSON.stringify({
