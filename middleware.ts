@@ -8,9 +8,22 @@ export async function middleware(request: NextRequest) {
 
   console.log('🔥 MIDDLEWARE RUNNING:', pathname, 'IP:', ip);
 
-  // レート制限チェック（Edge Runtime対応）
-  const rateLimiter = getEdgeRateLimiter();
-  const rateLimitResult = rateLimiter.checkLimit(ip);
+  // 静的リソースに対してはレート制限をスキップ
+  const isStaticResource = pathname.startsWith('/_next/') || 
+                          pathname.endsWith('.ico') || 
+                          pathname.endsWith('.png') || 
+                          pathname.endsWith('.jpg') || 
+                          pathname.endsWith('.jpeg') || 
+                          pathname.endsWith('.svg') || 
+                          pathname.endsWith('.css') || 
+                          pathname.endsWith('.js');
+
+  // レート制限チェック（APIルートと重要なページのみ）
+  let rateLimitResult = null;
+  if (!isStaticResource && (pathname.startsWith('/api/') || pathname.startsWith('/auth/'))) {
+    const rateLimiter = getEdgeRateLimiter();
+    rateLimitResult = rateLimiter.checkLimit(ip);
+  }
 
   if (!rateLimitResult.allowed) {
     console.log('🚨 RATE LIMIT EXCEEDED for IP:', ip);
@@ -108,14 +121,14 @@ export async function middleware(request: NextRequest) {
     });
 
     if (!token) {
-      const loginUrl = new URL('/auth/login', request.url);
+      const loginUrl = new URL('/auth/signin', request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
 
   // 認証済みユーザーの認証ページリダイレクト
-  const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
+  const authPaths = ['/auth/signin', '/auth/register'];
   const isAuthPage = authPaths.some((path) => pathname.startsWith(path));
 
   if (isAuthPage) {
