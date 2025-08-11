@@ -19,6 +19,7 @@ const customJestConfig = {
     '<rootDir>/__tests__/api/profile.test.ts',
     '<rootDir>/__tests__/api/auth-protected-api.test.ts',
     '<rootDir>/__tests__/lib/email.test.ts',
+    '<rootDir>/__tests__/security/',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
