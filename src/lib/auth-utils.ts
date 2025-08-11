@@ -5,7 +5,7 @@ import {
   getUserFriendlyErrorMessage,
   ErrorLevel,
   ERROR_LEVEL_MAP,
-} from '@/types/auth';
+} from '../types/auth';
 
 /**
  * APIレスポンスを安全にパースする
