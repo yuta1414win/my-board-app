@@ -116,7 +116,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.emailVerified = user.emailVerified ? new Date(user.emailVerified) : new Date(); // OAuthは認証済みとする
+        token.emailVerified = user.emailVerified
+          ? new Date(user.emailVerified)
+          : new Date(); // OAuthは認証済みとする
         token.loginAt = Date.now();
 
         // OAuthプロバイダーの場合
@@ -138,7 +140,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        session.user.emailVerified = token.emailVerified as boolean;
+        session.user.emailVerified = token.emailVerified as Date;
         if (token.role) {
           session.user.role = token.role as string;
         }
