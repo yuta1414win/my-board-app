@@ -203,7 +203,7 @@ export const authOptions: any = {
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: any) {
       // セキュアなリダイレクト処理
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
