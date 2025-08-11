@@ -210,7 +210,7 @@ export default function DashboardPage() {
 
         {/* 統計・アクティビティセクション */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Typography
                 variant="h6"
@@ -264,7 +264,7 @@ export default function DashboardPage() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
               <Stack
                 direction="row"
