@@ -11,7 +11,7 @@ import { getRealIP } from './rate-limiter';
 const mongoClient = new MongoClient(process.env.MONGODB_URI!);
 
 // セッションの最適化設定
-export const authOptions: NextAuthOptions = {
+export const authOptions: any = { // TODO: Replace with NextAuth v5 config type
   adapter: MongoDBAdapter(mongoClient),
 
   // プロバイダーの設定
