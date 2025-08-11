@@ -55,7 +55,10 @@ class AuthPages {
   }
 
   async submitSignIn() {
-    await this.page.getByRole('button', { name: /ログイン|Sign In/ }).click();
+    await this.page
+      .locator('form')
+      .getByRole('button', { name: /^(ログイン|Sign In)$/ })
+      .click();
   }
 
   async signOut() {
@@ -152,7 +155,7 @@ test.describe('認証フロー E2E テスト', () => {
       await expect(page.getByText(/確認メール.*送信/)).toBeVisible();
 
       // ログインページへのリンクが表示される
-      const signInLink = page.getByRole('link', { name: /ログイン|Sign In/ });
+      const signInLink = page.getByRole('link', { name: /^(ログイン|Sign In)$/ });
       await expect(signInLink).toBeVisible();
     });
 
@@ -270,7 +273,9 @@ test.describe('認証フロー E2E テスト', () => {
       await authPages.expectErrorMessage('ログイン試行回数が上限を超えました');
 
       // ログインボタンが無効化される
-      const loginButton = page.getByRole('button', { name: /ログイン/ });
+      const loginButton = page
+        .locator('form')
+        .getByRole('button', { name: /^(ログイン)$/ });
       await expect(loginButton).toBeDisabled();
     });
   });
@@ -457,12 +462,15 @@ test.describe('認証フロー E2E テスト', () => {
       await page.keyboard.press('Tab'); // パスワード表示切替ボタン
       await page.keyboard.press('Tab'); // ログインボタン
       await expect(
-        page.getByRole('button', { name: /ログイン/ })
+        page.locator('form').getByRole('button', { name: /^(ログイン)$/ })
       ).toBeFocused();
 
       // Enterキーでフォーム送信
       await authPages.fillSignInForm(existingUser.email, existingUser.password);
-      await page.getByRole('button', { name: /ログイン/ }).focus();
+      await page
+        .locator('form')
+        .getByRole('button', { name: /^(ログイン)$/ })
+        .focus();
       await page.keyboard.press('Enter');
 
       await authPages.expectToBeOnBoardPage();

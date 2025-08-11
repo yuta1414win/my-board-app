@@ -77,7 +77,10 @@ test.describe('認証システム エラーケース & セキュリティテス�
       await page.goto('/auth/signin');
       await page.getByLabel('メールアドレス').fill('test@example.com');
       await page.getByLabel('パスワード').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true })
+        .click();
 
       // エラーメッセージの確認
       await expect(page.getByText('サーバーエラー')).toBeVisible();
@@ -314,7 +317,10 @@ test.describe('認証システム エラーケース & セキュリティテス�
       for (const [index, password] of passwords.entries()) {
         await page.getByLabel('メールアドレス').fill(targetEmail);
         await page.getByLabel('パスワード').fill(password);
-        await page.getByRole('button', { name: 'ログイン' }).click();
+        await page
+          .locator('form')
+          .getByRole('button', { name: 'ログイン', exact: true })
+          .click();
 
         if (index >= 4) {
           // 5回目以降でアカウントロックが発動する
@@ -427,7 +433,7 @@ test.describe('認証システム エラーケース & セキュリティテス�
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
       await expect(page.getByLabel('パスワード')).toBeVisible();
       await expect(
-        page.getByRole('button', { name: 'ログイン' })
+        page.locator('form').getByRole('button', { name: 'ログイン', exact: true })
       ).toBeVisible();
     });
 
@@ -438,7 +444,10 @@ test.describe('認証システム エラーケース & セキュリティテス�
       await page.goto('/auth/signin');
       await page.getByLabel('メールアドレス').fill('test@example.com');
       await page.getByLabel('パスワード').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true })
+        .click();
 
       // Cookieなしでも適切なエラーメッセージが表示される
       await page.waitForTimeout(2000);
@@ -457,7 +466,7 @@ test.describe('認証システム エラーケース & セキュリティテス�
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
       await expect(page.getByLabel('パスワード')).toBeVisible();
       await expect(
-        page.getByRole('button', { name: 'ログイン' })
+        page.locator('form').getByRole('button', { name: 'ログイン', exact: true })
       ).toBeVisible();
     });
   });
@@ -497,7 +506,9 @@ test.describe('認証システム エラーケース & セキュリティテス�
       await page.getByLabel('パスワード').fill('TestPassword123!');
 
       // 複数回同時にログインボタンをクリック
-      const loginButton = page.getByRole('button', { name: 'ログイン' });
+      const loginButton = page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true });
       await Promise.all([loginButton.click(), loginButton.click()]);
 
       // 重複送信が防止される

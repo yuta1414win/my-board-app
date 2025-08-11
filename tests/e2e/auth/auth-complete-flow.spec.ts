@@ -196,7 +196,10 @@ test.describe('認証システム完全フロー', () => {
       await page.getByLabel('パスワード').fill('ExistingUser123!');
 
       // ログインボタンクリック
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true })
+        .click();
 
       // 成功時の動作確認（モック環境での想定）
       // 実際のテストでは事前にユーザー作成が必要
@@ -210,7 +213,10 @@ test.describe('認証システム完全フロー', () => {
       await page.getByLabel('メールアドレス').fill('nonexistent@example.com');
       await page.getByLabel('パスワード').fill('WrongPassword123!');
 
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true })
+        .click();
 
       // エラーメッセージの確認
       await expect(
@@ -229,7 +235,10 @@ test.describe('認証システム完全フロー', () => {
       for (let i = 1; i <= 5; i++) {
         await page.getByLabel('メールアドレス').fill(email);
         await page.getByLabel('パスワード').fill(wrongPassword);
-        await page.getByRole('button', { name: 'ログイン' }).click();
+        await page
+          .locator('form')
+          .getByRole('button', { name: 'ログイン', exact: true })
+          .click();
 
         if (i < 5) {
           await expect(page.getByText(`試行回数: ${i}/5`)).toBeVisible();
@@ -371,7 +380,10 @@ test.describe('認証システム完全フロー', () => {
       await page.goto('/auth/signin');
       await page.getByLabel('メールアドレス').fill('test@example.com');
       await page.getByLabel('パスワード').fill('TestPassword123!');
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true })
+        .click();
 
       // ネットワークエラーメッセージの確認
       await expect(
@@ -468,11 +480,13 @@ test.describe('認証システム完全フロー', () => {
       await expect(page.getByLabel('メールアドレス')).toBeVisible();
       await expect(page.getByLabel('パスワード')).toBeVisible();
       await expect(
-        page.getByRole('button', { name: 'ログイン' })
+        page.locator('form').getByRole('button', { name: 'ログイン', exact: true })
       ).toBeVisible();
 
       // ボタンが適切なサイズで表示される
-      const loginButton = page.getByRole('button', { name: 'ログイン' });
+      const loginButton = page
+        .locator('form')
+        .getByRole('button', { name: 'ログイン', exact: true });
       const buttonBox = await loginButton.boundingBox();
       expect(buttonBox?.width).toBeGreaterThan(200); // 最小タップエリア
       expect(buttonBox?.height).toBeGreaterThan(40);
@@ -500,7 +514,10 @@ async function loginUser(page: Page, email: string, password: string) {
   await page.goto('/auth/signin');
   await page.getByLabel('メールアドレス').fill(email);
   await page.getByLabel('パスワード').fill(password);
-  await page.getByRole('button', { name: 'ログイン' }).click();
+  await page
+    .locator('form')
+    .getByRole('button', { name: 'ログイン', exact: true })
+    .click();
   await page.waitForURL('/board', { timeout: 5000 });
 }
 

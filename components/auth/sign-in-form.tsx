@@ -360,6 +360,7 @@ export default function SignInForm() {
               py: 1.5,
               bgcolor: isBlocked ? 'grey.400' : 'primary.main',
             }}
+            data-testid="login-submit"
           >
             {loading ? (
               <CircularProgress size={24} />
@@ -369,101 +370,101 @@ export default function SignInForm() {
               'ログイン'
             )}
           </Button>
+        </Box>
 
-          <Divider sx={{ my: 2 }}>
-            <Typography variant="body2" color="textSecondary">
-              または
-            </Typography>
-          </Divider>
+        {/* OAuth ボタンと補助リンクはフォームの外に配置して、フォーム内のsubmitボタンと分離 */}
+        <Divider sx={{ my: 2 }}>
+          <Typography variant="body2" color="textSecondary">
+            または
+          </Typography>
+        </Divider>
 
-          <Stack spacing={2} sx={{ mb: 3 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              startIcon={<GoogleIcon />}
-              onClick={() => handleOAuthSignIn('google')}
-              disabled={loading || isBlocked}
-              sx={{
-                height: 48,
-                borderColor: '#db4437',
-                color: '#db4437',
-                '&:hover': {
-                  borderColor: '#c23321',
-                  backgroundColor: '#fdf2f2',
-                },
-                '&:disabled': {
-                  opacity: 0.6,
-                },
-              }}
-            >
-              Googleでログイン
-            </Button>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              startIcon={<GitHubIcon />}
-              onClick={() => handleOAuthSignIn('github')}
-              disabled={loading || isBlocked}
-              sx={{
-                height: 48,
-                borderColor: '#333',
-                color: '#333',
-                '&:hover': {
-                  borderColor: '#000',
-                  backgroundColor: '#f5f5f5',
-                },
-                '&:disabled': {
-                  opacity: 0.6,
-                },
-              }}
-            >
-              GitHubでログイン
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            flexWrap="wrap"
-            gap={1}
+        <Stack spacing={2} sx={{ mb: 3 }}>
+          <Button
+            type="button"
+            fullWidth
+            variant="outlined"
+            size="large"
+            startIcon={<GoogleIcon />}
+            onClick={() => handleOAuthSignIn('google')}
+            disabled={loading || isBlocked}
+            sx={{
+              height: 48,
+              borderColor: '#db4437',
+              color: '#db4437',
+              '&:hover': {
+                borderColor: '#c23321',
+                backgroundColor: '#fdf2f2',
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+            }}
           >
-            <Link
-              component={NextLink}
-              href="/auth/register"
-              variant="body2"
-              sx={{ color: 'primary.main' }}
-            >
-              新規登録
-            </Link>
-            <Link
-              component={NextLink}
-              href="/auth/forgot-password"
-              variant="body2"
-              sx={{ color: 'text.secondary' }}
-            >
-              パスワードを忘れた場合
-            </Link>
-          </Box>
+            Googleでログイン
+          </Button>
 
-          {/* セキュリティ情報 */}
-          <Box mt={3} p={2} bgcolor="grey.50" borderRadius={1}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              display="block"
-            >
-              <Security
-                fontSize="small"
-                sx={{ mr: 1, verticalAlign: 'middle' }}
-              />
-              セキュリティのため、5回連続でログインに失敗するとアカウントが5分間ロックされます。
-            </Typography>
-          </Box>
+          <Button
+            type="button"
+            fullWidth
+            variant="outlined"
+            size="large"
+            startIcon={<GitHubIcon />}
+            onClick={() => handleOAuthSignIn('github')}
+            disabled={loading || isBlocked}
+            sx={{
+              height: 48,
+              borderColor: '#333',
+              color: '#333',
+              '&:hover': {
+                borderColor: '#000',
+                backgroundColor: '#f5f5f5',
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+            }}
+          >
+            GitHubでログイン
+          </Button>
+        </Stack>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Link
+            component={NextLink}
+            href="/auth/register"
+            variant="body2"
+            sx={{ color: 'primary.main' }}
+          >
+            新規登録
+          </Link>
+          <Link
+            component={NextLink}
+            href="/auth/forgot-password"
+            variant="body2"
+            sx={{ color: 'text.secondary' }}
+          >
+            パスワードを忘れた場合
+          </Link>
+        </Box>
+
+        {/* セキュリティ情報 */}
+        <Box mt={3} p={2} bgcolor="grey.50" borderRadius={1}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+          >
+            <Security fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+            セキュリティのため、5回連続でログインに失敗するとアカウントが5分間ロックされます。
+          </Typography>
         </Box>
       </CardContent>
     </Card>

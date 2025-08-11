@@ -232,7 +232,8 @@ export async function POST(request: Request) {
     if (error instanceof Error) {
       errorMessage = error.message;
       errorDetails.name = error.name;
-      errorDetails.stack = process.env.NODE_ENV === 'development' ? error.stack : undefined;
+      errorDetails.stack =
+        process.env.NODE_ENV === 'development' ? error.stack : undefined;
     }
 
     // MongoDB重複エラーの処理
@@ -282,7 +283,8 @@ export async function POST(request: Request) {
         {
           error: 'データベース設定エラー',
           code: 'DATABASE_CONFIG_ERROR',
-          message: 'MongoDB URIが設定されていません。管理者に連絡してください。',
+          message:
+            'MongoDB URIが設定されていません。管理者に連絡してください。',
         },
         { status: 503 }
       );
@@ -292,7 +294,8 @@ export async function POST(request: Request) {
       {
         error: errorMessage,
         code: errorCode,
-        debug: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
+        debug:
+          process.env.NODE_ENV === 'development' ? errorDetails : undefined,
       },
       { status: 500 }
     );
