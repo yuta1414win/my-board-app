@@ -133,7 +133,7 @@ export async function POST(request: Request) {
 
     // 確認メール送信
     try {
-      await sendVerificationEmail(email, verificationToken, name);
+      await sendVerificationEmail(email, verificationToken);
     } catch (emailError) {
       console.error('Email sending error:', emailError);
       // ユーザー作成は成功したが、メール送信に失敗した場合
