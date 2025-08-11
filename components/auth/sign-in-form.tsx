@@ -113,7 +113,7 @@ export default function SignInForm() {
 
     if (!validation.success) {
       const newErrors: Partial<FormData> = {};
-      validation.error.errors.forEach((error) => {
+      validation.error.issues.forEach((error) => {
         const field = error.path[0] as keyof FormData;
         newErrors[field] = error.message;
       });
