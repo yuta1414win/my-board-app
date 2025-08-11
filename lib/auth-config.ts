@@ -123,8 +123,6 @@ export const authOptions: any = {
         token,
         secret,
         maxAge,
-        // より強力な暗号化
-        algorithm: 'HS512',
       });
     },
     decode: async ({ token, secret }: any) => {
