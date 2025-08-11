@@ -13,7 +13,7 @@ export interface VerificationResponse extends AuthResponse {
 }
 
 export interface ResendResponse extends AuthResponse {
-  // 再送信固有のプロパティがあれば追加
+  waitTime?: number; // 再送信まで待つ時間（秒）
 }
 
 // エラーコード定数
