@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     const verificationToken = generateVerificationToken();
 
     // ユーザーの作成
-    const insertedId = await UserModel.createUser({
+    const createdUser = await UserModel.createUser({
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
