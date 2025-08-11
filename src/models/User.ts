@@ -1,6 +1,22 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+// プレーンオブジェクト用の型
+export interface UserData {
+  name: string;
+  email: string;
+  password: string;
+  bio?: string;
+  quickComment?: string;
+  avatar?: string;
+  emailVerified: boolean;
+  role: 'user' | 'admin';
+  isActive: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Mongoose Document型
 export interface UserDocument extends Document {
   name: string;
   email: string;
