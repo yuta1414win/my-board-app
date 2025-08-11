@@ -99,8 +99,8 @@ export default function EditPostPage() {
           // 権限チェック
           if (!data.permissions.canEdit) {
             setPermissionError(
-              data.permissions.isAdmin 
-                ? '管理者権限でのみ編集可能です' 
+              data.permissions.isAdmin
+                ? '管理者権限でのみ編集可能です'
                 : 'この投稿を編集する権限がありません'
             );
           }
@@ -109,7 +109,7 @@ export default function EditPostPage() {
           setPost(data);
           setTitle(data.title);
           setContent(data.content);
-          
+
           // 従来の権限チェック
           if (session?.user?.id !== data.author) {
             setPermissionError('この投稿を編集する権限がありません');
@@ -118,7 +118,7 @@ export default function EditPostPage() {
               canEdit: true,
               canDelete: true,
               isOwner: true,
-              isAdmin: session?.user?.role === 'admin'
+              isAdmin: session?.user?.role === 'admin',
             });
           }
         }
@@ -217,10 +217,37 @@ export default function EditPostPage() {
     );
   }
 
+  // 権限エラーの表示
+  if (permissionError) {
+    return (
+      <Container maxWidth="md" sx={{ py: 3 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {permissionError}
+        </Alert>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={() => router.push('/board')}
+        >
+          掲示板に戻る
+        </Button>
+      </Container>
+    );
+  }
+
   if (error && !post) {
     return (
       <Container maxWidth="md" sx={{ py: 3 }}>
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={() => router.push('/board')}
+        >
+          掲示板に戻る
+        </Button>
       </Container>
     );
   }
@@ -251,6 +278,13 @@ export default function EditPostPage() {
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
+          </Alert>
+        )}
+
+        {permissions && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {permissions.isAdmin ? '管理者として編集中' : 'あなたの投稿を編集中'}
+            {permissions.isOwner && !permissions.isAdmin && '（投稿者）'}
           </Alert>
         )}
 
@@ -315,7 +349,9 @@ export default function EditPostPage() {
               disabled={
                 loading ||
                 titleLength > titleMaxLength ||
-                contentLength > contentMaxLength
+                contentLength > contentMaxLength ||
+                !permissions?.canEdit ||
+                !!permissionError
               }
               sx={{ flex: 1 }}
             >
