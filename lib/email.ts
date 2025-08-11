@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 // Gmail SMTP設定
 const createTransporter = () => {
@@ -90,22 +91,38 @@ export async function sendEmail({
 }
 
 export function generateEmailVerificationToken(userId: string): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    // フォールバック: JWT_SECRET未設定でも安全に動作させる
+    return crypto.randomBytes(32).toString('hex');
+  }
   return jwt.sign(
     { userId, type: 'email-verification' },
-    process.env.JWT_SECRET!,
+    secret,
     { expiresIn: '24h' }
   );
 }
 
 export function generatePasswordResetToken(userId: string): string {
-  return jwt.sign({ userId, type: 'password-reset' }, process.env.JWT_SECRET!, {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return crypto.randomBytes(32).toString('hex');
+  }
+  return jwt.sign({ userId, type: 'password-reset' }, secret, {
     expiresIn: '1h',
   });
 }
 
+function isLikelyJWT(token: string): boolean {
+  return token.split('.').length === 3;
+}
+
 export function verifyToken(token: string): any {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET!);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) return null; // フォールバック時はDB照合で検証
+    if (!isLikelyJWT(token)) return null;
+    return jwt.verify(token, secret);
   } catch (error) {
     console.error(
       'Token verification failed:',
@@ -136,7 +153,12 @@ export async function sendVerificationEmail(
   email: string,
   token: string
 ): Promise<EmailResult> {
-  const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${token}`;
+  const baseUrl =
+    process.env.NEXTAUTH_URL ||
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    '';
+  const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 
   const html = `
     <!DOCTYPE html>
@@ -177,7 +199,12 @@ export async function sendPasswordResetEmail(
   email: string,
   token: string
 ): Promise<EmailResult> {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+  const baseUrl =
+    process.env.NEXTAUTH_URL ||
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    '';
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 
   const html = `
     <!DOCTYPE html>
@@ -223,7 +250,12 @@ export async function sendWelcomeEmail(
   userName?: string
 ): Promise<EmailResult> {
   const displayName = userName || 'ユーザー様';
-  const dashboardUrl = `${process.env.NEXTAUTH_URL}/board`;
+  const baseUrl =
+    process.env.NEXTAUTH_URL ||
+    process.env.APP_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    '';
+  const dashboardUrl = `${baseUrl}/board`;
 
   const html = `
     <!DOCTYPE html>

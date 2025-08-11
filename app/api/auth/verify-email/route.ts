@@ -15,21 +15,23 @@ export async function GET(request: Request) {
       );
     }
 
-    // トークンを検証
+    // トークンを検証（JWT検証 → 失敗時はDBのトークン照合にフォールバック）
     const decoded = verifyToken(token);
-    if (!decoded || decoded.type !== 'email-verification') {
-      return NextResponse.json(
-        { error: '無効なトークンです' },
-        { status: 400 }
-      );
-    }
 
     await dbConnect();
 
-    // ユーザーを見つけて更新
-    const user = await User.findById(decoded.userId).select(
-      '+emailVerificationToken'
-    );
+    let user = null;
+    if (decoded && decoded.type === 'email-verification' && decoded.userId) {
+      // JWTにユーザーIDが含まれる場合はIDで検索
+      user = await User.findById(decoded.userId).select(
+        '+emailVerificationToken +emailVerificationExpires'
+      );
+    } else {
+      // フォールバック: 保存されているメール確認トークンで検索
+      user = await User.findOne({
+        emailVerificationToken: token,
+      }).select('+emailVerificationToken +emailVerificationExpires');
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -45,9 +47,21 @@ export async function GET(request: Request) {
       );
     }
 
+    // トークン有効期限のチェック（設定されている場合）
+    if (
+      user.emailVerificationExpires &&
+      user.emailVerificationExpires < new Date()
+    ) {
+      return NextResponse.json(
+        { error: 'トークンの有効期限が切れています' },
+        { status: 400 }
+      );
+    }
+
     // メール認証を完了
     user.emailVerified = true;
     user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
     await user.save();
 
     return NextResponse.json({
