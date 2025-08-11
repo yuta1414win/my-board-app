@@ -22,7 +22,7 @@ export async function GET() {
           100,
       },
       services: {
-        database: 'connected',
+        database: databaseStatus,
         auth: 'operational',
       },
     };
