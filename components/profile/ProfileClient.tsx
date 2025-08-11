@@ -115,7 +115,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
 
         <Grid container spacing={3} data-testid="profile-layout">
           {/* プロフィール情報カード */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Card elevation={2}>
               <CardContent sx={{ p: 3 }}>
                 <Stack
