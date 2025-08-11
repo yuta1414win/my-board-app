@@ -48,14 +48,20 @@ export async function POST(request: Request) {
       const db = await dbConnect();
       if (!db) {
         return NextResponse.json(
-          { error: 'Database connection not available', code: 'DATABASE_CONNECTION_UNAVAILABLE' },
+          {
+            error: 'Database connection not available',
+            code: 'DATABASE_CONNECTION_UNAVAILABLE',
+          },
           { status: 503 }
         );
       }
     } catch (connErr) {
       console.error('Database connection error:', connErr);
       return NextResponse.json(
-        { error: 'Database connection failed', code: 'DATABASE_CONNECTION_FAILED' },
+        {
+          error: 'Database connection failed',
+          code: 'DATABASE_CONNECTION_FAILED',
+        },
         { status: 503 }
       );
     }
