@@ -20,6 +20,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:all": "npm run test && npm run test:e2e",
     "test:mongodb": "node scripts/test-mongodb.js",
+    "test:functional": "node scripts/test-functional.js",
+    "test:security": "node scripts/test-security.js", 
+    "test:performance": "node scripts/test-performance.js",
+    "test:production": "npm run test:functional && npm run test:security && npm run test:performance",
     "deploy:check": "node scripts/deploy-check.js",
     "deploy:prod": "npm run build:prod && vercel --prod",
     "postbuild": "next-sitemap"
