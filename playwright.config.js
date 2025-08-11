@@ -21,7 +21,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.CI ? 'http://localhost:3000' : 'http://localhost:3001',
+    baseURL: 'http://localhost:3001',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Take screenshot when test fails */
@@ -76,7 +76,8 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI
     ? {
-        command: 'NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
+        command:
+          'NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
         port: 3000,
         reuseExistingServer: false,
         timeout: 300 * 1000, // 5分に延長
