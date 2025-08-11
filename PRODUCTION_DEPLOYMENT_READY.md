@@ -3,8 +3,9 @@
 ## 現在の状況
 
 ✅ **全ての準備が完了しています**
+
 - ビルドエラー修正済み
-- GitHub Actionsテスト修正済み 
+- GitHub Actionsテスト修正済み
 - Jest設定最適化済み
 - TypeScript型エラー修正済み
 - セキュリティ設定済み（vercel.json）
@@ -12,20 +13,25 @@
 ## 即座にデプロイ可能です
 
 ### 手順1: Vercelログイン
+
 ```bash
 npx vercel login
 ```
+
 **推奨**: GitHubアカウントでログイン
 
 ### 手順2: プロジェクトセットアップ
+
 ```bash
 npx vercel
 ```
+
 - プロジェクト名: `my-board-app` または任意の名前
 - フレームワーク検出: Next.js（自動認識）
 - ディレクトリ: `./` (current directory)
 
 ### 手順3: 環境変数設定
+
 Vercel Dashboard (https://vercel.com/dashboard) で以下を設定:
 
 #### 🔑 必須環境変数
@@ -35,7 +41,7 @@ Vercel Dashboard (https://vercel.com/dashboard) で以下を設定:
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname
 DB_NAME=my-board-app
 
-# NextAuth Configuration  
+# NextAuth Configuration
 NEXTAUTH_URL=https://your-project.vercel.app
 NEXTAUTH_SECRET=your-32-character-secret-key
 
@@ -59,6 +65,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://your-public-sentry-dsn
 ```
 
 ### 手順4: 本番デプロイ
+
 ```bash
 npx vercel --prod
 ```
@@ -66,6 +73,7 @@ npx vercel --prod
 ## 🔒 セキュリティ設定済み
 
 以下のセキュリティ機能が自動で適用されます：
+
 - HTTPS強制 (Vercel自動)
 - セキュリティヘッダー (vercel.json設定済み)
 - CSP (Content Security Policy)
@@ -76,6 +84,7 @@ npx vercel --prod
 ## 📊 デプロイ後の確認項目
 
 ### 1. 基本機能テスト
+
 - [ ] サイトにアクセス可能
 - [ ] ユーザー登録機能
 - [ ] メール認証システム
@@ -84,6 +93,7 @@ npx vercel --prod
 - [ ] プロフィール編集
 
 ### 2. セキュリティ確認
+
 ```bash
 # セキュリティヘッダー確認
 curl -I https://your-domain.vercel.app
@@ -93,6 +103,7 @@ curl -I https://your-domain.vercel.app | grep -i security
 ```
 
 ### 3. パフォーマンス測定
+
 - Lighthouse スコア測定
 - Core Web Vitals確認
 - ページ読み込み速度確認
@@ -100,19 +111,24 @@ curl -I https://your-domain.vercel.app | grep -i security
 ## 🚨 トラブルシューティング
 
 ### ビルドエラーが発生した場合
+
 ```bash
 # ローカルで再度ビルドテスト
 npm run build
 ```
+
 現在のビルドは成功済みのため、問題ありません。
 
 ### 環境変数関連エラー
+
 1. MongoDB URI が正しいか確認
-2. NextAuth URLが本番URLと一致するか確認  
+2. NextAuth URLが本番URLと一致するか確認
 3. Gmailアプリパスワードが正しいか確認
 
 ### データベース接続エラー
+
 MongoDB Atlasの場合：
+
 1. IPホワイトリストに `0.0.0.0/0` を追加
 2. データベースユーザー権限確認
 
@@ -136,6 +152,7 @@ MongoDB Atlasの場合：
 **推定時間**: 5-10分で完了予定
 
 ### 注意事項
+
 - MongoDB URIなどの機密情報は安全に管理してください
 - 初回デプロイ後、DNS反映に数分かかる場合があります
 - カスタムドメインを使用する場合は別途DNS設定が必要です
