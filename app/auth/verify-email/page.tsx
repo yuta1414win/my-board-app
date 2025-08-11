@@ -88,3 +88,11 @@ function VerifyEmailContent() {
     </Box>
   );
 }
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<CircularProgress />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
