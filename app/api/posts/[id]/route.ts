@@ -20,7 +20,10 @@ export async function GET(
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
-        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' }, 
+        {
+          error: PERMISSION_MESSAGES.NOT_AUTHENTICATED,
+          code: 'NOT_AUTHENTICATED',
+        },
         { status: 401 }
       );
     }
@@ -28,7 +31,7 @@ export async function GET(
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
       return NextResponse.json(
-        { error: '無効な投稿IDです', code: 'INVALID_POST_ID' }, 
+        { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
         { status: 400 }
       );
     }
@@ -47,7 +50,10 @@ export async function GET(
     const permissions = checkPostPermissions(session, post);
     if (!permissions.canView) {
       return NextResponse.json(
-        { error: PERMISSION_MESSAGES.NOT_AUTHORIZED, code: 'PERMISSION_DENIED' },
+        {
+          error: PERMISSION_MESSAGES.NOT_AUTHORIZED,
+          code: 'PERMISSION_DENIED',
+        },
         { status: 403 }
       );
     }
@@ -77,12 +83,18 @@ export async function PUT(
   try {
     const session = await auth();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json(
+        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' },
+        { status: 401 }
+      );
     }
 
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
+      return NextResponse.json(
+        { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
+        { status: 400 }
+      );
     }
 
     const { title, content } = await request.json();
@@ -90,21 +102,21 @@ export async function PUT(
     // バリデーション
     if (!title || !content) {
       return NextResponse.json(
-        { error: 'タイトルと内容は必須です' },
+        { error: 'タイトルと内容は必須です', code: 'VALIDATION_ERROR' },
         { status: 400 }
       );
     }
 
     if (title.length > 100) {
       return NextResponse.json(
-        { error: 'タイトルは100文字以内で入力してください' },
+        { error: 'タイトルは100文字以内で入力してください', code: 'VALIDATION_ERROR' },
         { status: 400 }
       );
     }
 
     if (content.length > 1000) {
       return NextResponse.json(
-        { error: '内容は1000文字以内で入力してください' },
+        { error: '内容は1000文字以内で入力してください', code: 'VALIDATION_ERROR' },
         { status: 400 }
       );
     }
@@ -114,15 +126,22 @@ export async function PUT(
     const post = await Post.findById(params.id);
     if (!post) {
       return NextResponse.json(
-        { error: '投稿が見つかりません' },
+        { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
         { status: 404 }
       );
     }
 
-    // 投稿者チェック - String型として比較
-    const isAuthor = String(post.author) === String(session.user.id);
-    if (!isAuthor) {
-      return NextResponse.json({ error: '権限がありません' }, { status: 403 });
+    // 権限チェック - 新しいヘルパー関数を使用
+    if (!canEditPost(session, post)) {
+      return NextResponse.json(
+        { 
+          error: PERMISSION_MESSAGES.NOT_POST_OWNER, 
+          code: 'PERMISSION_DENIED',
+          action: 'edit',
+          postId: params.id 
+        },
+        { status: 403 }
+      );
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
@@ -142,8 +161,14 @@ export async function PUT(
     });
   } catch (error: any) {
     console.error('Update post error:', error);
+    if (error instanceof PermissionError) {
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.statusCode }
+      );
+    }
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { error: 'サーバーエラーが発生しました', code: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }
