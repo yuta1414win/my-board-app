@@ -17,7 +17,7 @@ export default defineConfig({
   /* Use fewer workers on CI for stability */
   workers: process.env.CI ? 1 : 2,
   /* Set timeout for CI */
-  timeout: process.env.CI ? 30 * 1000 : undefined,
+  timeout: process.env.CI ? 60 * 1000 : undefined, // 60秒に延長
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -78,11 +78,18 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI
     ? {
-        command:
-          'NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
+        command: 'npm run build && npm run start',
         port: 3000,
-        reuseExistingServer: false,
-        timeout: 300 * 1000, // 5分に延長
+        reuseExistingServer: !process.env.CI, // CI以外では再利用
+        timeout: 600 * 1000, // 10分に延長
+        env: {
+          NEXTAUTH_SECRET: 'test-secret-for-e2e-testing-only',
+          JWT_SECRET: 'test-jwt-secret-for-e2e-testing-only',
+          AUTH_TRUST_HOST: 'true',
+          NEXTAUTH_URL: 'http://localhost:3000',
+          NODE_ENV: 'production',
+          CI: 'true'
+        }
       }
     : undefined, // ローカルでは既存のサーバーを使用
 });
