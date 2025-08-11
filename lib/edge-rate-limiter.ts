@@ -90,7 +90,7 @@ let rateLimiterInstance: EdgeRateLimiter | null = null;
 
 export function getEdgeRateLimiter(): EdgeRateLimiter {
   if (!rateLimiterInstance) {
-    rateLimiterInstance = new EdgeRateLimiter(60 * 1000, 5); // 1分間に5回
+    rateLimiterInstance = new EdgeRateLimiter(60 * 1000, 50); // 1分間に50回
 
     // 定期クリーンアップ（Edge RuntimeでsetIntervalは使えないので、リクエスト時にクリーンアップ）
   }
