@@ -16,8 +16,14 @@ const customJestConfig = {
     '<rootDir>/playwright/',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact)/)',
+    'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
   ],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
