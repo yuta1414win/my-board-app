@@ -465,9 +465,9 @@ export class AuditLogger {
       totalEvents,
       failedLogins,
       highRiskEvents,
-      topActions: topActions as { action: string; count: number; }[],
-      topIPs,
-      riskDistribution,
+      topActions: topActions as { action: string; count: number }[],
+      topIPs: topIPs as { ip: string; count: number; }[],
+      riskDistribution: riskDistribution as { level: number; count: number; }[],
     };
   }
 
