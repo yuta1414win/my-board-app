@@ -43,6 +43,15 @@ const limiter = rateLimit({
 
 export async function POST(request: Request) {
   try {
+    // データベース接続チェック
+    const db = await dbConnect();
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database connection not available' },
+        { status: 503 }
+      );
+    }
+
     // レート制限チェック
     const identifier =
       request.headers.get('x-forwarded-for') ||
