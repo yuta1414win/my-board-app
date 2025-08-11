@@ -13,7 +13,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Use fewer workers on CI for stability */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 2,
   /* Set timeout for CI */
   timeout: process.env.CI ? 30 * 1000 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -81,11 +81,13 @@ export default defineConfig({
         reuseExistingServer: false,
         timeout: 180 * 1000, // 3分（CI環境用に短縮）
         env: {
-          NEXTAUTH_SECRET: 'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+          NEXTAUTH_SECRET:
+            'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
           NEXTAUTH_URL: 'http://localhost:3000',
           AUTH_TRUST_HOST: 'true',
-          JWT_SECRET: 'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-        }
+          JWT_SECRET:
+            'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+        },
       }
     : {
         command: 'npm run dev',
@@ -93,10 +95,12 @@ export default defineConfig({
         reuseExistingServer: true,
         timeout: 120 * 1000, // 2分
         env: {
-          NEXTAUTH_SECRET: 'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+          NEXTAUTH_SECRET:
+            'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
           NEXTAUTH_URL: 'http://localhost:3001',
           AUTH_TRUST_HOST: 'true',
-          JWT_SECRET: 'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-        }
+          JWT_SECRET:
+            'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+        },
       },
 });
