@@ -100,16 +100,17 @@ export async function POST(req: NextRequest) {
       testHtml
     );
 
-    if (result === true) {
+    if (result.success) {
       return NextResponse.json({
         success: true,
         message: `テストメールを ${email} に送信しました`,
+        messageId: result.messageId,
       });
     } else {
       return NextResponse.json({
         success: false,
         message: 'テストメール送信に失敗しました',
-        error: typeof result === 'object' && 'error' in result ? result.error : 'Unknown error',
+        error: result.error,
       });
     }
   } catch (error) {
