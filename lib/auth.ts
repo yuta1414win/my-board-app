@@ -79,7 +79,9 @@ export const authOptions: any = {
             id: user._id.toString(),
             email: user.email,
             name: user.name,
-            emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+            emailVerified: user.emailVerified
+              ? new Date(user.emailVerified)
+              : null,
           };
         } catch (error) {
           console.error('認証エラー:', error);
@@ -105,7 +107,7 @@ export const authOptions: any = {
     updateAge: 24 * 60 * 60, // 24 hours - セッション更新間隔
   },
   callbacks: {
-    async jwt({ token, user, trigger, session, account }) {
+    async jwt({ token, user, trigger, session, account }: any) {
       // 初回ログイン時
       if (user) {
         token.id = user.id;
@@ -128,7 +130,7 @@ export const authOptions: any = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session?.user && token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
@@ -140,7 +142,7 @@ export const authOptions: any = {
       }
       return session;
     },
-    async signIn({ user, account }) {
+    async signIn({ user, account }: any) {
       // サインイン前の最終チェック
       if (account?.provider === 'credentials') {
         return !!user?.emailVerified;
@@ -149,7 +151,7 @@ export const authOptions: any = {
     },
   },
   events: {
-    async signIn({ user, account, isNewUser }) {
+    async signIn({ user, account, isNewUser }: any) {
       console.log('サインイン成功:', {
         userId: user.id,
         email: user.email,
@@ -157,7 +159,7 @@ export const authOptions: any = {
         isNewUser,
       });
     },
-    async signOut({ token }) {
+    async signOut({ token }: any) {
       console.log('サインアウト:', { userId: token?.id, email: token?.email });
     },
   },
