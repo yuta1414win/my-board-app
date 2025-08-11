@@ -20,7 +20,6 @@ export default function AuthButton({
   fullWidth = false,
 }: AuthButtonProps) {
   const { data: session, status } = useSession();
-  const router = useRouter();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/' });
