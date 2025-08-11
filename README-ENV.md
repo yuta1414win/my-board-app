@@ -5,11 +5,13 @@
 Vercelでデプロイする際は、以下の環境変数を設定してください：
 
 ### データベース接続
+
 ```
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database-name?retryWrites=true&w=majority
 ```
 
 ### 認証設定
+
 ```
 NEXTAUTH_URL=https://your-app.vercel.app
 NEXTAUTH_SECRET=ランダムな文字列（openssl rand -base64 32で生成）
@@ -17,6 +19,7 @@ JWT_SECRET=ランダムな文字列（openssl rand -base64 32で生成）
 ```
 
 ### メール送信設定（Gmail使用例）
+
 ```
 EMAIL_SERVER_HOST=smtp.gmail.com
 EMAIL_SERVER_PORT=587
@@ -27,6 +30,7 @@ EMAIL_FROM_NAME=My Board App
 ```
 
 ### アプリケーションURL
+
 ```
 APP_URL=https://your-app.vercel.app
 NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
@@ -51,10 +55,12 @@ NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 ## トラブルシューティング
 
 ### 500エラーが出る場合
+
 - MONGODB_URIが正しく設定されているか確認
 - MongoDB Atlasのネットワークアクセスで0.0.0.0/0を許可しているか確認
 - Vercelのログで環境変数チェックの結果を確認
 
 ### メールが送信されない場合
+
 - Gmailの「安全性の低いアプリのアクセス」または「アプリパスワード」が設定されているか確認
-- EMAIL_SERVER_*の設定が正しいか確認
+- EMAIL*SERVER*\*の設定が正しいか確認

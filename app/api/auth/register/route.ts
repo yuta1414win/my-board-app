@@ -47,7 +47,9 @@ export async function POST(request: Request) {
     console.log('Environment check:', {
       hasMongoUri: !!process.env.MONGODB_URI,
       hasJwtSecret: !!process.env.JWT_SECRET,
-      hasEmailConfig: !!(process.env.EMAIL_SERVER_USER && process.env.EMAIL_SERVER_PASSWORD),
+      hasEmailConfig: !!(
+        process.env.EMAIL_SERVER_USER && process.env.EMAIL_SERVER_PASSWORD
+      ),
       hasAppUrl: !!(process.env.NEXTAUTH_URL || process.env.APP_URL),
       nodeEnv: process.env.NODE_ENV,
     });
@@ -56,14 +58,19 @@ export async function POST(request: Request) {
     try {
       const db = await dbConnect();
       if (!db) {
-        console.error('Database connection returned null - MONGODB_URI may be missing');
+        console.error(
+          'Database connection returned null - MONGODB_URI may be missing'
+        );
         return NextResponse.json(
           {
             error: 'Database connection not available',
             code: 'DATABASE_CONNECTION_UNAVAILABLE',
-            debug: process.env.NODE_ENV === 'development' ? {
-              hasMongoUri: !!process.env.MONGODB_URI,
-            } : undefined,
+            debug:
+              process.env.NODE_ENV === 'development'
+                ? {
+                    hasMongoUri: !!process.env.MONGODB_URI,
+                  }
+                : undefined,
           },
           { status: 503 }
         );
@@ -151,7 +158,10 @@ export async function POST(request: Request) {
         ); // 24時間有効
         await existingUser.save();
 
-        const emailResult = await sendVerificationEmail(email, verificationToken);
+        const emailResult = await sendVerificationEmail(
+          email,
+          verificationToken
+        );
 
         const baseUrl =
           process.env.NEXTAUTH_URL ||
