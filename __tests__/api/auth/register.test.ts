@@ -462,6 +462,7 @@ describe('/api/auth/register', () => {
 
       // Assert
       expectApiSuccess(result, 201);
+      expect(result.data.verificationUrl).toBeDefined();
       // 名前はそのまま保存されるが、SQLインジェクションは効果がない（NoSQL）
       expect(mongoMock.mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -491,6 +492,7 @@ describe('/api/auth/register', () => {
 
       // Assert
       expectApiSuccess(result, 201);
+      expect(result.data.verificationUrl).toBeDefined();
       // データはそのまま保存される（フロントエンドでエスケープされるべき）
       expect(mongoMock.mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
