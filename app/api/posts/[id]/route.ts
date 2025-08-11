@@ -84,7 +84,10 @@ export async function PUT(
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
-        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' },
+        {
+          error: PERMISSION_MESSAGES.NOT_AUTHENTICATED,
+          code: 'NOT_AUTHENTICATED',
+        },
         { status: 401 }
       );
     }
@@ -109,14 +112,20 @@ export async function PUT(
 
     if (title.length > 100) {
       return NextResponse.json(
-        { error: 'タイトルは100文字以内で入力してください', code: 'VALIDATION_ERROR' },
+        {
+          error: 'タイトルは100文字以内で入力してください',
+          code: 'VALIDATION_ERROR',
+        },
         { status: 400 }
       );
     }
 
     if (content.length > 1000) {
       return NextResponse.json(
-        { error: '内容は1000文字以内で入力してください', code: 'VALIDATION_ERROR' },
+        {
+          error: '内容は1000文字以内で入力してください',
+          code: 'VALIDATION_ERROR',
+        },
         { status: 400 }
       );
     }
@@ -134,11 +143,11 @@ export async function PUT(
     // 権限チェック - 新しいヘルパー関数を使用
     if (!canEditPost(session, post)) {
       return NextResponse.json(
-        { 
-          error: PERMISSION_MESSAGES.NOT_POST_OWNER, 
+        {
+          error: PERMISSION_MESSAGES.NOT_POST_OWNER,
           code: 'PERMISSION_DENIED',
           action: 'edit',
-          postId: params.id 
+          postId: params.id,
         },
         { status: 403 }
       );
@@ -181,67 +190,66 @@ export async function DELETE(
   try {
     const session = await auth();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json(
+        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' },
+        { status: 401 }
+      );
     }
-
-    // デバッグ: セッション情報を確認
-    console.log('削除リクエスト - セッション情報:', {
-      userId: session.user.id,
-      userEmail: session.user.email,
-      userName: session.user.name,
-    });
 
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      console.error('無効なID形式:', params.id);
-      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
+      return NextResponse.json(
+        { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
+        { status: 400 }
+      );
     }
 
     await dbConnect();
 
-    const post = await Post.findById(params.id).populate('author');
+    const post = await Post.findById(params.id);
     if (!post) {
-      console.error('投稿が見つかりません:', params.id);
       return NextResponse.json(
-        { error: '投稿が見つかりません' },
+        { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
         { status: 404 }
       );
     }
 
-    // デバッグ: 投稿の詳細情報を確認
-    console.log('削除対象の投稿情報:', {
-      postId: post._id.toString(),
-      postAuthor: post.author,
-      postAuthorType: typeof post.author,
-      postAuthorToString: post.author?.toString(),
-    });
-
-    // 投稿者チェック - String型として比較
-    // post.authorにはユーザーIDが文字列として保存されている
-    const isAuthor = String(post.author) === String(session.user.id);
-    console.log('権限チェック結果:', {
-      postAuthor: String(post.author),
-      sessionUserId: String(session.user.id),
-      isAuthor: isAuthor,
-    });
-
-    if (!isAuthor) {
-      return NextResponse.json({ error: '権限がありません' }, { status: 403 });
+    // 権限チェック - 新しいヘルパー関数を使用
+    if (!canDeletePost(session, post)) {
+      return NextResponse.json(
+        { 
+          error: PERMISSION_MESSAGES.NOT_POST_OWNER, 
+          code: 'PERMISSION_DENIED',
+          action: 'delete',
+          postId: params.id 
+        },
+        { status: 403 }
+      );
     }
 
     // 削除実行
     const result = await Post.findByIdAndDelete(params.id);
-    console.log('削除結果:', result ? '成功' : '失敗');
+    if (!result) {
+      return NextResponse.json(
+        { error: '削除に失敗しました', code: 'DELETE_FAILED' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       message: '投稿が削除されました',
       success: true,
     });
   } catch (error: any) {
-    console.error('Delete post error - 詳細:', error);
-    console.error('エラースタック:', error.stack);
+    console.error('Delete post error:', error);
+    if (error instanceof PermissionError) {
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.statusCode }
+      );
+    }
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { error: 'サーバーエラーが発生しました', code: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }
