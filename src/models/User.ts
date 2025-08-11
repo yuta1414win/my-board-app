@@ -109,8 +109,6 @@ export class UserModel {
     id: string,
     data: ChangePasswordData
   ): Promise<{ success: boolean; error?: string }> {
-    const collection = await this.getCollection();
-
     // 現在のユーザー情報を取得
     const user = await this.findById(id);
     if (!user) {
@@ -130,17 +128,15 @@ export class UserModel {
     const hashedNewPassword = await bcrypt.hash(data.newPassword, 12);
 
     // パスワードを更新
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
+    const result = await User.findByIdAndUpdate(
+      id,
       {
-        $set: {
-          password: hashedNewPassword,
-          updatedAt: new Date(),
-        },
+        password: hashedNewPassword,
+        updatedAt: new Date(),
       }
     );
 
-    return { success: result.modifiedCount > 0 };
+    return { success: !!result };
   }
 
   static async verifyPassword(
