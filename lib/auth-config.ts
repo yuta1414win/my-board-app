@@ -1,4 +1,4 @@
-import { NextAuthOptions } from 'next-auth';
+// import { NextAuthOptions } from 'next-auth'; // Not available in NextAuth v5
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoClient } from 'mongodb';
@@ -13,22 +13,22 @@ const mongoClient = new MongoClient(process.env.MONGODB_URI!);
 // セッションの最適化設定
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(mongoClient),
-  
+
   // プロバイダーの設定
   providers: [
     CredentialsProvider({
       id: 'credentials',
       name: 'credentials',
       credentials: {
-        email: { 
-          label: 'Email', 
+        email: {
+          label: 'Email',
           type: 'email',
-          placeholder: 'your@email.com' 
+          placeholder: 'your@email.com',
         },
-        password: { 
-          label: 'Password', 
-          type: 'password' 
-        }
+        password: {
+          label: 'Password',
+          type: 'password',
+        },
       },
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
@@ -41,20 +41,17 @@ export const authOptions: NextAuthOptions = {
           const users = db.collection('users');
 
           // ユーザー検索
-          const user = await users.findOne({ 
-            email: credentials.email.toLowerCase() 
+          const user = await users.findOne({
+            email: credentials.email.toLowerCase(),
           });
 
           if (!user) {
             // 監査ログ: ログイン失敗（ユーザーが存在しない）
             const ip = getRealIP(req as any);
-            const userAgent = (req as any)?.headers?.['user-agent'] || 'unknown';
-            
-            await auditLog.loginFailed(
-              ip,
-              userAgent,
-              'User not found'
-            );
+            const userAgent =
+              (req as any)?.headers?.['user-agent'] || 'unknown';
+
+            await auditLog.loginFailed(ip, userAgent, 'User not found');
             return null;
           }
 
@@ -67,38 +64,28 @@ export const authOptions: NextAuthOptions = {
           if (!isPasswordValid) {
             // 監査ログ: ログイン失敗（パスワード不正）
             const ip = getRealIP(req as any);
-            const userAgent = (req as any)?.headers?.['user-agent'] || 'unknown';
-            
-            await auditLog.loginFailed(
-              ip,
-              userAgent,
-              'Invalid password'
-            );
+            const userAgent =
+              (req as any)?.headers?.['user-agent'] || 'unknown';
+
+            await auditLog.loginFailed(ip, userAgent, 'Invalid password');
             return null;
           }
 
           // アカウント状態チェック
           if (user.status === 'suspended') {
             const ip = getRealIP(req as any);
-            const userAgent = (req as any)?.headers?.['user-agent'] || 'unknown';
-            
-            await auditLog.loginFailed(
-              ip,
-              userAgent,
-              'Account suspended'
-            );
+            const userAgent =
+              (req as any)?.headers?.['user-agent'] || 'unknown';
+
+            await auditLog.loginFailed(ip, userAgent, 'Account suspended');
             return null;
           }
 
           // ログイン成功の監査ログ
           const ip = getRealIP(req as any);
           const userAgent = (req as any)?.headers?.['user-agent'] || 'unknown';
-          
-          await auditLog.loginSuccess(
-            user._id.toString(),
-            ip,
-            userAgent
-          );
+
+          await auditLog.loginSuccess(user._id.toString(), ip, userAgent);
 
           return {
             id: user._id.toString(),
@@ -108,22 +95,21 @@ export const authOptions: NextAuthOptions = {
             emailVerified: user.emailVerified,
             image: user.image,
             lastLoginAt: new Date(),
-            loginIP: ip
+            loginIP: ip,
           };
-
         } catch (error) {
           console.error('Authentication error:', error);
           return null;
         }
-      }
-    })
+      },
+    }),
   ],
 
   // セッション戦略
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24時間（秒単位）
-    updateAge: 60 * 60,   // 1時間ごとに更新（セッション延長）
+    updateAge: 60 * 60, // 1時間ごとに更新（セッション延長）
   },
 
   // JWT設定
@@ -137,13 +123,13 @@ export const authOptions: NextAuthOptions = {
         secret,
         maxAge,
         // より強力な暗号化
-        algorithm: 'HS512'
+        algorithm: 'HS512',
       });
     },
     decode: async ({ token, secret }) => {
       const { decode } = await import('next-auth/jwt');
       return decode({ token, secret });
-    }
+    },
   },
 
   // クッキー設定の最適化
@@ -154,27 +140,31 @@ export const authOptions: NextAuthOptions = {
         ...getOptimizedCookieSettings().options,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        domain: process.env.NODE_ENV === 'production' 
-          ? process.env.NEXTAUTH_URL?.replace('https://', '').replace('http://', '')
-          : undefined
-      }
+        domain:
+          process.env.NODE_ENV === 'production'
+            ? process.env.NEXTAUTH_URL?.replace('https://', '').replace(
+                'http://',
+                ''
+              )
+            : undefined,
+      },
     },
     callbackUrl: {
       name: `__Secure-next-auth.callback-url`,
       options: {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        httpOnly: false // クライアントサイドでアクセスが必要
-      }
+        httpOnly: false, // クライアントサイドでアクセスが必要
+      },
     },
     csrfToken: {
       name: `__Host-next-auth.csrf-token`,
       options: {
         httpOnly: true,
         sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
 
   // コールバック関数
@@ -217,7 +207,7 @@ export const authOptions: NextAuthOptions = {
         return url;
       }
       return baseUrl;
-    }
+    },
   },
 
   // イベントハンドラー
@@ -238,8 +228,8 @@ export const authOptions: NextAuthOptions = {
                 lastLoginAt: new Date(),
                 loginCount: 1,
                 status: 'active',
-                createdAt: new Date()
-              }
+                createdAt: new Date(),
+              },
             }
           );
         } catch (error) {
@@ -256,11 +246,11 @@ export const authOptions: NextAuthOptions = {
             { _id: user.id },
             {
               $set: {
-                lastLoginAt: new Date()
+                lastLoginAt: new Date(),
               },
               $inc: {
-                loginCount: 1
-              }
+                loginCount: 1,
+              },
             }
           );
         } catch (error) {
@@ -280,7 +270,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       // セッション使用時のログ（必要に応じて）
       // 頻繁に呼ばれるため、重要なアクション時のみログを記録
-    }
+    },
   },
 
   // ページ設定
@@ -289,7 +279,7 @@ export const authOptions: NextAuthOptions = {
     signOut: '/auth/logout',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
-    newUser: '/auth/welcome'
+    newUser: '/auth/welcome',
   },
 
   // デバッグ設定
@@ -297,9 +287,9 @@ export const authOptions: NextAuthOptions = {
 
   // セキュリティ設定
   secret: process.env.NEXTAUTH_SECRET,
-  
+
   // CSRF保護を有効化
-  useSecureCookies: process.env.NODE_ENV === 'production'
+  useSecureCookies: process.env.NODE_ENV === 'production',
 };
 
 // セッションの拡張タイプ定義
