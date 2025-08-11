@@ -76,8 +76,10 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     gzipSize: true,
-    serverComponentsExternalPackages: ['mongoose'],
   },
+
+  // 外部パッケージ設定（Next.js 15対応）
+  serverExternalPackages: ['mongoose'],
 
   // セキュリティヘッダー
   async headers() {
