@@ -164,9 +164,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         isNewUser,
       });
     },
-    async signOut({ session }) {
-      console.log('サインアウト:', { userId: session?.user?.id, email: session?.user?.email });
-    },
   },
   debug: process.env.NODE_ENV === 'development',
 });
