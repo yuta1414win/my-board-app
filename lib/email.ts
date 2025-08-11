@@ -132,6 +132,41 @@ export async function testEmailConnection(): Promise<EmailResult> {
   }
 }
 
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<EmailResult> {
+  const transporter = createTransporter();
+
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER,
+      to,
+      subject,
+      html,
+    });
+
+    console.log('Email sent successfully:', info.messageId);
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (error: any) {
+    console.error('Failed to send email:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to send email',
+    };
+  } finally {
+    transporter.close();
+  }
+}
+
 export async function sendVerificationEmail(
   email: string,
   token: string
