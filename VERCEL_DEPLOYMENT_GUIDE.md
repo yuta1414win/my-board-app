@@ -8,23 +8,29 @@
 ## 🚀 デプロイ手順
 
 ### 1. Vercel にログイン
+
 ```bash
 npx vercel login
 ```
+
 - GitHub, Google, GitLab, Bitbucket, またはEメールでログインしてください
 - 推奨: GitHubアカウントでのログイン（リポジトリ連携のため）
 
 ### 2. プロジェクトのリンク
+
 ```bash
 npx vercel link
 ```
+
 - 新規プロジェクトの場合は作成を選択
 - 既存のプロジェクトの場合はリンクを選択
 
 ### 3. 環境変数の設定
+
 Vercel Dashboard (https://vercel.com/dashboard) で以下の環境変数を設定:
 
 #### 必須環境変数:
+
 ```bash
 # Database
 MONGODB_URI=<MongoDBの接続URL>
@@ -50,6 +56,7 @@ NEXT_PUBLIC_SENTRY_DSN=<Sentry Public DSN>
 ```
 
 ### 4. 本番環境デプロイ
+
 ```bash
 npx vercel --prod --yes
 ```
@@ -57,7 +64,9 @@ npx vercel --prod --yes
 ## 🔒 セキュリティ設定
 
 ### セキュリティヘッダー
+
 `vercel.json`にて以下のセキュリティヘッダーが設定済み:
+
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Strict-Transport-Security` (HSTS)
@@ -66,20 +75,24 @@ npx vercel --prod --yes
 - `X-XSS-Protection`
 
 ### 機能ポリシー
+
 カメラ、マイク、位置情報へのアクセスを無効化済み
 
 ## 📋 デプロイ後チェックリスト
 
 ### 1. ビルド確認
+
 - ✅ Vercel Dashboard でビルドログを確認
 - ✅ エラーがないことを確認
 
 ### 2. HTTPS・SSL確認
+
 - ✅ https://your-domain.vercel.app でアクセス可能
 - ✅ SSL証明書が有効
 - ✅ セキュリティヘッダーが設定されている
 
 ### 3. 機能テスト
+
 - ✅ ユーザー登録・ログイン機能
 - ✅ メール認証システム
 - ✅ 掲示板機能（投稿・表示・編集）
@@ -87,38 +100,47 @@ npx vercel --prod --yes
 - ✅ 認証保護されたページアクセス
 
 ### 4. Sentry監視
+
 - ✅ エラー監視が動作している
 - ✅ パフォーマンス監視が有効
 
 ### 5. パフォーマンス
+
 - ✅ Lighthouse スコア > 70
 - ✅ Core Web Vitals が良好
 
 ## 🌐 カスタムドメイン設定（オプション）
 
 ### 1. ドメインの追加
+
 Vercel Dashboard → Settings → Domains で独自ドメインを追加
 
 ### 2. DNS設定
+
 ドメインレジストラーでCNAMEレコードを設定:
+
 ```
 CNAME: your-subdomain → cname.vercel-dns.com
 ```
 
 ### 3. 環境変数更新
+
 `NEXTAUTH_URL`を新しいドメインに更新
 
 ## 📊 監視とメンテナンス
 
 ### Vercel Analytics
+
 - ✅ 自動的に有効化
 - ✅ パフォーマンス指標を監視
 
 ### Sentry Integration
+
 - ✅ エラー追跡とパフォーマンス監視
 - ✅ アラート設定
 
 ### 定期メンテナンス
+
 - データベースバックアップ
 - セキュリティアップデート
 - 依存関係の更新
@@ -137,18 +159,22 @@ CNAME: your-subdomain → cname.vercel-dns.com
 ## 🚨 トラブルシューティング
 
 ### ビルドエラー
+
 - 環境変数が正しく設定されているか確認
 - Node.js バージョンが18.17.0以上であることを確認
 
 ### 認証エラー
+
 - `NEXTAUTH_SECRET`が設定されているか確認
 - `NEXTAUTH_URL`が本番URLと一致しているか確認
 
 ### データベース接続エラー
+
 - `MONGODB_URI`が有効か確認
 - MongoDB Atlasの IP ホワイトリストにVercelが追加されているか確認 (0.0.0.0/0)
 
 ### メール送信エラー
+
 - Gmailアプリパスワードが正しく設定されているか確認
 - 2段階認証がGmailアカウントで有効になっているか確認
 

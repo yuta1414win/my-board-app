@@ -5,7 +5,7 @@ const options = {
   hostname: 'localhost',
   port: 3003,
   path: '/',
-  method: 'GET'
+  method: 'GET',
 };
 
 const req = http.request(options, (res) => {
@@ -14,12 +14,12 @@ const req = http.request(options, (res) => {
   Object.entries(res.headers).forEach(([key, value]) => {
     console.log(`  ${key}: ${value}`);
   });
-  
+
   let data = '';
   res.on('data', (chunk) => {
     data += chunk;
   });
-  
+
   res.on('end', () => {
     console.log('\nResponse body length:', data.length);
     if (res.statusCode === 500) {

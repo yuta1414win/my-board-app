@@ -283,7 +283,9 @@ export default function EditPostPage() {
 
         {permissions && (
           <Alert severity="info" sx={{ mb: 2 }}>
-            {permissions.isAdmin ? '管理者として編集中' : 'あなたの投稿を編集中'}
+            {permissions.isAdmin
+              ? '管理者として編集中'
+              : 'あなたの投稿を編集中'}
             {permissions.isOwner && !permissions.isAdmin && '（投稿者）'}
           </Alert>
         )}

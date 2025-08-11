@@ -17,7 +17,9 @@ jest.mock('../../src/models/User', () => ({
 import { getCurrentUser } from '../../src/lib/auth';
 import { UserModel } from '../../src/models/User';
 
-const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<typeof getCurrentUser>;
+const mockGetCurrentUser = getCurrentUser as jest.MockedFunction<
+  typeof getCurrentUser
+>;
 const mockUserModel = UserModel as jest.Mocked<typeof UserModel>;
 
 describe('/api/user/profile API テスト', () => {
@@ -191,7 +193,9 @@ describe('/api/user/profile API テスト', () => {
       expect(response.status).toBe(400);
       expect(data.details.name).toBe('名前は50文字以内で入力してください');
       expect(data.details.bio).toBe('自己紹介は200文字以内で入力してください');
-      expect(data.details.quickComment).toBe('一言コメントは50文字以内で入力してください');
+      expect(data.details.quickComment).toBe(
+        '一言コメントは50文字以内で入力してください'
+      );
     });
   });
 });

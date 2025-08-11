@@ -8,13 +8,17 @@ interface QuickCommentBubbleProps {
   comment: string;
 }
 
-export default function QuickCommentBubble({ comment }: QuickCommentBubbleProps) {
+export default function QuickCommentBubble({
+  comment,
+}: QuickCommentBubbleProps) {
   if (!comment.trim()) {
     return null;
   }
 
   return (
-    <Box sx={{ position: 'relative', display: 'inline-block', maxWidth: '300px' }}>
+    <Box
+      sx={{ position: 'relative', display: 'inline-block', maxWidth: '300px' }}
+    >
       <Paper
         elevation={1}
         sx={{
@@ -40,9 +44,9 @@ export default function QuickCommentBubble({ comment }: QuickCommentBubbleProps)
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <ChatBubbleIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               fontWeight: 500,
               lineHeight: 1.4,
               wordBreak: 'break-word',

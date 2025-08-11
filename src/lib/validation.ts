@@ -112,13 +112,17 @@ export function validateProfile(data: {
   }
 
   // 一言コメントのバリデーション
-  if (data.quickComment !== undefined && data.quickComment && data.quickComment.length > 50) {
+  if (
+    data.quickComment !== undefined &&
+    data.quickComment &&
+    data.quickComment.length > 50
+  ) {
     errors.quickComment = '一言コメントは50文字以内で入力してください';
   }
 
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }
 
@@ -150,7 +154,8 @@ export function validatePasswordChange(data: {
   } else {
     const strength = checkPasswordStrength(data.newPassword);
     if (!strength.isValid) {
-      errors.newPassword = 'パスワードは8文字以上で、大文字、小文字、数字、特殊文字のうち4つ以上を含む必要があります';
+      errors.newPassword =
+        'パスワードは8文字以上で、大文字、小文字、数字、特殊文字のうち4つ以上を含む必要があります';
     }
   }
 
@@ -163,6 +168,6 @@ export function validatePasswordChange(data: {
 
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }

@@ -16,14 +16,20 @@ import {
 } from '@mui/material';
 
 export default function TestProfilePage() {
-  const [results, setResults] = useState<{
-    type: 'success' | 'error';
-    message: string;
-    details?: any;
-  }[]>([]);
+  const [results, setResults] = useState<
+    {
+      type: 'success' | 'error';
+      message: string;
+      details?: any;
+    }[]
+  >([]);
 
-  const addResult = (type: 'success' | 'error', message: string, details?: any) => {
-    setResults(prev => [...prev, { type, message, details }]);
+  const addResult = (
+    type: 'success' | 'error',
+    message: string,
+    details?: any
+  ) => {
+    setResults((prev) => [...prev, { type, message, details }]);
   };
 
   const clearResults = () => {
@@ -34,7 +40,7 @@ export default function TestProfilePage() {
     try {
       const response = await fetch('/api/user/profile');
       const data = await response.json();
-      
+
       if (response.ok) {
         addResult('success', 'プロフィール取得成功', data);
       } else {
@@ -49,7 +55,7 @@ export default function TestProfilePage() {
     const testData = {
       name: 'テストユーザー' + Date.now(),
       bio: 'これはテスト用の自己紹介です。更新されました。',
-      quickComment: 'テストコメント！'
+      quickComment: 'テストコメント！',
     };
 
     try {
@@ -61,7 +67,7 @@ export default function TestProfilePage() {
         body: JSON.stringify(testData),
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         addResult('success', 'プロフィール更新成功', data);
       } else {
@@ -76,7 +82,7 @@ export default function TestProfilePage() {
     const invalidData = {
       name: '', // 必須エラー
       bio: 'あ'.repeat(201), // 文字数制限エラー
-      quickComment: 'あ'.repeat(51) // 文字数制限エラー
+      quickComment: 'あ'.repeat(51), // 文字数制限エラー
     };
 
     try {
@@ -88,7 +94,7 @@ export default function TestProfilePage() {
         body: JSON.stringify(invalidData),
       });
       const data = await response.json();
-      
+
       if (!response.ok) {
         addResult('success', 'バリデーションエラーが正常に動作', data);
       } else {
@@ -103,7 +109,7 @@ export default function TestProfilePage() {
     const passwordData = {
       currentPassword: 'WrongPassword123!',
       newPassword: 'NewPassword123!',
-      confirmPassword: 'NewPassword123!'
+      confirmPassword: 'NewPassword123!',
     };
 
     try {
@@ -115,7 +121,7 @@ export default function TestProfilePage() {
         body: JSON.stringify(passwordData),
       });
       const data = await response.json();
-      
+
       if (!response.ok) {
         addResult('success', 'パスワード変更エラー処理が正常に動作', data);
       } else {
@@ -132,7 +138,7 @@ export default function TestProfilePage() {
         <Typography variant="h4" component="h1" gutterBottom>
           プロフィール機能テスト
         </Typography>
-        
+
         <Card sx={{ mb: 3 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -163,7 +169,7 @@ export default function TestProfilePage() {
             テスト結果
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          
+
           {results.length === 0 ? (
             <Typography color="text.secondary">
               テストを実行すると結果がここに表示されます
@@ -176,15 +182,15 @@ export default function TestProfilePage() {
                     {result.message}
                   </Typography>
                   {result.details && (
-                    <Box 
-                      component="pre" 
-                      sx={{ 
-                        fontSize: '0.8rem', 
+                    <Box
+                      component="pre"
+                      sx={{
+                        fontSize: '0.8rem',
                         overflow: 'auto',
                         backgroundColor: 'rgba(0,0,0,0.05)',
                         p: 1,
                         borderRadius: 1,
-                        mt: 1
+                        mt: 1,
                       }}
                     >
                       {JSON.stringify(result.details, null, 2)}
@@ -203,13 +209,34 @@ export default function TestProfilePage() {
             </Typography>
             <Typography variant="body2" component="div">
               <ol>
-                <li><strong>認証チェック</strong>: ログアウト状態で `/profile` にアクセス → ログインページにリダイレクト</li>
-                <li><strong>プロフィール表示</strong>: ログイン後 `/profile` にアクセス → プロフィール情報が表示される</li>
-                <li><strong>編集機能</strong>: 「編集」ボタンクリック → フォーム表示 → データ変更 → 保存</li>
-                <li><strong>文字数制限</strong>: 名前51文字、自己紹介201文字、コメント51文字入力 → エラー表示</li>
-                <li><strong>パスワード変更</strong>: `/profile/change-credentials` → フォーム入力 → バリデーション確認</li>
-                <li><strong>キャンセル機能</strong>: 編集中にキャンセル → 変更が破棄される</li>
-                <li><strong>レスポンシブ</strong>: ブラウザサイズ変更 → レイアウト調整確認</li>
+                <li>
+                  <strong>認証チェック</strong>: ログアウト状態で `/profile`
+                  にアクセス → ログインページにリダイレクト
+                </li>
+                <li>
+                  <strong>プロフィール表示</strong>: ログイン後 `/profile`
+                  にアクセス → プロフィール情報が表示される
+                </li>
+                <li>
+                  <strong>編集機能</strong>: 「編集」ボタンクリック →
+                  フォーム表示 → データ変更 → 保存
+                </li>
+                <li>
+                  <strong>文字数制限</strong>:
+                  名前51文字、自己紹介201文字、コメント51文字入力 → エラー表示
+                </li>
+                <li>
+                  <strong>パスワード変更</strong>: `/profile/change-credentials`
+                  → フォーム入力 → バリデーション確認
+                </li>
+                <li>
+                  <strong>キャンセル機能</strong>: 編集中にキャンセル →
+                  変更が破棄される
+                </li>
+                <li>
+                  <strong>レスポンシブ</strong>: ブラウザサイズ変更 →
+                  レイアウト調整確認
+                </li>
               </ol>
             </Typography>
           </CardContent>

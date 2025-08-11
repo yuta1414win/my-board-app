@@ -9,16 +9,19 @@
 ### 1. レート制限システム 🚦
 
 #### 機能
+
 - IPアドレスベースの制限（1分間に5回まで）
 - 違反時のブロック機能（2倍の時間延長）
 - プログレッシブペナルティシステム
 - メモリ効率的なLRUキャッシュ使用
 
 #### 実装ファイル
+
 - `lib/rate-limiter.ts`
 - `src/middleware.ts` (統合)
 
 #### 使用方法
+
 ```typescript
 import { defaultRateLimiter, getRealIP } from '../lib/rate-limiter';
 
@@ -33,6 +36,7 @@ if (!result.allowed) {
 ### 2. セキュリティヘッダー設定 🛡️
 
 #### 機能
+
 - Content Security Policy (CSP)
 - HTTP Strict Transport Security (HSTS)
 - X-Frame-Options (クリックジャッキング対策)
@@ -41,10 +45,12 @@ if (!result.allowed) {
 - 環境別設定（開発/本番）
 
 #### 実装ファイル
+
 - `lib/security-headers.ts`
 - `src/middleware.ts` (適用)
 
 #### ページ別CSP設定
+
 - `/admin`: 最も厳格
 - `/auth`: 認証ページ用
 - `/api`: APIエンドポイント用
@@ -53,6 +59,7 @@ if (!result.allowed) {
 ### 3. XSS対策（入力値サニタイゼーション） 🧹
 
 #### 機能
+
 - HTMLエンティティエスケープ
 - 危険なスクリプトパターン除去
 - タイプ別サニタイゼーション
@@ -60,25 +67,28 @@ if (!result.allowed) {
 - Zodライブラリとの統合
 
 #### 実装ファイル
+
 - `lib/input-sanitizer.ts`
 
 #### サニタイゼーションタイプ
+
 ```typescript
 enum SanitizationType {
-  STRICT = 'strict',           // 完全エスケープ
-  BASIC_HTML = 'basic_html',   // 基本HTMLタグのみ許可
-  PLAIN_TEXT = 'plain_text',   // プレーンテキストのみ
-  EMAIL = 'email',             // メールアドレス
-  URL = 'url',                 // URL
-  FILENAME = 'filename',       // ファイル名
-  USERNAME = 'username',       // ユーザー名
-  POST_CONTENT = 'post_content' // 投稿内容
+  STRICT = 'strict', // 完全エスケープ
+  BASIC_HTML = 'basic_html', // 基本HTMLタグのみ許可
+  PLAIN_TEXT = 'plain_text', // プレーンテキストのみ
+  EMAIL = 'email', // メールアドレス
+  URL = 'url', // URL
+  FILENAME = 'filename', // ファイル名
+  USERNAME = 'username', // ユーザー名
+  POST_CONTENT = 'post_content', // 投稿内容
 }
 ```
 
 ### 4. CSRF対策 🔐
 
 #### 機能
+
 - トークンベース保護
 - セッション連動トークン
 - タイミング攻撃対策
@@ -86,10 +96,12 @@ enum SanitizationType {
 - NextAuth.js統合
 
 #### 実装ファイル
+
 - `lib/csrf-protection.ts`
 - `src/middleware.ts` (適用)
 
 #### 使用方法
+
 ```typescript
 import { defaultCSRFProtection } from '../lib/csrf-protection';
 
@@ -103,6 +115,7 @@ const isValid = defaultCSRFProtection.verifyToken(token, sessionId);
 ### 5. セッション管理最適化 🔑
 
 #### 機能
+
 - Rolling Sessionによるセッション延長
 - セキュアクッキー設定
 - セッション再生成
@@ -110,10 +123,12 @@ const isValid = defaultCSRFProtection.verifyToken(token, sessionId);
 - IPアドレス/User Agent変更検知
 
 #### 実装ファイル
+
 - `lib/csrf-protection.ts` (OptimizedSessionManager)
 - `lib/auth-config.ts` (NextAuth設定)
 
 #### セッション設定
+
 ```typescript
 session: {
   strategy: 'jwt',
@@ -125,6 +140,7 @@ session: {
 ### 6. 監査ログシステム 📊
 
 #### 機能
+
 - 包括的なセキュリティイベント記録
 - リスクスコア自動計算
 - MongoDB統合
@@ -132,21 +148,23 @@ session: {
 - アラート機能
 
 #### 実装ファイル
+
 - `lib/audit-logger.ts`
 
 #### 監査アクション
+
 ```typescript
 enum AuditAction {
   // 認証関連
   LOGIN_SUCCESS = 'login_success',
   LOGIN_FAILED = 'login_failed',
-  
+
   // セキュリティ関連
   RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
   CSRF_VIOLATION = 'csrf_violation',
   XSS_ATTEMPT = 'xss_attempt',
   SUSPICIOUS_ACTIVITY = 'suspicious_activity',
-  
+
   // その他多数...
 }
 ```
@@ -154,6 +172,7 @@ enum AuditAction {
 ## セキュリティテスト 🧪
 
 ### テスト内容
+
 - レート制限機能テスト
 - XSS/SQLインジェクション対策テスト
 - CSRF保護テスト
@@ -162,9 +181,11 @@ enum AuditAction {
 - 統合セキュリティテスト
 
 ### テストファイル
+
 - `__tests__/security/security-integration.test.ts`
 
 ### テスト実行
+
 ```bash
 npm run test -- __tests__/security/
 ```
@@ -172,6 +193,7 @@ npm run test -- __tests__/security/
 ## 設定とメンテナンス
 
 ### 環境変数
+
 ```env
 # 必須
 NEXTAUTH_SECRET=your-secure-random-string
@@ -185,6 +207,7 @@ AUDIT_RETENTION_DAYS=365
 ```
 
 ### 監査ログの確認
+
 ```typescript
 import { defaultAuditLogger } from '../lib/audit-logger';
 
@@ -195,11 +218,12 @@ const stats = await defaultAuditLogger.getStatistics('day');
 const logs = await defaultAuditLogger.search({
   level: AuditLevel.WARN,
   startDate: new Date('2024-01-01'),
-  limit: 100
+  limit: 100,
 });
 ```
 
 ### セキュリティヘッダーの検証
+
 ```typescript
 import { validateSecurityHeaders } from '../lib/security-headers';
 
@@ -210,16 +234,18 @@ console.log(validation); // { valid: true, warnings: [], errors: [] }
 ## ベストプラクティス
 
 ### 1. 入力値検証
+
 ```typescript
 // すべての外部入力はサニタイゼーション
 const sanitizedData = InputSanitizer.sanitizeBatch(formData, {
   title: { type: SanitizationType.PLAIN_TEXT, maxLength: 200 },
   content: { type: SanitizationType.POST_CONTENT, maxLength: 10000 },
-  email: { type: SanitizationType.EMAIL, maxLength: 254 }
+  email: { type: SanitizationType.EMAIL, maxLength: 254 },
 });
 ```
 
 ### 2. API保護
+
 ```typescript
 // API routeでのCSRF保護
 export async function POST(request: NextRequest) {
@@ -227,12 +253,13 @@ export async function POST(request: NextRequest) {
   if (csrfResult) {
     return csrfResult; // CSRF違反
   }
-  
+
   // 通常の処理...
 }
 ```
 
 ### 3. 監査ログ記録
+
 ```typescript
 // 重要なアクションは必ずログに記録
 await auditLog.postCreated(
@@ -244,6 +271,7 @@ await auditLog.postCreated(
 ```
 
 ### 4. エラーハンドリング
+
 ```typescript
 try {
   // セキュリティ関連の処理
@@ -257,6 +285,7 @@ try {
 ## 緊急時対応
 
 ### 1. 攻撃検知時
+
 ```typescript
 // 高リスクアクティビティの場合、自動アラート
 // lib/audit-logger.ts内で自動実行
@@ -266,6 +295,7 @@ if (entry.riskScore >= 7) {
 ```
 
 ### 2. IPブロック
+
 ```typescript
 // 緊急時のIPブロック
 rateLimiter.resetIP('malicious-ip-address');
@@ -273,6 +303,7 @@ rateLimiter.resetIP('malicious-ip-address');
 ```
 
 ### 3. セッション無効化
+
 ```typescript
 // ユーザーの全セッションを無効化
 sessionManager.invalidateAllUserSessions(userId);
@@ -281,6 +312,7 @@ sessionManager.invalidateAllUserSessions(userId);
 ## モニタリング
 
 ### 重要メトリクス
+
 - レート制限違反数
 - CSRF攻撃試行数
 - XSS攻撃試行数
@@ -288,6 +320,7 @@ sessionManager.invalidateAllUserSessions(userId);
 - 高リスクスコアイベント数
 
 ### アラート設定
+
 - 連続ログイン失敗: 5回以上
 - レート制限違反: 10回以上
 - 疑わしい活動: 3回以上
@@ -295,12 +328,14 @@ sessionManager.invalidateAllUserSessions(userId);
 ## 更新とパッチ
 
 ### セキュリティアップデート手順
+
 1. 依存関係の更新確認
 2. セキュリティテストの実行
 3. ステージング環境での検証
 4. 本番環境への段階的デプロイ
 
 ### 定期的なセキュリティ監査
+
 - 月次: ログの確認と分析
 - 四半期: セキュリティテストの実行
 - 年次: 包括的なセキュリティ監査
@@ -308,16 +343,19 @@ sessionManager.invalidateAllUserSessions(userId);
 ## 追加のセキュリティ対策（今後の実装予定）
 
 ### 1. 二要素認証 (2FA)
+
 - TOTP対応
 - SMS認証
 - バックアップコード
 
 ### 2. より高度な脅威検知
+
 - 機械学習による異常検知
 - IP地理位置情報の活用
 - デバイスフィンガープリンティング
 
 ### 3. Web Application Firewall (WAF)
+
 - より高度な攻撃パターン検知
 - 地理的アクセス制限
 - DDoS保護

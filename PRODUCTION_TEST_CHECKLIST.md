@@ -3,6 +3,7 @@
 ## 📋 テスト実行前準備
 
 ### 環境設定
+
 - [ ] 本番URL設定: `export PRODUCTION_URL="https://yourdomain.com"`
 - [ ] テスト用認証情報設定済み
 - [ ] 必要なツールインストール確認
@@ -11,6 +12,7 @@
   - [ ] curl コマンド利用可能
 
 ### 基本確認
+
 - [ ] 本番サイトにブラウザでアクセス可能
 - [ ] DNS正常解決確認: `nslookup yourdomain.com`
 - [ ] SSL証明書有効性確認: `openssl s_client -connect yourdomain.com:443`
@@ -20,11 +22,13 @@
 ## 🔧 Phase 1: インフラ・基本動作テスト (0-15分)
 
 ### 1.1 ヘルスチェック確認
+
 ```bash
 npm run test:functional
 ```
 
 **チェック項目:**
+
 - [ ] ✅ **基本接続テスト**: サイトアクセス可能 (200 OK)
 - [ ] ✅ **ヘルスチェック**: `/health` エンドポイント正常 (`status: "ok"`)
 - [ ] ✅ **認証ページ**: `/auth/signin`, `/auth/register` アクセス可能
@@ -33,11 +37,13 @@ npm run test:functional
 - [ ] ✅ **エラーページ**: 404ページ正常表示
 
 ### 1.2 SSL・セキュリティ確認
+
 ```bash
 npm run test:security
 ```
 
 **チェック項目:**
+
 - [ ] ✅ **SSL証明書**: 有効期限30日以上、TLS 1.2以上
 - [ ] ✅ **セキュリティヘッダー**: 必須ヘッダー全て設定 (80%以上)
 - [ ] ✅ **HTTPS強制**: HTTPからHTTPSへ正常リダイレクト
@@ -45,13 +51,14 @@ npm run test:security
 - [ ] ✅ **レート制限**: 認証エンドポイントでレート制限動作
 
 **手動確認:**
+
 ```bash
 # セキュリティヘッダー確認
 curl -I https://yourdomain.com/
 
 # 必須ヘッダー存在確認
 # - X-Frame-Options: SAMEORIGIN
-# - X-Content-Type-Options: nosniff  
+# - X-Content-Type-Options: nosniff
 # - Strict-Transport-Security: max-age=...
 # - Content-Security-Policy: ...
 ```
@@ -61,11 +68,13 @@ curl -I https://yourdomain.com/
 ## ⚡ Phase 2: パフォーマンステスト (15-45分)
 
 ### 2.1 レスポンス時間測定
+
 ```bash
 npm run test:performance
 ```
 
 **チェック項目:**
+
 - [ ] ✅ **ホームページ**: < 2秒
 - [ ] ✅ **API応答**: < 500ms
 - [ ] ✅ **静的リソース**: < 200ms
@@ -73,18 +82,21 @@ npm run test:performance
 - [ ] ✅ **メモリリーク**: なし (メモリ増加 < 10%)
 
 ### 2.2 Lighthouse監査
+
 ```bash
 # 手動実行 (自動実行が失敗した場合)
 lighthouse https://yourdomain.com/ --output json --output html --output-path=./lighthouse-report
 ```
 
 **目標スコア:**
+
 - [ ] ✅ **Performance**: ≥ 90
-- [ ] ✅ **Accessibility**: ≥ 90  
+- [ ] ✅ **Accessibility**: ≥ 90
 - [ ] ✅ **Best Practices**: ≥ 80
 - [ ] ✅ **SEO**: ≥ 80
 
 **Core Web Vitals:**
+
 - [ ] ✅ **First Contentful Paint**: < 1.8s
 - [ ] ✅ **Largest Contentful Paint**: < 2.5s
 - [ ] ✅ **Cumulative Layout Shift**: < 0.1
@@ -97,12 +109,14 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 3.1 認証フロー完全テスト
 
 **ユーザー登録フロー:**
+
 1. [ ] `/auth/register` で新規ユーザー登録
 2. [ ] 確認メール受信 (メール監視確認)
 3. [ ] メール内リンククリックで認証完了
 4. [ ] 認証後自動ログイン確認
 
 **ログインフロー:**
+
 1. [ ] `/auth/signin` でログイン
 2. [ ] 正常時: ダッシュボードリダイレクト
 3. [ ] 異常時: 適切なエラーメッセージ表示
@@ -111,12 +125,14 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 3.2 掲示板機能テスト
 
 **投稿CRUD操作:**
+
 1. [ ] **作成**: `/posts/new` で新規投稿作成
 2. [ ] **閲覧**: `/board` で投稿一覧表示
 3. [ ] **編集**: `/posts/[id]/edit` で投稿編集 (作者のみ)
 4. [ ] **削除**: 投稿削除機能 (作者のみ)
 
 **アクセス制限テスト:**
+
 - [ ] 未ログインユーザー: 掲示板アクセス不可
 - [ ] ログインユーザー: 掲示板アクセス可能
 - [ ] 他ユーザーの投稿: 編集・削除不可
@@ -124,6 +140,7 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 3.3 エラーハンドリング確認
 
 **意図的エラー発生テスト:**
+
 - [ ] 存在しないページ: 404エラー表示
 - [ ] 不正なAPI呼び出し: 適切なエラーレスポンス
 - [ ] 権限なしアクセス: 403エラー
@@ -136,12 +153,14 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 4.1 エラー監視動作確認
 
 **Sentry統合確認:**
+
 1. [ ] Sentry Dashboard でエラー受信確認
 2. [ ] 意図的エラー発生 → Sentry通知確認
 3. [ ] エラー詳細情報適切にマスク済み
 4. [ ] アラート設定動作確認
 
 **ログ監視:**
+
 - [ ] Vercel Function Logs 正常出力
 - [ ] エラーレベル適切 (本番: error のみ)
 - [ ] 機密情報がログに出力されていない
@@ -149,17 +168,20 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 4.2 バックアップ・復旧テスト
 
 **データベース:**
+
 - [ ] MongoDB Atlas 自動バックアップ有効
 - [ ] Point-in-time Recovery 利用可能
 - [ ] バックアップからのリストア手順確認
 
 **アプリケーション:**
+
 - [ ] Vercel Deployment 履歴確認
 - [ ] 前バージョンへのロールバック可能
 
 ### 4.3 外部監視設定
 
 **Uptime監視 (UptimeRobot/Pingdom):**
+
 - [ ] `/health` エンドポイント監視設定
 - [ ] 監視間隔: 5分
 - [ ] アラート通知: Email + Slack
@@ -172,6 +194,7 @@ lighthouse https://yourdomain.com/ --output json --output html --output-path=./l
 ### 5.1 トラフィック負荷テスト
 
 **基本負荷テスト:**
+
 ```bash
 # 軽負荷テスト (10並列 x 60秒)
 for i in {1..10}; do
@@ -182,6 +205,7 @@ killall curl
 ```
 
 **チェック項目:**
+
 - [ ] レスポンス時間 < 3秒維持
 - [ ] エラー率 < 1%
 - [ ] サーバーリソース使用量 < 80%
@@ -189,6 +213,7 @@ killall curl
 ### 5.2 同時ユーザー負荷テスト
 
 **認証負荷テスト:**
+
 - [ ] 10同時ログイン試行: 正常処理
 - [ ] 20同時新規登録: レート制限動作
 - [ ] 100同時API呼び出し: 適切にスケール
@@ -198,18 +223,21 @@ killall curl
 ## 📋 最終チェックリスト
 
 ### テスト結果確認
+
 - [ ] **機能テスト**: 100% Pass
-- [ ] **セキュリティテスト**: スコア ≥ 80%  
+- [ ] **セキュリティテスト**: スコア ≥ 80%
 - [ ] **パフォーマンステスト**: スコア ≥ 80%
 - [ ] **統合テスト**: 全項目 Pass
 
 ### レポート生成
+
 - [ ] `functional-test-results.json` 生成確認
-- [ ] `security-test-results.json` 生成確認  
+- [ ] `security-test-results.json` 生成確認
 - [ ] `performance-test-results.json` 生成確認
 - [ ] Lighthouse レポート生成確認
 
 ### 運用準備
+
 - [ ] 監視ダッシュボード設定完了
 - [ ] アラート通知先設定完了
 - [ ] 障害対応手順書更新
@@ -220,19 +248,22 @@ killall curl
 ## 🎯 合格基準
 
 ### 必須合格項目 (Must Pass)
+
 - [ ] **稼働確認**: ヘルスチェック 200 OK
 - [ ] **SSL**: A級証明書、セキュアな設定
 - [ ] **認証**: 登録・ログイン・ログアウト正常動作
 - [ ] **データベース**: CRUD操作全て正常
 - [ ] **メール**: 認証メール送信成功
 
-### 推奨合格項目 (Should Pass)  
+### 推奨合格項目 (Should Pass)
+
 - [ ] **パフォーマンス**: Lighthouse スコア 90+
 - [ ] **セキュリティ**: セキュリティスコア 80%+
 - [ ] **レスポンス時間**: 平均 < 2秒
 - [ ] **エラー率**: < 1%
 
 ### 監視項目 (Ongoing)
+
 - [ ] **可用性**: 99.9%+ (月次確認)
 - [ ] **エラー監視**: リアルタイム通知
 - [ ] **パフォーマンス**: 継続監視
@@ -243,11 +274,13 @@ killall curl
 ## 🚨 不合格時の対応
 
 ### 緊急対応レベル
+
 - **Level 3 (緊急)**: 即座にロールバック実行
-- **Level 2 (重大)**: 24時間以内修正・再デプロイ  
+- **Level 2 (重大)**: 24時間以内修正・再デプロイ
 - **Level 1 (警告)**: 1週間以内改善計画実行
 
 ### 代表的な問題と対応
+
 - **SSL証明書エラー** → 証明書再発行・DNS確認
 - **パフォーマンス低下** → キャッシュ設定・CDN設定確認
 - **セキュリティ警告** → ヘッダー設定・脆弱性対応
@@ -258,7 +291,7 @@ killall curl
 ## 📞 緊急連絡先
 
 - **1次対応**: システム管理者 [連絡先]
-- **エスカレーション**: 技術リード [連絡先]  
+- **エスカレーション**: 技術リード [連絡先]
 - **外部サポート**: Vercel, MongoDB Atlas, Resend
 
 ---

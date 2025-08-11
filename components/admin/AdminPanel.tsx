@@ -86,7 +86,11 @@ export default function AdminPanel() {
     setActiveTab(newValue);
   };
 
-  const showConfirmDialog = (title: string, message: string, action: () => void) => {
+  const showConfirmDialog = (
+    title: string,
+    message: string,
+    action: () => void
+  ) => {
     setConfirmDialog({
       open: true,
       title,
@@ -96,7 +100,7 @@ export default function AdminPanel() {
   };
 
   const closeConfirmDialog = () => {
-    setConfirmDialog(prev => ({ ...prev, open: false }));
+    setConfirmDialog((prev) => ({ ...prev, open: false }));
   };
 
   const handleConfirmAction = () => {
@@ -108,7 +112,11 @@ export default function AdminPanel() {
     <Box sx={{ p: 3 }}>
       {/* ヘッダー */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        >
           <AdminPanelSettings color="primary" />
           管理者パネル
         </Typography>
@@ -124,27 +132,27 @@ export default function AdminPanel() {
       <Card>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab 
-              icon={<PostAdd />} 
-              label="投稿管理" 
+            <Tab
+              icon={<PostAdd />}
+              label="投稿管理"
               id="admin-tab-0"
               aria-controls="admin-tabpanel-0"
             />
-            <Tab 
-              icon={<People />} 
-              label="ユーザー管理" 
+            <Tab
+              icon={<People />}
+              label="ユーザー管理"
               id="admin-tab-1"
               aria-controls="admin-tabpanel-1"
             />
-            <Tab 
-              icon={<Security />} 
-              label="セキュリティ" 
+            <Tab
+              icon={<Security />}
+              label="セキュリティ"
               id="admin-tab-2"
               aria-controls="admin-tabpanel-2"
             />
-            <Tab 
-              icon={<Settings />} 
-              label="システム設定" 
+            <Tab
+              icon={<Settings />}
+              label="システム設定"
               id="admin-tab-3"
               aria-controls="admin-tabpanel-3"
             />
@@ -159,21 +167,26 @@ export default function AdminPanel() {
           <Typography variant="body2" color="text.secondary" paragraph>
             すべての投稿の編集・削除が可能です。
           </Typography>
-          
+
           <Alert severity="warning" sx={{ mb: 2 }}>
             管理者として他のユーザーの投稿を操作する際は、適切な理由があることを確認してください。
           </Alert>
 
           {/* 投稿管理の統計情報例 */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 3 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 2,
+              mb: 3,
+            }}
+          >
             <Card variant="outlined">
               <CardContent>
                 <Typography color="text.secondary" gutterBottom>
                   総投稿数
                 </Typography>
-                <Typography variant="h5">
-                  --
-                </Typography>
+                <Typography variant="h5">--</Typography>
               </CardContent>
             </Card>
             <Card variant="outlined">
@@ -181,9 +194,7 @@ export default function AdminPanel() {
                 <Typography color="text.secondary" gutterBottom>
                   今日の投稿
                 </Typography>
-                <Typography variant="h5">
-                  --
-                </Typography>
+                <Typography variant="h5">--</Typography>
               </CardContent>
             </Card>
             <Card variant="outlined">
@@ -191,9 +202,7 @@ export default function AdminPanel() {
                 <Typography color="text.secondary" gutterBottom>
                   報告された投稿
                 </Typography>
-                <Typography variant="h5">
-                  --
-                </Typography>
+                <Typography variant="h5">--</Typography>
               </CardContent>
             </Card>
           </Box>
@@ -220,8 +229,8 @@ export default function AdminPanel() {
           <Box sx={{ mt: 2 }}>
             <List>
               <ListItem>
-                <ListItemText 
-                  primary="ユーザー一覧" 
+                <ListItemText
+                  primary="ユーザー一覧"
                   secondary="すべてのユーザーアカウントの表示と管理"
                 />
                 <ListItemSecondaryAction>
@@ -229,8 +238,8 @@ export default function AdminPanel() {
                 </ListItemSecondaryAction>
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="権限管理" 
+                <ListItemText
+                  primary="権限管理"
                   secondary="ユーザーの役割と権限の変更"
                 />
                 <ListItemSecondaryAction>
@@ -238,8 +247,8 @@ export default function AdminPanel() {
                 </ListItemSecondaryAction>
               </ListItem>
               <ListItem>
-                <ListItemText 
-                  primary="アカウント制御" 
+                <ListItemText
+                  primary="アカウント制御"
                   secondary="ユーザーアカウントの有効化・無効化"
                 />
                 <ListItemSecondaryAction>
@@ -265,8 +274,8 @@ export default function AdminPanel() {
 
           <List>
             <ListItem>
-              <ListItemText 
-                primary="ログイン制限" 
+              <ListItemText
+                primary="ログイン制限"
                 secondary="不正なログイン試行の監視と制限"
               />
               <ListItemSecondaryAction>
@@ -274,8 +283,8 @@ export default function AdminPanel() {
               </ListItemSecondaryAction>
             </ListItem>
             <ListItem>
-              <ListItemText 
-                primary="パスワード暗号化" 
+              <ListItemText
+                primary="パスワード暗号化"
                 secondary="bcrypt による安全なパスワード保存"
               />
               <ListItemSecondaryAction>
@@ -283,8 +292,8 @@ export default function AdminPanel() {
               </ListItemSecondaryAction>
             </ListItem>
             <ListItem>
-              <ListItemText 
-                primary="セッション管理" 
+              <ListItemText
+                primary="セッション管理"
                 secondary="安全なセッション管理と自動タイムアウト"
               />
               <ListItemSecondaryAction>
@@ -309,8 +318,8 @@ export default function AdminPanel() {
 
           <List>
             <ListItem>
-              <ListItemText 
-                primary="サイト設定" 
+              <ListItemText
+                primary="サイト設定"
                 secondary="サイト名、説明、連絡先等の基本情報"
               />
               <ListItemSecondaryAction>
@@ -318,8 +327,8 @@ export default function AdminPanel() {
               </ListItemSecondaryAction>
             </ListItem>
             <ListItem>
-              <ListItemText 
-                primary="メール設定" 
+              <ListItemText
+                primary="メール設定"
                 secondary="メール送信設定とテンプレート管理"
               />
               <ListItemSecondaryAction>
@@ -327,8 +336,8 @@ export default function AdminPanel() {
               </ListItemSecondaryAction>
             </ListItem>
             <ListItem>
-              <ListItemText 
-                primary="データベース管理" 
+              <ListItemText
+                primary="データベース管理"
                 secondary="データベースのバックアップと最適化"
               />
               <ListItemSecondaryAction>
@@ -347,7 +356,11 @@ export default function AdminPanel() {
         </DialogContent>
         <DialogActions>
           <Button onClick={closeConfirmDialog}>キャンセル</Button>
-          <Button onClick={handleConfirmAction} variant="contained" color="error">
+          <Button
+            onClick={handleConfirmAction}
+            variant="contained"
+            color="error"
+          >
             実行
           </Button>
         </DialogActions>

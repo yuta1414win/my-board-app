@@ -5,8 +5,9 @@
 このドキュメントは、Next.js 15 + NextAuth + MongoDB で構築された会員制掲示板システムの本番環境デプロイ手順を説明します。
 
 **技術スタック:**
+
 - Frontend: Next.js 15 (App Router) + TypeScript
-- Authentication: NextAuth v5  
+- Authentication: NextAuth v5
 - Database: MongoDB Atlas
 - Hosting: Vercel
 - Monitoring: Sentry
@@ -46,6 +47,7 @@
 ### 1. MongoDB Atlas (データベース)
 
 #### クラスター作成
+
 ```bash
 # 推奨スペック: M2 (Shared) - 初期運用
 # リージョン: Asia Pacific (Tokyo) - ap-northeast-1
@@ -54,6 +56,7 @@
 ```
 
 #### セキュリティ設定
+
 - **Database Access**: 本番用強力パスワード
 - **Network Access**: Vercel IP許可 + 特定IPアドレス
 - **接続文字列例**:
@@ -64,11 +67,12 @@
 ### 2. Resend (メール送信)
 
 #### ドメイン設定
+
 ```bash
 # 1. ドメイン追加 (resend.com)
 # 2. DNS設定
 TXT _dmarc "v=DMARC1; p=quarantine; rua=mailto:admin@yourdomain.com"
-TXT @ "v=spf1 include:_spf.resend.com ~all" 
+TXT @ "v=spf1 include:_spf.resend.com ~all"
 CNAME resend._domainkey "resend._domainkey.resend.com"
 
 # 3. API Key取得
@@ -78,6 +82,7 @@ CNAME resend._domainkey "resend._domainkey.resend.com"
 ### 3. Sentry (エラー監視)
 
 #### プロジェクト作成
+
 ```bash
 # 1. Sentry アカウント作成
 # 2. Next.js プロジェクト作成
@@ -92,6 +97,7 @@ CNAME resend._domainkey "resend._domainkey.resend.com"
 ### Vercel 環境変数
 
 #### 必須設定 (Production)
+
 ```bash
 # 認証
 NEXTAUTH_SECRET="[openssl rand -base64 48]"
@@ -119,6 +125,7 @@ APP_NAME="My Board App"
 ```
 
 #### オプション設定
+
 ```bash
 # エラー監視
 NEXT_PUBLIC_SENTRY_DSN="https://xxxxx@xxxxxx.ingest.sentry.io/xxxxxxx"
@@ -248,6 +255,7 @@ curl -I https://yourdomain.com/
 ### 1. Uptime 監視
 
 **UptimeRobot 設定:**
+
 ```bash
 # 監視URL: https://yourdomain.com/health
 # 監視間隔: 5分
@@ -258,6 +266,7 @@ curl -I https://yourdomain.com/
 ### 2. エラー監視 (Sentry)
 
 **主要メトリクス:**
+
 - エラー率 < 1%
 - 応答時間 < 2秒
 - Apdex スコア > 0.8
@@ -265,6 +274,7 @@ curl -I https://yourdomain.com/
 ### 3. パフォーマンス監視
 
 **目標値:**
+
 - First Contentful Paint < 1.8s
 - Largest Contentful Paint < 2.5s
 - Cumulative Layout Shift < 0.1
@@ -277,6 +287,7 @@ curl -I https://yourdomain.com/
 ### よくある問題と解決法
 
 #### 1. メール送信失敗
+
 ```bash
 # 原因チェック
 - Resend API制限確認
@@ -290,8 +301,9 @@ curl -I https://yourdomain.com/
 ```
 
 #### 2. MongoDB接続エラー
+
 ```bash
-# 原因チェック  
+# 原因チェック
 - IP許可リスト
 - 接続文字列形式
 - Network Access設定
@@ -303,6 +315,7 @@ curl -I https://yourdomain.com/
 ```
 
 #### 3. 認証エラー
+
 ```bash
 # 原因チェック
 - NEXTAUTH_SECRET設定
@@ -321,7 +334,7 @@ curl -I https://yourdomain.com/
 # 1. Vercel Deployment履歴確認
 vercel ls
 
-# 2. 前のデプロイメントにロールバック  
+# 2. 前のデプロイメントにロールバック
 vercel alias set <previous-deployment-url> <production-domain>
 
 # 3. データベース復旧（必要に応じて）
@@ -335,11 +348,13 @@ vercel alias set <previous-deployment-url> <production-domain>
 ### 定期メンテナンス
 
 #### 週次
+
 - [ ] エラー率確認 (Sentry)
 - [ ] パフォーマンス確認 (Vercel Analytics)
 - [ ] セキュリティアラート確認
 
-#### 月次  
+#### 月次
+
 - [ ] 依存関係アップデート
 - [ ] セキュリティパッチ適用
 - [ ] バックアップテスト実行
@@ -348,11 +363,13 @@ vercel alias set <previous-deployment-url> <production-domain>
 ### スケーリング計画
 
 #### ユーザー数増加対応
+
 - MongoDB Atlas: M2 → M10 → M30
 - Vercel: Pro Plan → Team Plan
 - Resend: 制限増量申請
 
 #### 機能拡張準備
+
 - CDN最適化 (画像配信)
 - 検索機能 (Elasticsearch)
 - リアルタイム通知 (WebSocket)
@@ -362,12 +379,14 @@ vercel alias set <previous-deployment-url> <production-domain>
 ## 📚 参考資料
 
 ### ドキュメント
+
 - [Next.js Deployment](https://nextjs.org/docs/deployment)
 - [Vercel Documentation](https://vercel.com/docs)
 - [MongoDB Atlas](https://docs.atlas.mongodb.com/)
 - [NextAuth.js](https://next-auth.js.org/)
 
 ### 設定ファイル
+
 - `vercel.json` - Vercel設定
 - `next.config.ts` - Next.js設定 (セキュリティヘッダー含む)
 - `env.production.template` - 環境変数テンプレート
@@ -375,6 +394,7 @@ vercel alias set <previous-deployment-url> <production-domain>
 - `DEPLOY_CHECKLIST.md` - デプロイチェックリスト
 
 ### コマンドリファレンス
+
 ```bash
 # デプロイ関連
 npm run deploy:check     # デプロイ前チェック

@@ -34,17 +34,20 @@
 ### ✅ コード準備
 
 - [ ] **全テスト通過確認**
+
   ```bash
   npm run test:all  # Jest + Playwright
   ```
 
 - [ ] **ESLint/TypeScript エラー解決**
+
   ```bash
   npm run lint
   npx tsc --noEmit
   ```
 
 - [ ] **セキュリティスキャン実行**
+
   ```bash
   npm audit --audit-level high
   ```
@@ -59,13 +62,14 @@
 ### ✅ プロジェクト設定
 
 - [ ] **Vercelプロジェクト作成**
+
   ```bash
   vercel login
   vercel link
   ```
 
 - [ ] **環境変数設定** (Vercel Dashboard)
-  
+
   **必須変数:**
   - [ ] `NEXTAUTH_SECRET` (48文字以上)
   - [ ] `NEXTAUTH_URL` (https://yourdomain.com)
@@ -103,6 +107,7 @@
 ### ✅ 初回デプロイ
 
 - [ ] **プレビューデプロイでテスト**
+
   ```bash
   vercel  # プレビューデプロイ
   ```

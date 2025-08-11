@@ -7,6 +7,7 @@
 ## 事前準備
 
 ### 1. 環境設定
+
 ```bash
 # 開発サーバーの起動
 npm run dev
@@ -17,6 +18,7 @@ export NODE_ENV=development
 ```
 
 ### 2. 必要なツール
+
 - ブラウザ（Chrome/Firefox推奨）
 - 開発者ツール
 - curl または Postman
@@ -27,12 +29,15 @@ export NODE_ENV=development
 ### 🚦 1. レート制限テスト
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js rate-limit
 ```
 
 #### 手動確認手順
+
 1. **ブラウザテスト**
+
    ```bash
    # 複数のcurlリクエストを並行実行
    for i in {1..10}; do
@@ -56,23 +61,32 @@ node scripts/security-test.js rate-limit
 ### 🧹 2. XSS攻撃シミュレーション
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js xss
 ```
 
 #### 手動確認手順
+
 1. **投稿フォームでのXSSテスト**
-   
+
    以下のペイロードを投稿フォームに入力：
+
    ```html
-   <script>alert('XSS')</script>
-   <img src="x" onerror="alert('XSS')">
+   <script>
+     alert('XSS');
+   </script>
+   <img src="x" onerror="alert('XSS')" />
    <svg onload="alert('XSS')">
-   javascript:alert('XSS')
-   "><script>alert('XSS')</script>
+     javascript:alert('XSS') ">
+     <script>
+       alert('XSS');
+     </script>
+   </svg>
    ```
 
 2. **URL パラメータでのXSS**
+
    ```
    http://localhost:3001/posts?search=<script>alert('XSS')</script>
    ```
@@ -90,12 +104,15 @@ node scripts/security-test.js xss
 ### 🔐 3. CSRF攻撃防御確認
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js csrf
 ```
 
 #### 手動確認手順
+
 1. **CSRFトークンなしのリクエスト**
+
    ```bash
    curl -X POST http://localhost:3001/api/posts \
      -H "Content-Type: application/json" \
@@ -104,12 +121,13 @@ node scripts/security-test.js csrf
    ```
 
 2. **異なるオリジンからのリクエスト**
+
    ```html
    <!-- 悪意のあるサイト上のフォーム -->
    <form action="http://localhost:3001/api/posts" method="POST">
-     <input type="hidden" name="title" value="CSRF Attack">
-     <input type="hidden" name="content" value="Malicious content">
-     <input type="submit" value="Click me">
+     <input type="hidden" name="title" value="CSRF Attack" />
+     <input type="hidden" name="content" value="Malicious content" />
+     <input type="submit" value="Click me" />
    </form>
    ```
 
@@ -126,21 +144,25 @@ node scripts/security-test.js csrf
 ### 🛡️ 4. セキュリティヘッダー確認
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js headers
 ```
 
 #### 手動確認手順
+
 1. **ブラウザ開発者ツールで確認**
    - ページを開いて Network タブを確認
    - レスポンスヘッダーを確認
 
 2. **curlでヘッダー確認**
+
    ```bash
    curl -I http://localhost:3001/
    ```
 
 3. **期待結果**
+
    ```
    Content-Security-Policy: [適切なCSP]
    X-Frame-Options: DENY
@@ -162,12 +184,15 @@ node scripts/security-test.js headers
 ### 🔍 5. 不正入力値の拒否テスト
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js input
 ```
 
 #### 手動確認手順
+
 1. **SQLインジェクション**
+
    ```bash
    curl -X POST http://localhost:3001/api/posts \
      -H "Content-Type: application/json" \
@@ -175,6 +200,7 @@ node scripts/security-test.js input
    ```
 
 2. **コマンドインジェクション**
+
    ```bash
    curl -X POST http://localhost:3001/api/posts \
      -H "Content-Type: application/json" \
@@ -182,6 +208,7 @@ node scripts/security-test.js input
    ```
 
 3. **長大な文字列（バッファオーバーフロー）**
+
    ```bash
    # 10,000文字の文字列
    LONG_STRING=$(python3 -c "print('A' * 10000)")
@@ -203,12 +230,15 @@ node scripts/security-test.js input
 ### 📊 6. 監査ログの記録確認
 
 #### 自動テスト実行
+
 ```bash
 node scripts/security-test.js audit
 ```
 
 #### 手動確認手順
+
 1. **ログイン失敗の記録**
+
    ```bash
    curl -X POST http://localhost:3001/api/auth/signin \
      -H "Content-Type: application/json" \
@@ -216,17 +246,19 @@ node scripts/security-test.js audit
    ```
 
 2. **レート制限違反の記録**
+
    ```bash
    # 複数回リクエストを送信
    for i in {1..8}; do
      curl -X POST http://localhost:3001/api/posts \
        -H "Content-Type: application/json" \
-       -d '{"title":"Test","content":"content"}' 
+       -d '{"title":"Test","content":"content"}'
    done
    ```
 
 3. **監査ログの確認**
    - MongoDB Compassまたはmongoshでデータベース確認
+
    ```javascript
    // MongoDBで確認
    use my-board-app
@@ -246,6 +278,7 @@ node scripts/security-test.js audit
 ## 包括テスト実行
 
 ### 全自動テスト実行
+
 ```bash
 # すべてのセキュリティテストを実行
 node scripts/security-test.js
@@ -260,6 +293,7 @@ npm run test:all
 ### テスト結果の評価
 
 #### 成功基準
+
 - **レート制限**: 90%以上のリクエストをブロック
 - **XSS対策**: 100%のペイロードをブロック
 - **CSRF対策**: すべての不正リクエストをブロック
@@ -268,11 +302,13 @@ npm run test:all
 - **監査ログ**: すべてのセキュリティイベントを記録
 
 #### 失敗時の対処
+
 1. **ログの確認**
+
    ```bash
    # サーバーログ
    tail -f logs/security.log
-   
+
    # 監査ログ
    node -e "
    const { defaultAuditLogger } = require('./lib/audit-logger');
@@ -291,6 +327,7 @@ npm run test:all
 ## 継続的セキュリティ監視
 
 ### 定期実行の設定
+
 ```bash
 # crontabでの定期実行設定例
 # 毎日午前2時にセキュリティテスト実行
@@ -298,6 +335,7 @@ npm run test:all
 ```
 
 ### アラート設定
+
 ```javascript
 // package.json scripts追加
 {
@@ -310,6 +348,7 @@ npm run test:all
 ```
 
 ### セキュリティメトリクス収集
+
 - テスト成功率の追跡
 - レスポンス時間の監視
 - エラー率の監視
@@ -340,6 +379,7 @@ npm run test:all
    - フラッシュ処理の確認
 
 ### デバッグのヒント
+
 - `NODE_ENV=development` でより詳細なログ出力
 - ブラウザ開発者ツールのNetwork/Consoleタブ活用
 - curlの`-v`オプションでリクエスト詳細確認

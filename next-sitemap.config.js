@@ -3,7 +3,7 @@ module.exports = {
   siteUrl: process.env.APP_URL || 'https://yourdomain.com',
   generateRobotsTxt: true,
   sitemapSize: 5000,
-  
+
   // 除外するパス
   exclude: [
     '/api/*',
@@ -13,7 +13,7 @@ module.exports = {
     '/posts/*/edit',
     '/server-sitemap-index.xml',
   ],
-  
+
   // robots.txt設定
   robotsTxtOptions: {
     policies: [
@@ -35,14 +35,14 @@ module.exports = {
       `${process.env.APP_URL || 'https://yourdomain.com'}/server-sitemap-index.xml`,
     ],
   },
-  
+
   // 変更頻度設定
   changefreq: 'daily',
   priority: 0.7,
-  
+
   // 追加設定
   autoLastmod: true,
-  
+
   transform: async (config, path) => {
     // パス別の設定
     const customPaths = {

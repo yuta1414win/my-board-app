@@ -11,7 +11,8 @@ class EdgeRateLimiter {
   private readonly windowMs: number;
   private readonly maxRequests: number;
 
-  constructor(windowMs = 60 * 1000, maxRequests = 5) { // 1分間に5回
+  constructor(windowMs = 60 * 1000, maxRequests = 5) {
+    // 1分間に5回
     this.windowMs = windowMs;
     this.maxRequests = maxRequests;
   }
@@ -32,7 +33,7 @@ class EdgeRateLimiter {
         firstRequest: now,
         lastRequest: now,
       });
-      
+
       return {
         allowed: true,
         limit: this.maxRequests,
@@ -90,10 +91,10 @@ let rateLimiterInstance: EdgeRateLimiter | null = null;
 export function getEdgeRateLimiter(): EdgeRateLimiter {
   if (!rateLimiterInstance) {
     rateLimiterInstance = new EdgeRateLimiter(60 * 1000, 5); // 1分間に5回
-    
+
     // 定期クリーンアップ（Edge RuntimeでsetIntervalは使えないので、リクエスト時にクリーンアップ）
   }
-  
+
   return rateLimiterInstance;
 }
 

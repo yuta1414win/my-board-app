@@ -27,21 +27,21 @@ const DEFAULT_HEADERS: SecurityHeadersConfig = {
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "upgrade-insecure-requests"
+    'upgrade-insecure-requests',
   ].join('; '),
-  
+
   // HTTP Strict Transport Security - HTTPS強制
   strictTransportSecurity: 'max-age=31536000; includeSubDomains; preload',
-  
+
   // X-Frame-Options - クリックジャッキング攻撃を防ぐ
   xFrameOptions: 'DENY',
-  
+
   // X-Content-Type-Options - MIME型スニッフィングを防ぐ
   xContentTypeOptions: 'nosniff',
-  
+
   // Referrer Policy - リファラー情報の制御
   referrerPolicy: 'strict-origin-when-cross-origin',
-  
+
   // Permissions Policy - ブラウザ機能の制限
   permissionsPolicy: [
     'geolocation=()',
@@ -53,20 +53,20 @@ const DEFAULT_HEADERS: SecurityHeadersConfig = {
     'gyroscope=()',
     'speaker=(self)',
     'fullscreen=(self)',
-    'sync-xhr=()'
+    'sync-xhr=()',
   ].join(', '),
-  
+
   // X-XSS-Protection - 古いブラウザ用XSS保護
   xXSSProtection: '1; mode=block',
-  
+
   // Cross-Origin Embedder Policy
   crossOriginEmbedderPolicy: 'require-corp',
-  
+
   // Cross-Origin Opener Policy
   crossOriginOpenerPolicy: 'same-origin',
-  
+
   // Cross-Origin Resource Policy
-  crossOriginResourcePolicy: 'same-site'
+  crossOriginResourcePolicy: 'same-site',
 };
 
 // 開発環境用のより緩い設定
@@ -82,12 +82,12 @@ const DEVELOPMENT_HEADERS: SecurityHeadersConfig = {
     "connect-src 'self' localhost:* ws://localhost:* wss://localhost:* https://api.resend.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
+    "form-action 'self'",
   ].join('; '),
-  
+
   // 開発環境ではHSTSを無効化
   strictTransportSecurity: undefined,
-  
+
   // Cross-Origin policies を開発環境では緩める
   crossOriginEmbedderPolicy: undefined,
   crossOriginOpenerPolicy: 'unsafe-none',
@@ -101,11 +101,11 @@ function getSecurityHeaders(): SecurityHeadersConfig {
 
 // NextResponseにセキュリティヘッダーを適用
 export function applySecurityHeaders(
-  response: NextResponse, 
+  response: NextResponse,
   customConfig?: Partial<SecurityHeadersConfig>
 ): NextResponse {
   const headers = { ...getSecurityHeaders(), ...customConfig };
-  
+
   // 各ヘッダーを設定
   Object.entries(headers).forEach(([key, value]) => {
     if (value) {
@@ -113,7 +113,7 @@ export function applySecurityHeaders(
       response.headers.set(headerName, value);
     }
   });
-  
+
   return response;
 }
 
@@ -129,9 +129,9 @@ function convertToHeaderName(key: string): string {
     xXSSProtection: 'X-XSS-Protection',
     crossOriginEmbedderPolicy: 'Cross-Origin-Embedder-Policy',
     crossOriginOpenerPolicy: 'Cross-Origin-Opener-Policy',
-    crossOriginResourcePolicy: 'Cross-Origin-Resource-Policy'
+    crossOriginResourcePolicy: 'Cross-Origin-Resource-Policy',
   };
-  
+
   return headerMap[key] || key;
 }
 
@@ -147,9 +147,9 @@ export const PAGE_SPECIFIC_CSP = {
     "connect-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
+    "form-action 'self'",
   ].join('; '),
-  
+
   // 管理者ページ - 最も厳格
   admin: [
     "default-src 'self'",
@@ -159,14 +159,11 @@ export const PAGE_SPECIFIC_CSP = {
     "connect-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
+    "form-action 'self'",
   ].join('; '),
-  
+
   // APIエンドポイント
-  api: [
-    "default-src 'none'",
-    "frame-ancestors 'none'"
-  ].join('; ')
+  api: ["default-src 'none'", "frame-ancestors 'none'"].join('; '),
 };
 
 // CSPレポートの処理
@@ -184,7 +181,7 @@ export interface CSPReport {
 // CSP違反レポートの処理
 export function handleCSPReport(report: CSPReport): void {
   const violation = report['csp-report'];
-  
+
   console.warn('CSP Violation:', {
     documentUri: violation['document-uri'],
     violatedDirective: violation['violated-directive'],
@@ -192,9 +189,9 @@ export function handleCSPReport(report: CSPReport): void {
     sourceFile: violation['source-file'],
     lineNumber: violation['line-number'],
     columnNumber: violation['column-number'],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
-  
+
   // 本番環境では監査ログに記録
   if (process.env.NODE_ENV === 'production') {
     // 監査ログシステムに送信（後で実装）
@@ -211,35 +208,35 @@ export function validateSecurityHeaders(): {
   const headers = getSecurityHeaders();
   const warnings: string[] = [];
   const errors: string[] = [];
-  
+
   // 必須ヘッダーのチェック
   if (!headers.contentSecurityPolicy) {
     errors.push('Content-Security-Policy is missing');
   }
-  
+
   if (!headers.xFrameOptions) {
     errors.push('X-Frame-Options is missing');
   }
-  
+
   // 本番環境での警告
   if (process.env.NODE_ENV === 'production') {
     if (!headers.strictTransportSecurity) {
       warnings.push('HSTS should be enabled in production');
     }
-    
+
     if (headers.contentSecurityPolicy?.includes('unsafe-inline')) {
       warnings.push('unsafe-inline in CSP reduces security');
     }
-    
+
     if (headers.contentSecurityPolicy?.includes('unsafe-eval')) {
       warnings.push('unsafe-eval in CSP reduces security');
     }
   }
-  
+
   return {
     valid: errors.length === 0,
     warnings,
-    errors
+    errors,
   };
 }
 

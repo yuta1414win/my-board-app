@@ -15,19 +15,26 @@ export async function POST(request: NextRequest) {
     const { currentPassword, newPassword, confirmPassword } = body;
 
     // バリデーション
-    const validation = validatePasswordChange({ currentPassword, newPassword, confirmPassword });
+    const validation = validatePasswordChange({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
 
     if (!validation.isValid) {
-      return NextResponse.json({
-        error: '入力データが無効です',
-        details: validation.errors
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: '入力データが無効です',
+          details: validation.errors,
+        },
+        { status: 400 }
+      );
     }
 
     // パスワード変更処理
     const result = await UserModel.changePassword(currentUser.id, {
       currentPassword,
-      newPassword
+      newPassword,
     });
 
     if (!result.success) {

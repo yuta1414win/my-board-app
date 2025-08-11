@@ -11,7 +11,12 @@ import {
   Box,
   Alert,
 } from '@mui/material';
-import { ErrorOutline, Security, AdminPanelSettings, Person } from '@mui/icons-material';
+import {
+  ErrorOutline,
+  Security,
+  AdminPanelSettings,
+  Person,
+} from '@mui/icons-material';
 
 interface PermissionErrorDialogProps {
   open: boolean;
@@ -36,7 +41,9 @@ export default function PermissionErrorDialog({
 
   const getErrorIcon = () => {
     if (error.isAdmin) {
-      return <AdminPanelSettings sx={{ fontSize: 48, color: 'warning.main' }} />;
+      return (
+        <AdminPanelSettings sx={{ fontSize: 48, color: 'warning.main' }} />
+      );
     }
     if (error.isOwner) {
       return <Person sx={{ fontSize: 48, color: 'info.main' }} />;

@@ -10,10 +10,7 @@ import {
   Typography,
   Chip,
 } from '@mui/material';
-import {
-  Save as SaveIcon,
-  Cancel as CancelIcon,
-} from '@mui/icons-material';
+import { Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
 import { UserProfile } from '@/models/User';
 
 interface ProfileEditFormProps {
@@ -35,11 +32,11 @@ interface ValidationErrors {
   quickComment?: string;
 }
 
-export default function ProfileEditForm({ 
-  user, 
-  onUpdate, 
-  onError, 
-  onCancel 
+export default function ProfileEditForm({
+  user,
+  onUpdate,
+  onError,
+  onCancel,
 }: ProfileEditFormProps) {
   const [formData, setFormData] = useState<FormData>({
     name: user.name || '',
@@ -51,17 +48,22 @@ export default function ProfileEditForm({
   const [errors, setErrors] = useState<ValidationErrors>({});
 
   // フォームのリアルタイムバリデーション
-  const validateField = (name: keyof FormData, value: string): string | undefined => {
+  const validateField = (
+    name: keyof FormData,
+    value: string
+  ): string | undefined => {
     switch (name) {
       case 'name':
         if (!value.trim()) return '名前は必須です';
         if (value.length > 50) return '名前は50文字以内で入力してください';
         return undefined;
       case 'bio':
-        if (value.length > 200) return '自己紹介は200文字以内で入力してください';
+        if (value.length > 200)
+          return '自己紹介は200文字以内で入力してください';
         return undefined;
       case 'quickComment':
-        if (value.length > 50) return '一言コメントは50文字以内で入力してください';
+        if (value.length > 50)
+          return '一言コメントは50文字以内で入力してください';
         return undefined;
       default:
         return undefined;
@@ -71,15 +73,15 @@ export default function ProfileEditForm({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const fieldName = name as keyof FormData;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       [fieldName]: value,
     }));
 
     // リアルタイムバリデーション
     const error = validateField(fieldName, value);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [fieldName]: error,
     }));
@@ -87,7 +89,7 @@ export default function ProfileEditForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // 全フィールドをバリデーション
     const newErrors: ValidationErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
@@ -145,20 +147,17 @@ export default function ProfileEditForm({
     onCancel();
   };
 
-  const isFormValid = !Object.values(errors).some(error => error) && formData.name.trim();
+  const isFormValid =
+    !Object.values(errors).some((error) => error) && formData.name.trim();
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
       {loading && <LinearProgress sx={{ mb: 2 }} />}
-      
+
       <Stack spacing={3}>
         {/* 名前 */}
         <Box>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1 }}
-          >
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             名前 *
           </Typography>
           <TextField
@@ -176,11 +175,7 @@ export default function ProfileEditForm({
 
         {/* 自己紹介 */}
         <Box>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ mb: 1 }}
-          >
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             自己紹介
           </Typography>
           <TextField
@@ -201,16 +196,13 @@ export default function ProfileEditForm({
         {/* 一言コメント */}
         <Box>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-            >
+            <Typography variant="body2" color="text.secondary">
               一言コメント
             </Typography>
-            <Chip 
-              label="吹き出し表示" 
-              size="small" 
-              variant="outlined" 
+            <Chip
+              label="吹き出し表示"
+              size="small"
+              variant="outlined"
               color="primary"
             />
           </Stack>
@@ -222,7 +214,9 @@ export default function ProfileEditForm({
             placeholder="短いコメントを入力してください"
             disabled={loading}
             error={!!errors.quickComment}
-            helperText={errors.quickComment || `${formData.quickComment.length}/50文字`}
+            helperText={
+              errors.quickComment || `${formData.quickComment.length}/50文字`
+            }
             inputProps={{ maxLength: 50 }}
           />
         </Box>

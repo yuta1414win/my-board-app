@@ -47,21 +47,24 @@ export async function PUT(request: NextRequest) {
     const validation = validateProfile({ name, bio, quickComment });
 
     if (!validation.isValid) {
-      return NextResponse.json({ 
-        error: '入力データが無効です',
-        details: validation.errors
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: '入力データが無効です',
+          details: validation.errors,
+        },
+        { status: 400 }
+      );
     }
 
     // データベース更新
     const updateData = {
       name: name?.trim(),
       bio: bio?.trim() || undefined,
-      quickComment: quickComment?.trim() || undefined
+      quickComment: quickComment?.trim() || undefined,
     };
 
     // undefinedのキーを削除
-    Object.keys(updateData).forEach(key => {
+    Object.keys(updateData).forEach((key) => {
       if (updateData[key as keyof typeof updateData] === undefined) {
         delete updateData[key as keyof typeof updateData];
       }

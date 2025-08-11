@@ -9,58 +9,59 @@ const checks = [
   {
     name: '環境変数テンプレートの確認',
     check: () => fs.existsSync('env.production.template'),
-    required: true
+    required: true,
   },
   {
     name: 'Vercel設定ファイルの確認',
     check: () => fs.existsSync('vercel.json'),
-    required: true
+    required: true,
   },
   {
     name: 'Next.js設定ファイルの確認',
     check: () => fs.existsSync('next.config.ts'),
-    required: true
+    required: true,
   },
   {
     name: 'TypeScript設定の確認',
     check: () => fs.existsSync('tsconfig.json'),
-    required: true
+    required: true,
   },
   {
     name: 'パッケージファイルの確認',
-    check: () => fs.existsSync('package.json') && fs.existsSync('package-lock.json'),
-    required: true
+    check: () =>
+      fs.existsSync('package.json') && fs.existsSync('package-lock.json'),
+    required: true,
   },
   {
     name: 'ESLint設定の確認',
     check: () => fs.existsSync('eslint.config.mjs'),
-    required: true
+    required: true,
   },
   {
     name: 'Jest設定の確認',
     check: () => fs.existsSync('jest.config.js'),
-    required: false
+    required: false,
   },
   {
     name: 'Playwright設定の確認',
     check: () => fs.existsSync('playwright.config.js'),
-    required: false
+    required: false,
   },
   {
     name: 'ミドルウェア設定の確認',
     check: () => fs.existsSync('middleware.ts'),
-    required: true
+    required: true,
   },
   {
     name: '認証設定の確認',
     check: () => fs.existsSync('auth.config.ts') && fs.existsSync('auth.ts'),
-    required: true
+    required: true,
   },
   {
     name: 'ヘルスチェックエンドポイントの確認',
     check: () => fs.existsSync('app/api/health/route.ts'),
-    required: true
-  }
+    required: true,
+  },
 ];
 
 const securityChecks = [
@@ -71,7 +72,7 @@ const securityChecks = [
       const gitignore = fs.readFileSync('.gitignore', 'utf8');
       return gitignore.includes('.env.local') || gitignore.includes('.env*');
     },
-    required: true
+    required: true,
   },
   {
     name: 'node_modules がgitignoreされているか',
@@ -80,8 +81,8 @@ const securityChecks = [
       const gitignore = fs.readFileSync('.gitignore', 'utf8');
       return gitignore.includes('node_modules');
     },
-    required: true
-  }
+    required: true,
+  },
 ];
 
 const buildChecks = [
@@ -89,13 +90,15 @@ const buildChecks = [
     name: 'TypeScript型チェック',
     check: () => {
       try {
-        require('child_process').execSync('npx tsc --noEmit', { stdio: 'ignore' });
+        require('child_process').execSync('npx tsc --noEmit', {
+          stdio: 'ignore',
+        });
         return true;
       } catch {
         return false;
       }
     },
-    required: true
+    required: true,
   },
   {
     name: 'ESLint チェック',
@@ -107,8 +110,8 @@ const buildChecks = [
         return false;
       }
     },
-    required: true
-  }
+    required: true,
+  },
 ];
 
 let allPassed = true;
@@ -118,11 +121,11 @@ let warnings = 0;
 console.log('📁 ファイル構成チェック:');
 checks.forEach(({ name, check, required }) => {
   const passed = check();
-  const symbol = passed ? '✅' : (required ? '❌' : '⚠️');
-  const status = passed ? 'OK' : (required ? 'FAILED' : 'WARNING');
-  
+  const symbol = passed ? '✅' : required ? '❌' : '⚠️';
+  const status = passed ? 'OK' : required ? 'FAILED' : 'WARNING';
+
   console.log(`  ${symbol} ${name}: ${status}`);
-  
+
   if (!passed && required) {
     allPassed = false;
   } else if (!passed) {
@@ -135,9 +138,9 @@ securityChecks.forEach(({ name, check, required }) => {
   const passed = check();
   const symbol = passed ? '✅' : '❌';
   const status = passed ? 'OK' : 'FAILED';
-  
+
   console.log(`  ${symbol} ${name}: ${status}`);
-  
+
   if (!passed && required) {
     allPassed = false;
   }
@@ -148,9 +151,9 @@ buildChecks.forEach(({ name, check, required }) => {
   const passed = check();
   const symbol = passed ? '✅' : '❌';
   const status = passed ? 'OK' : 'FAILED';
-  
+
   console.log(`  ${symbol} ${name}: ${status}`);
-  
+
   if (!passed && required) {
     allPassed = false;
   }

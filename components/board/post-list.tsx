@@ -280,24 +280,34 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        {selectedPost && (session?.user?.id === selectedPost.author || session?.user?.role === 'admin') && (
-          <MenuItem onClick={handleEdit}>
-            <Edit sx={{ mr: 1 }} fontSize="small" />
-            編集
-            {session?.user?.role === 'admin' && session?.user?.id !== selectedPost.author && (
-              <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>（管理者）</Typography>
-            )}
-          </MenuItem>
-        )}
-        {selectedPost && (session?.user?.id === selectedPost.author || session?.user?.role === 'admin') && (
-          <MenuItem onClick={handleDeleteClick}>
-            <Delete sx={{ mr: 1 }} fontSize="small" />
-            削除
-            {session?.user?.role === 'admin' && session?.user?.id !== selectedPost.author && (
-              <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>（管理者）</Typography>
-            )}
-          </MenuItem>
-        )}
+        {selectedPost &&
+          (session?.user?.id === selectedPost.author ||
+            session?.user?.role === 'admin') && (
+            <MenuItem onClick={handleEdit}>
+              <Edit sx={{ mr: 1 }} fontSize="small" />
+              編集
+              {session?.user?.role === 'admin' &&
+                session?.user?.id !== selectedPost.author && (
+                  <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>
+                    （管理者）
+                  </Typography>
+                )}
+            </MenuItem>
+          )}
+        {selectedPost &&
+          (session?.user?.id === selectedPost.author ||
+            session?.user?.role === 'admin') && (
+            <MenuItem onClick={handleDeleteClick}>
+              <Delete sx={{ mr: 1 }} fontSize="small" />
+              削除
+              {session?.user?.role === 'admin' &&
+                session?.user?.id !== selectedPost.author && (
+                  <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>
+                    （管理者）
+                  </Typography>
+                )}
+            </MenuItem>
+          )}
       </Menu>
 
       {totalPages > 1 && (

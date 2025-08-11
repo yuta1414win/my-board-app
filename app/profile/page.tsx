@@ -17,7 +17,7 @@ export default async function ProfilePage() {
   if (!user && currentUser.email) {
     // emailでMongoDBユーザーを検索
     user = await UserModel.findByEmail(currentUser.email);
-    
+
     // それでも見つからない場合、セッション情報から仮想プロフィールを作成
     if (!user) {
       const virtualProfile = {

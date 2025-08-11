@@ -17,6 +17,7 @@
 ### 主要原因：Next.js App Routerの競合
 
 1. **ディレクトリ構造の競合**
+
    ```
    プロジェクトルート/
    ├── app/                    # Next.js 13+ App Router (優先)
@@ -65,11 +66,12 @@ cp src/hooks/useRequireAuth.ts hooks/useRequireAuth.ts
 ```
 
 **修正内容**:
+
 ```typescript
 // 修正前
 import { useRequireAuth } from '@/hooks/useRequireAuth';
 
-// 修正後  
+// 修正後
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 ```
 
@@ -137,6 +139,7 @@ npm run dev
 ### トラブルシューティング手順
 
 1. **ファイル存在確認**
+
    ```bash
    find . -name "dashboard" -type d
    find . -path "*/dashboard/*" -name "*.tsx"

@@ -58,37 +58,45 @@ export class UserModel {
     return collection.findOne({ email });
   }
 
-  static async createUser(userData: Omit<UserDocument, '_id' | 'createdAt' | 'updatedAt'>): Promise<ObjectId> {
+  static async createUser(
+    userData: Omit<UserDocument, '_id' | 'createdAt' | 'updatedAt'>
+  ): Promise<ObjectId> {
     const collection = await this.getCollection();
     const now = new Date();
-    
+
     const user: Omit<UserDocument, '_id'> = {
       ...userData,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
 
     const result = await collection.insertOne(user);
     return result.insertedId;
   }
 
-  static async updateProfile(id: string, data: UpdateUserProfileData): Promise<boolean> {
+  static async updateProfile(
+    id: string,
+    data: UpdateUserProfileData
+  ): Promise<boolean> {
     const collection = await this.getCollection();
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
+      {
+        $set: {
           ...data,
-          updatedAt: new Date() 
-        } 
+          updatedAt: new Date(),
+        },
       }
     );
     return result.modifiedCount > 0;
   }
 
-  static async changePassword(id: string, data: ChangePasswordData): Promise<{ success: boolean; error?: string }> {
+  static async changePassword(
+    id: string,
+    data: ChangePasswordData
+  ): Promise<{ success: boolean; error?: string }> {
     const collection = await this.getCollection();
-    
+
     // 現在のユーザー情報を取得
     const user = await this.findById(id);
     if (!user) {
@@ -96,7 +104,10 @@ export class UserModel {
     }
 
     // 現在のパスワードを確認
-    const isCurrentPasswordValid = await bcrypt.compare(data.currentPassword, user.password);
+    const isCurrentPasswordValid = await bcrypt.compare(
+      data.currentPassword,
+      user.password
+    );
     if (!isCurrentPasswordValid) {
       return { success: false, error: '現在のパスワードが正しくありません' };
     }
@@ -107,18 +118,21 @@ export class UserModel {
     // パスワードを更新
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
+      {
+        $set: {
           password: hashedNewPassword,
-          updatedAt: new Date() 
-        } 
+          updatedAt: new Date(),
+        },
       }
     );
 
     return { success: result.modifiedCount > 0 };
   }
 
-  static async verifyPassword(email: string, password: string): Promise<UserDocument | null> {
+  static async verifyPassword(
+    email: string,
+    password: string
+  ): Promise<UserDocument | null> {
     const user = await this.findByEmail(email);
     if (!user) {
       return null;
@@ -138,7 +152,7 @@ export class UserModel {
       avatar: doc.avatar,
       emailVerified: doc.emailVerified,
       createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt
+      updatedAt: doc.updatedAt,
     };
   }
 }

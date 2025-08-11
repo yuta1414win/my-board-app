@@ -9,46 +9,53 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
-    value: 'on'
+    value: 'on',
   },
   {
     key: 'X-XSS-Protection',
-    value: '1; mode=block'
+    value: '1; mode=block',
   },
   {
     key: 'X-Frame-Options',
-    value: 'SAMEORIGIN'
+    value: 'SAMEORIGIN',
   },
   {
     key: 'X-Content-Type-Options',
-    value: 'nosniff'
+    value: 'nosniff',
   },
   {
     key: 'Referrer-Policy',
-    value: 'strict-origin-when-cross-origin'
+    value: 'strict-origin-when-cross-origin',
   },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=(), accelerometer=(), gyroscope=(), magnetometer=(), clipboard-read=(), clipboard-write=()'
+    value:
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=(), accelerometer=(), gyroscope=(), magnetometer=(), clipboard-read=(), clipboard-write=()',
   },
-  ...(process.env.NODE_ENV === 'production' ? [{
-    key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload'
-  }] : []),
+  ...(process.env.NODE_ENV === 'production'
+    ? [
+        {
+          key: 'Strict-Transport-Security',
+          value: 'max-age=63072000; includeSubDomains; preload',
+        },
+      ]
+    : []),
   {
     key: 'Content-Security-Policy',
-    value: process.env.CONTENT_SECURITY_POLICY || [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https:",
-      "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://*.sentry.io https://vercel.live",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self'"
-    ].join('; ')
-  }
+    value:
+      process.env.CONTENT_SECURITY_POLICY ||
+      [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "img-src 'self' data: blob: https:",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://*.sentry.io https://vercel.live",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join('; '),
+  },
 ];
 
 const nextConfig: NextConfig = {
@@ -56,7 +63,7 @@ const nextConfig: NextConfig = {
   output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   poweredByHeader: false,
   compress: true,
-  
+
   // 画像最適化設定
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -85,10 +92,10 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate'
-          }
+            value: 'no-cache, no-store, must-revalidate',
+          },
         ],
-      }
+      },
     ];
   },
 
@@ -104,7 +111,7 @@ const nextConfig: NextConfig = {
         source: '/signup',
         destination: '/auth/register',
         permanent: true,
-      }
+      },
     ];
   },
 

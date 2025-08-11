@@ -34,7 +34,7 @@ const applySecurityHeaders = (response, customConfig = {}) => {
   };
 
   const headers = { ...DEVELOPMENT_HEADERS, ...customConfig };
-  
+
   const headerMap = {
     contentSecurityPolicy: 'Content-Security-Policy',
     strictTransportSecurity: 'Strict-Transport-Security',
@@ -65,11 +65,11 @@ console.log('Testing security headers function...');
 // Create a mock NextResponse
 const mockResponse = {
   headers: new Map(),
-  status: 200
+  status: 200,
 };
 
 // Override the headers.set method to capture calls
-mockResponse.headers.set = function(name, value) {
+mockResponse.headers.set = function (name, value) {
   console.log(`Header set: ${name} = ${value}`);
   this[name] = value;
 };
@@ -78,7 +78,11 @@ console.log('\n1. Testing applySecurityHeaders function:');
 const result = applySecurityHeaders(mockResponse);
 
 console.log('\n2. Final headers in response:');
-console.log(Object.keys(mockResponse).filter(key => key !== 'headers' && key !== 'status'));
+console.log(
+  Object.keys(mockResponse).filter(
+    (key) => key !== 'headers' && key !== 'status'
+  )
+);
 
 console.log('\n3. Testing with curl to actual server...');
 
@@ -94,7 +98,7 @@ const options = {
 const req = http.request(options, (res) => {
   console.log(`Status: ${res.statusCode}`);
   console.log('Response Headers:');
-  
+
   const securityHeaders = [
     'content-security-policy',
     'x-frame-options',
@@ -102,11 +106,11 @@ const req = http.request(options, (res) => {
     'referrer-policy',
     'permissions-policy',
     'x-xss-protection',
-    'cross-origin-opener-policy'
+    'cross-origin-opener-policy',
   ];
-  
+
   let foundHeaders = 0;
-  
+
   Object.entries(res.headers).forEach(([key, value]) => {
     const isSecurityHeader = securityHeaders.includes(key.toLowerCase());
     if (isSecurityHeader) {
@@ -116,11 +120,15 @@ const req = http.request(options, (res) => {
       console.log(`  ${key}: ${value}`);
     }
   });
-  
-  console.log(`\nSecurity headers found: ${foundHeaders}/${securityHeaders.length}`);
-  
+
+  console.log(
+    `\nSecurity headers found: ${foundHeaders}/${securityHeaders.length}`
+  );
+
   if (foundHeaders === 0) {
-    console.log('❌ No security headers found - middleware may not be applying them');
+    console.log(
+      '❌ No security headers found - middleware may not be applying them'
+    );
   } else if (foundHeaders < securityHeaders.length) {
     console.log('⚠️ Some security headers missing');
   } else {

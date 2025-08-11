@@ -47,7 +47,7 @@ export default function NewPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !content.trim()) {
       setError('タイトルと内容を入力してください');
       return;
@@ -94,9 +94,7 @@ export default function NewPostPage() {
   if (!session) {
     return (
       <Container maxWidth="md" sx={{ py: 3 }}>
-        <Alert severity="warning">
-          投稿するにはログインが必要です
-        </Alert>
+        <Alert severity="warning">投稿するにはログインが必要です</Alert>
       </Container>
     );
   }
@@ -104,9 +102,9 @@ export default function NewPostPage() {
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       <Breadcrumbs sx={{ mb: 3 }}>
-        <Link 
-          component="button" 
-          variant="inherit" 
+        <Link
+          component="button"
+          variant="inherit"
           onClick={handleBack}
           sx={{ textDecoration: 'none', cursor: 'pointer' }}
         >
@@ -119,7 +117,7 @@ export default function NewPostPage() {
         <Typography variant="h5" gutterBottom>
           ✍️ 新しい投稿を作成
         </Typography>
-        
+
         <Typography variant="body2" color="text.secondary" paragraph>
           他の会員と情報を共有しましょう
         </Typography>
@@ -142,7 +140,7 @@ export default function NewPostPage() {
             error={titleLength > titleMaxLength}
             helperText={getTitleHelperText()}
           />
-          
+
           <Box sx={{ mb: 1 }}>
             <LinearProgress
               variant="determinate"
@@ -150,7 +148,7 @@ export default function NewPostPage() {
               color={titleLength > titleMaxLength ? 'error' : 'primary'}
             />
           </Box>
-          
+
           <TextField
             fullWidth
             label="内容"
@@ -183,12 +181,16 @@ export default function NewPostPage() {
             >
               戻る
             </Button>
-            
+
             <Button
               type="submit"
               variant="contained"
               startIcon={loading ? <CircularProgress size={20} /> : <Save />}
-              disabled={loading || titleLength > titleMaxLength || contentLength > contentMaxLength}
+              disabled={
+                loading ||
+                titleLength > titleMaxLength ||
+                contentLength > contentMaxLength
+              }
               sx={{ flex: 1 }}
             >
               {loading ? '投稿中...' : '投稿する'}

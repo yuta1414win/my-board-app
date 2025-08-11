@@ -10,7 +10,7 @@ const HTML_ENTITIES: Record<string, string> = {
   "'": '&#x27;',
   '/': '&#x2F;',
   '`': '&#x60;',
-  '=': '&#x3D;'
+  '=': '&#x3D;',
 };
 
 // 危険なHTMLタグとスクリプトパターン
@@ -29,24 +29,34 @@ const DANGEROUS_PATTERNS = [
   /on\w+\s*=/gi, // onclick, onload, etc.
   /expression\s*\(/gi,
   /url\s*\(/gi,
-  /@import/gi
+  /@import/gi,
 ];
 
 // 許可されたHTMLタグ（限定的なリッチテキスト用）
 const ALLOWED_HTML_TAGS = [
-  'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'blockquote'
+  'p',
+  'br',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'u',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
 ];
 
 // 入力検証のタイプ
 export enum SanitizationType {
-  STRICT = 'strict',           // 完全エスケープ
-  BASIC_HTML = 'basic_html',   // 基本的なHTMLタグのみ許可
-  PLAIN_TEXT = 'plain_text',   // プレーンテキストのみ
-  EMAIL = 'email',             // メールアドレス
-  URL = 'url',                 // URL
-  FILENAME = 'filename',       // ファイル名
-  USERNAME = 'username',       // ユーザー名
-  POST_CONTENT = 'post_content' // 投稿内容
+  STRICT = 'strict', // 完全エスケープ
+  BASIC_HTML = 'basic_html', // 基本的なHTMLタグのみ許可
+  PLAIN_TEXT = 'plain_text', // プレーンテキストのみ
+  EMAIL = 'email', // メールアドレス
+  URL = 'url', // URL
+  FILENAME = 'filename', // ファイル名
+  USERNAME = 'username', // ユーザー名
+  POST_CONTENT = 'post_content', // 投稿内容
 }
 
 // サニタイゼーション設定
@@ -82,23 +92,23 @@ export class InputSanitizer {
     const reverseEntities = Object.fromEntries(
       Object.entries(HTML_ENTITIES).map(([key, value]) => [value, key])
     );
-    
+
     let result = input;
     Object.entries(reverseEntities).forEach(([entity, char]) => {
       result = result.replace(new RegExp(entity, 'g'), char);
     });
-    
+
     return result;
   }
 
   // 危険なパターンの除去
   static removeDangerousPatterns(input: string): string {
     let sanitized = input;
-    
-    DANGEROUS_PATTERNS.forEach(pattern => {
+
+    DANGEROUS_PATTERNS.forEach((pattern) => {
       sanitized = sanitized.replace(pattern, '');
     });
-    
+
     return sanitized;
   }
 
@@ -106,7 +116,7 @@ export class InputSanitizer {
   static sanitizeBasicHTML(input: string): string {
     // 危険なパターンを除去
     let sanitized = this.removeDangerousPatterns(input);
-    
+
     // 許可されていないタグを除去
     const tagPattern = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g;
     sanitized = sanitized.replace(tagPattern, (match, tagName) => {
@@ -116,7 +126,7 @@ export class InputSanitizer {
       }
       return ''; // 許可されていないタグは除去
     });
-    
+
     return sanitized.trim();
   }
 
@@ -169,15 +179,15 @@ export class InputSanitizer {
       case SanitizationType.STRICT:
         result = this.escapeHTML(result);
         break;
-        
+
       case SanitizationType.BASIC_HTML:
         result = this.sanitizeBasicHTML(result);
         break;
-        
+
       case SanitizationType.PLAIN_TEXT:
         result = this.toPlainText(result);
         break;
-        
+
       case SanitizationType.EMAIL:
         // メールアドレスの形式チェック
         const emailSchema = z.string().email();
@@ -187,7 +197,7 @@ export class InputSanitizer {
           throw new SanitizationError('Invalid email format', 'email', input);
         }
         break;
-        
+
       case SanitizationType.URL:
         // URLの形式チェック
         const urlSchema = z.string().url();
@@ -201,15 +211,15 @@ export class InputSanitizer {
           throw new SanitizationError('Invalid URL format', 'url', input);
         }
         break;
-        
+
       case SanitizationType.FILENAME:
         result = this.sanitizeFilename(result);
         break;
-        
+
       case SanitizationType.USERNAME:
         result = this.sanitizeUsername(result);
         break;
-        
+
       case SanitizationType.POST_CONTENT:
         // 投稿内容：基本的なHTMLは許可、危険なスクリプトは除去
         result = this.removeDangerousPatterns(result);
@@ -217,7 +227,7 @@ export class InputSanitizer {
           result = this.escapeHTML(result);
         }
         break;
-        
+
       default:
         result = this.escapeHTML(result);
     }
@@ -232,7 +242,7 @@ export class InputSanitizer {
 
   // バッチサニタイゼーション
   static sanitizeBatch(
-    inputs: Record<string, string>, 
+    inputs: Record<string, string>,
     configs: Record<string, SanitizeConfig>
   ): Record<string, string> {
     const results: Record<string, string> = {};
@@ -247,17 +257,21 @@ export class InputSanitizer {
           error.field = field;
           errors.push(error);
         } else {
-          errors.push(new SanitizationError(
-            error instanceof Error ? error.message : 'Unknown error',
-            field,
-            value
-          ));
+          errors.push(
+            new SanitizationError(
+              error instanceof Error ? error.message : 'Unknown error',
+              field,
+              value
+            )
+          );
         }
       }
     });
 
     if (errors.length > 0) {
-      throw new Error(`Sanitization failed: ${errors.map(e => `${e.field}: ${e.message}`).join(', ')}`);
+      throw new Error(
+        `Sanitization failed: ${errors.map((e) => `${e.field}: ${e.message}`).join(', ')}`
+      );
     }
 
     return results;
@@ -279,7 +293,7 @@ export class InputSanitizer {
     for (let i = 0; i < token.length; i++) {
       result |= token.charCodeAt(i) ^ expectedToken.charCodeAt(i);
     }
-    
+
     return result === 0;
   }
 }
@@ -288,46 +302,51 @@ export class InputSanitizer {
 export const SANITIZE_CONFIGS = {
   username: {
     type: SanitizationType.USERNAME,
-    maxLength: 50
+    maxLength: 50,
   },
   email: {
     type: SanitizationType.EMAIL,
-    maxLength: 254
+    maxLength: 254,
   },
   password: {
     type: SanitizationType.STRICT,
-    maxLength: 128
+    maxLength: 128,
   },
   postTitle: {
     type: SanitizationType.PLAIN_TEXT,
-    maxLength: 200
+    maxLength: 200,
   },
   postContent: {
     type: SanitizationType.POST_CONTENT,
     maxLength: 10000,
-    encodeHTML: true
+    encodeHTML: true,
   },
   fileName: {
     type: SanitizationType.FILENAME,
-    maxLength: 255
+    maxLength: 255,
   },
   url: {
     type: SanitizationType.URL,
-    maxLength: 2048
-  }
+    maxLength: 2048,
+  },
 } as const;
 
 // Express/Next.js用のミドルウェアヘルパー
-export function createSanitizationMiddleware(configs: Record<string, SanitizeConfig>) {
+export function createSanitizationMiddleware(
+  configs: Record<string, SanitizeConfig>
+) {
   return (data: Record<string, any>) => {
     const sanitizedData = { ...data };
-    
+
     Object.entries(configs).forEach(([field, config]) => {
       if (sanitizedData[field] && typeof sanitizedData[field] === 'string') {
-        sanitizedData[field] = InputSanitizer.sanitize(sanitizedData[field], config);
+        sanitizedData[field] = InputSanitizer.sanitize(
+          sanitizedData[field],
+          config
+        );
       }
     });
-    
+
     return sanitizedData;
   };
 }

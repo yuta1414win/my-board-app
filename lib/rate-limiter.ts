@@ -49,7 +49,7 @@ export class RateLimiter {
   } {
     const now = Date.now();
     const key = `rate_limit:${ip}`;
-    
+
     let entry = rateLimitCache.get(key);
 
     // エントリが存在しないか、リセット時間を過ぎた場合
@@ -89,7 +89,7 @@ export class RateLimiter {
       // 初回違反の場合、ブロック状態にする
       if (!entry.blocked) {
         entry.blocked = true;
-        entry.blockUntil = now + (this.config.windowMs * 2); // 2倍の時間ブロック
+        entry.blockUntil = now + this.config.windowMs * 2; // 2倍の時間ブロック
       }
 
       rateLimitCache.set(key, entry);
@@ -168,13 +168,13 @@ export function getRealIP(request: Request): string {
   const xForwardedFor = request.headers.get('x-forwarded-for');
   const xRealIP = request.headers.get('x-real-ip');
   const cfConnectingIP = request.headers.get('cf-connecting-ip');
-  
+
   if (cfConnectingIP) return cfConnectingIP;
   if (xRealIP) return xRealIP;
   if (xForwardedFor) {
     return xForwardedFor.split(',')[0].trim();
   }
-  
+
   // フォールバック（開発環境）
   return '127.0.0.1';
 }
