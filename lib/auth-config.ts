@@ -128,7 +128,11 @@ export const authOptions: any = {
     },
     decode: async ({ token, secret }: any) => {
       const { decode } = await import('next-auth/jwt');
-      return decode({ token, secret });
+      return decode({ 
+        token, 
+        secret,
+        salt: '', // NextAuth v5では空文字列でOK
+      });
     },
   },
 
