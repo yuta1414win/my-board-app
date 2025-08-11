@@ -93,8 +93,8 @@ export async function POST(req: NextRequest) {
       </html>
     `;
 
-    const { sendEmail } = await import('@/lib/email-nodemailer');
-    const result = await sendEmail({
+    const { sendSimpleEmail } = await import('@/lib/email-nodemailer');
+    const result = await sendSimpleEmail(
       to: email,
       subject: '【My Board App】メール送信テスト',
       html: testHtml,
