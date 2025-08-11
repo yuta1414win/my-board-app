@@ -81,9 +81,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             email: user.email,
             name: user.name,
             emailVerified: user.emailVerified
-              ? (typeof user.emailVerified === 'boolean' 
-                 ? new Date() 
-                 : new Date(user.emailVerified))
+              ? typeof user.emailVerified === 'boolean'
+                ? new Date()
+                : new Date(user.emailVerified)
               : undefined,
           };
         } catch (error) {
@@ -116,7 +116,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.emailVerified = user.emailVerified || true; // OAuthは認証済みとする
+        token.emailVerified = user.emailVerified ? new Date(user.emailVerified) : new Date(); // OAuthは認証済みとする
         token.loginAt = Date.now();
 
         // OAuthプロバイダーの場合
