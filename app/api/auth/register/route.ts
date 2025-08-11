@@ -158,7 +158,12 @@ export async function POST(request: Request) {
     console.error('Registration error:', error);
 
     // MongoDB重複エラーの処理
-    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 11000
+    ) {
       return NextResponse.json(
         {
           error: 'このメールアドレスは既に登録されています',
@@ -169,8 +174,8 @@ export async function POST(request: Request) {
     }
 
     // MongoDB バリデーションエラー
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map((err: any) => ({
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
+      const errors = Object.values(error.errors as Record<string, {path: string, message: string}>).map((err) => ({
         field: err.path,
         message: err.message,
       }));
