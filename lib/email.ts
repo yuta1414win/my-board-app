@@ -115,6 +115,23 @@ export function verifyToken(token: string): any {
   }
 }
 
+export async function testEmailConnection(): Promise<EmailResult> {
+  try {
+    const transporter = createTransporter();
+    await transporter.verify();
+    return {
+      success: true,
+      message: 'Email connection successful',
+    };
+  } catch (error) {
+    console.error('Email connection test failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
 export async function sendVerificationEmail(
   email: string,
   token: string
