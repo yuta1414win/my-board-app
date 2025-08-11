@@ -95,22 +95,21 @@ export async function POST(req: NextRequest) {
 
     const { sendSimpleEmail } = await import('@/lib/email-nodemailer');
     const result = await sendSimpleEmail(
-      to: email,
-      subject: '【My Board App】メール送信テスト',
-      html: testHtml,
-    });
+      email,
+      '【My Board App】メール送信テスト',
+      testHtml
+    );
 
-    if (result.success) {
+    if (result === true) {
       return NextResponse.json({
         success: true,
         message: `テストメールを ${email} に送信しました`,
-        messageId: result.messageId,
       });
     } else {
       return NextResponse.json({
         success: false,
         message: 'テストメール送信に失敗しました',
-        error: result.error,
+        error: typeof result === 'object' && 'error' in result ? result.error : 'Unknown error',
       });
     }
   } catch (error) {
