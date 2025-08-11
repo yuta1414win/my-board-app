@@ -154,11 +154,11 @@ export async function POST(request: Request) {
       success: true,
       code: 'REGISTRATION_SUCCESS',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
 
     // MongoDB重複エラーの処理
-    if (error.code === 11000) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
       return NextResponse.json(
         {
           error: 'このメールアドレスは既に登録されています',
