@@ -116,7 +116,7 @@ jobs:
         AUTH_TRUST_HOST: true
     
     - name: Run E2E tests
-      run: npm run test:e2e
+      run: npm run test:e2e:ci
       env:
         CI: true
         PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
