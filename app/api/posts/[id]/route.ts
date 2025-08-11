@@ -3,6 +3,13 @@ import { auth } from '../../../../auth';
 import dbConnect from '../../../../lib/mongodb';
 import Post from '../../../../models/Post';
 import mongoose from 'mongoose';
+import { 
+  checkPostPermissions, 
+  canEditPost, 
+  canDeletePost, 
+  PERMISSION_MESSAGES,
+  PermissionError 
+} from '../../../../lib/permissions';
 
 // GET関数を追加
 export async function GET(
