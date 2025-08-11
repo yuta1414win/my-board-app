@@ -198,7 +198,7 @@ export default function ProfileClient({ initialUser }: ProfileClientProps) {
           </Grid>
 
           {/* サイドバー */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Stack spacing={3}>
               {/* アバターカード */}
               <Card elevation={2}>
