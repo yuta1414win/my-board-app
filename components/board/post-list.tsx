@@ -157,23 +157,25 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         // 一覧を再取得
         await fetchPosts(page);
       } else {
-        const data = await response.json() as APIError;
+        const data = (await response.json()) as APIError;
         let errorMessage = data.error || '削除に失敗しました';
-        
+
         // APIエラーコードに基づく詳細なエラーメッセージ
         switch (response.status) {
           case 403:
-            errorMessage = data.code === 'PERMISSION_DENIED' 
-              ? (data.error || 'この投稿を削除する権限がありません')
-              : 'アクセスが拒否されました';
+            errorMessage =
+              data.code === 'PERMISSION_DENIED'
+                ? data.error || 'この投稿を削除する権限がありません'
+                : 'アクセスが拒否されました';
             break;
           case 404:
             errorMessage = '投稿が見つかりません';
             break;
           case 400:
-            errorMessage = data.code === 'INVALID_POST_ID' 
-              ? '無効な投稿IDです' 
-              : '入力内容に問題があります';
+            errorMessage =
+              data.code === 'INVALID_POST_ID'
+                ? '無効な投稿IDです'
+                : '入力内容に問題があります';
             break;
           case 401:
             errorMessage = '認証が必要です。再度ログインしてください';
@@ -181,7 +183,7 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
           default:
             errorMessage = data.error || 'サーバーエラーが発生しました';
         }
-        
+
         setError(errorMessage);
         console.error('削除エラー:', errorMessage);
         console.error('エラーレスポンス:', data);
@@ -278,16 +280,22 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        {selectedPost && session?.user?.id === selectedPost.author && (
+        {selectedPost && (session?.user?.id === selectedPost.author || session?.user?.role === 'admin') && (
           <MenuItem onClick={handleEdit}>
             <Edit sx={{ mr: 1 }} fontSize="small" />
             編集
+            {session?.user?.role === 'admin' && session?.user?.id !== selectedPost.author && (
+              <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>（管理者）</Typography>
+            )}
           </MenuItem>
         )}
-        {selectedPost && session?.user?.id === selectedPost.author && (
+        {selectedPost && (session?.user?.id === selectedPost.author || session?.user?.role === 'admin') && (
           <MenuItem onClick={handleDeleteClick}>
             <Delete sx={{ mr: 1 }} fontSize="small" />
             削除
+            {session?.user?.role === 'admin' && session?.user?.id !== selectedPost.author && (
+              <Typography variant="caption" sx={{ ml: 1, opacity: 0.7 }}>（管理者）</Typography>
+            )}
           </MenuItem>
         )}
       </Menu>
