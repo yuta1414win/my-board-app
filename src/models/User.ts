@@ -128,13 +128,10 @@ export class UserModel {
     const hashedNewPassword = await bcrypt.hash(data.newPassword, 12);
 
     // パスワードを更新
-    const result = await User.findByIdAndUpdate(
-      id,
-      {
-        password: hashedNewPassword,
-        updatedAt: new Date(),
-      }
-    );
+    const result = await User.findByIdAndUpdate(id, {
+      password: hashedNewPassword,
+      updatedAt: new Date(),
+    });
 
     return { success: !!result };
   }
