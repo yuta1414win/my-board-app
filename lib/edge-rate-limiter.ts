@@ -11,8 +11,8 @@ class EdgeRateLimiter {
   private readonly windowMs: number;
   private readonly maxRequests: number;
 
-  constructor(windowMs = 60 * 1000, maxRequests = 5) {
-    // 1分間に5回
+  constructor(windowMs = 60 * 1000, maxRequests = 50) {
+    // 本番環境では1分間に50回に緩和（通常のブラウジング用）
     this.windowMs = windowMs;
     this.maxRequests = maxRequests;
   }
