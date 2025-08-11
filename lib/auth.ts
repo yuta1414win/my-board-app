@@ -30,7 +30,7 @@ export const authOptions: any = {
           placeholder: '8文字以上のパスワード',
         },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any) {
         try {
           // 入力値の検証
           const validatedFields = credentialsSchema.safeParse(credentials);
