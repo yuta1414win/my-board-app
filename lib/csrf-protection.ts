@@ -197,15 +197,6 @@ export class OptimizedSessionManager {
     this.config = { ...OPTIMIZED_SESSION_CONFIG, ...customConfig };
   }
 
-  // セッション情報の構造
-  interface SessionInfo {
-    userId: string;
-    createdAt: number;
-    lastAccess: number;
-    ipAddress: string;
-    userAgent: string;
-    isActive: boolean;
-  }
 
   // セッションの作成
   createSession(userId: string, ipAddress: string, userAgent: string): string {
