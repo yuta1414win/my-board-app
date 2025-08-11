@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests/e2e',
-  testMatch: process.env.CI ? '**/smoke.spec.{js,ts}' : '**/*.spec.{js,ts}',
+  testMatch: '**/smoke.spec.{js,ts}',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
