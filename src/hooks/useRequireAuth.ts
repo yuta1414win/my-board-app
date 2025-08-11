@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { User } from 'next-auth';
 
 interface UseRequireAuthOptions {
   redirectTo?: string;
