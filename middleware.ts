@@ -1,19 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { getEdgeRateLimiter, getClientIP } from './lib/edge-rate-limiter';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log('🔥 MIDDLEWARE RUNNING:', pathname);
+  const ip = getClientIP(request);
+  
+  console.log('🔥 MIDDLEWARE RUNNING:', pathname, 'IP:', ip);
+
+  // レート制限チェック（Edge Runtime対応）
+  const rateLimiter = getEdgeRateLimiter();
+  const rateLimitResult = rateLimiter.checkLimit(ip);
+  
+  if (!rateLimitResult.allowed) {
+    console.log('🚨 RATE LIMIT EXCEEDED for IP:', ip);
+    return new NextResponse(
+      JSON.stringify({
+        error: 'Rate limit exceeded',
+        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
+      }),
+      {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': Math.ceil(
+            (rateLimitResult.resetTime - Date.now()) / 1000
+          ).toString(),
+          'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+        },
+      }
+    );
+  }
 
   // 基本的なセキュリティヘッダーを設定（Edge Runtime互換）
   const response = NextResponse.next();
+  
+  // レート制限情報をヘッダーに追加
+  response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
+  response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
+  response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
 
   // 基本セキュリティヘッダーの設定
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
-  
+
   // Content Security Policy (開発環境用)
   const csp = [
     "default-src 'self'",
@@ -24,9 +58,9 @@ export async function middleware(request: NextRequest) {
     "connect-src 'self' localhost:* ws://localhost:* wss://localhost:*",
     "frame-ancestors 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
+    "form-action 'self'",
   ].join('; ');
-  
+
   response.headers.set('Content-Security-Policy', csp);
 
   // Permissions Policy
@@ -40,14 +74,22 @@ export async function middleware(request: NextRequest) {
     'gyroscope=()',
     'speaker=(self)',
     'fullscreen=(self)',
-    'sync-xhr=()'
+    'sync-xhr=()',
   ].join(', ');
-  
+
   response.headers.set('Permissions-Policy', permissionsPolicy);
 
   // 認証チェック（保護されたルート）
-  const protectedPaths = ['/board', '/profile', '/settings', '/dashboard', '/posts'];
-  const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
+  const protectedPaths = [
+    '/board',
+    '/profile',
+    '/settings',
+    '/dashboard',
+    '/posts',
+  ];
+  const isProtectedRoute = protectedPaths.some((path) =>
+    pathname.startsWith(path)
+  );
 
   if (isProtectedRoute) {
     const token = await getToken({
@@ -64,7 +106,7 @@ export async function middleware(request: NextRequest) {
 
   // 認証済みユーザーの認証ページリダイレクト
   const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
-  const isAuthPage = authPaths.some(path => pathname.startsWith(path));
+  const isAuthPage = authPaths.some((path) => pathname.startsWith(path));
 
   if (isAuthPage) {
     const token = await getToken({
@@ -82,7 +124,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
