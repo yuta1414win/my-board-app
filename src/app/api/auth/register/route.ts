@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
           success: true,
           message:
             'アカウントが作成されました。確認メールの送信に失敗しました。サポートにお問い合わせください。',
-          userId: insertedId.toString(),
+          userId: createdUser._id!.toString(),
           emailSent: false,
         },
         { status: 201 }
