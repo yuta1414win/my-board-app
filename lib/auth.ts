@@ -14,7 +14,7 @@ const credentialsSchema = z.object({
   password: z.string().min(8, 'パスワードは8文字以上で入力してください'),
 });
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: any = {
   providers: [
     Credentials({
       name: 'credentials',
