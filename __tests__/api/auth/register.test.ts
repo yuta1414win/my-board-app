@@ -408,8 +408,11 @@ describe('/api/auth/register', () => {
         }
       );
 
-      // Act & Assert
-      await expect(POST(request)).rejects.toThrow();
+      // Act
+      const result = await POST(request);
+      
+      // Assert
+      expectApiError(result, 'VALIDATION_ERROR', 400);
     });
   });
 
