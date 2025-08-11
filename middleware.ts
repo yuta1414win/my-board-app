@@ -1,133 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { defaultRateLimiter, getRealIP } from './lib/rate-limiter';
-import {
-  applySecurityHeaders,
-  PAGE_SPECIFIC_CSP,
-} from './lib/security-headers';
-import { defaultCSRFProtection } from './lib/csrf-protection';
-import { auditLog } from './lib/audit-logger';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const ip = getRealIP(request);
-  const userAgent = request.headers.get('user-agent') || 'unknown';
-  const startTime = Date.now();
+  console.log('🔥 MIDDLEWARE RUNNING:', pathname);
 
-  console.log('🔥 MIDDLEWARE RUNNING:', pathname, 'IP:', ip);
+  // 基本的なセキュリティヘッダーを設定（Edge Runtime互換）
+  const response = NextResponse.next();
 
-  // レート制限チェック
-  const rateLimitResult = defaultRateLimiter.checkLimit(ip);
-  if (!rateLimitResult.allowed) {
-    await auditLog.rateLimitExceeded(ip, userAgent, pathname);
+  // 基本セキュリティヘッダーの設定
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  
+  // Content Security Policy (開発環境用)
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' localhost:* 127.0.0.1:*",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self' localhost:* ws://localhost:* wss://localhost:*",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; ');
+  
+  response.headers.set('Content-Security-Policy', csp);
 
-    const response = new NextResponse(
-      JSON.stringify({
-        error: 'Rate limit exceeded',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      }),
-      {
-        status: 429,
-        headers: {
-          'Content-Type': 'application/json',
-          'Retry-After': Math.ceil(
-            (rateLimitResult.resetTime - Date.now()) / 1000
-          ).toString(),
-        },
-      }
-    );
+  // Permissions Policy
+  const permissionsPolicy = [
+    'geolocation=()',
+    'microphone=()',
+    'camera=()',
+    'payment=()',
+    'usb=()',
+    'magnetometer=()',
+    'gyroscope=()',
+    'speaker=(self)',
+    'fullscreen=(self)',
+    'sync-xhr=()'
+  ].join(', ');
+  
+  response.headers.set('Permissions-Policy', permissionsPolicy);
 
-    return applySecurityHeaders(response, {
-      contentSecurityPolicy: PAGE_SPECIFIC_CSP.api,
-    });
-  }
+  // 認証チェック（保護されたルート）
+  const protectedPaths = ['/board', '/profile', '/settings', '/dashboard', '/posts'];
+  const isProtectedRoute = protectedPaths.some(path => pathname.startsWith(path));
 
-  // 保護されたページのパス
-  const protectedPaths = [
-    '/board',
-    '/profile',
-    '/settings',
-    '/dashboard',
-    '/posts',
-  ];
-  const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
-
-  // 既にログインしている場合の認証ページアクセス処理
-  if (authPaths.some((path) => pathname.startsWith(path))) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (token) {
-      const response = NextResponse.redirect(
-        new URL('/dashboard', request.url)
-      );
-      return applySecurityHeaders(response);
-    }
-  }
-
-  // CSRF保護（API routes用）
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
-    const csrfResult = await defaultCSRFProtection.middleware(request);
-    if (csrfResult) {
-      await auditLog.csrfViolation(ip, userAgent, pathname);
-      return applySecurityHeaders(csrfResult);
-    }
-  }
-
-  // 認証が必要なパスのチェック
-  if (protectedPaths.some((path) => pathname.startsWith(path))) {
+  if (isProtectedRoute) {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
 
     if (!token) {
-      const url = new URL('/auth/login', request.url);
-      url.searchParams.set('callbackUrl', pathname);
-      const response = NextResponse.redirect(url);
-      return applySecurityHeaders(response);
+      const loginUrl = new URL('/auth/login', request.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
-  // 成功時のレスポンス作成
-  const response = NextResponse.next();
+  // 認証済みユーザーの認証ページリダイレクト
+  const authPaths = ['/auth/login', '/auth/signin', '/auth/register'];
+  const isAuthPage = authPaths.some(path => pathname.startsWith(path));
 
-  // パス別のCSP設定
-  let securityConfig = {};
-  if (pathname.startsWith('/admin')) {
-    securityConfig = { contentSecurityPolicy: PAGE_SPECIFIC_CSP.admin };
-  } else if (pathname.startsWith('/auth')) {
-    securityConfig = { contentSecurityPolicy: PAGE_SPECIFIC_CSP.auth };
-  } else if (pathname.startsWith('/api/')) {
-    securityConfig = { contentSecurityPolicy: PAGE_SPECIFIC_CSP.api };
+  if (isAuthPage) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    if (token) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
-  // レート制限ヘッダーの設定
-  response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
-  response.headers.set(
-    'X-RateLimit-Remaining',
-    rateLimitResult.remaining.toString()
-  );
-  response.headers.set(
-    'X-RateLimit-Reset',
-    rateLimitResult.resetTime.toString()
-  );
-
-  // 処理時間の記録
-  const duration = Date.now() - startTime;
-  response.headers.set('X-Response-Time', `${duration}ms`);
-
-  console.log('🔥 APPLYING SECURITY HEADERS');
-  const finalResponse = applySecurityHeaders(response, securityConfig);
-  console.log('🔥 HEADERS APPLIED:', Array.from(finalResponse.headers.entries()));
-  
-  return finalResponse;
+  console.log('🔥 SECURITY HEADERS SET');
+  return response;
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
