@@ -4,7 +4,7 @@ import dbConnect from '@/lib/mongodb';
 export async function GET() {
   try {
     // データベース接続チェック
-    await getDatabase();
+    await dbConnect();
 
     const healthData = {
       status: 'ok',
