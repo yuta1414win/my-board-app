@@ -14,10 +14,9 @@ const credentialsSchema = z.object({
   password: z.string().min(8, 'パスワードは8文字以上で入力してください'),
 });
 
-export const { auth, signIn, signOut, handlers } = NextAuth({
-  ...authConfig,
-  providers: [
-    Credentials({
+// プロバイダー定義（OAuthは環境変数が揃っている場合のみ有効化）
+const providers = [
+  Credentials({
       name: 'credentials',
       credentials: {
         email: {
@@ -95,15 +94,29 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         }
       },
     }),
+];
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
+    }) as any
+  );
+}
+
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  providers.push(
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    }),
-  ],
+    }) as any
+  );
+}
+
+export const { auth, signIn, signOut, handlers } = NextAuth({
+  ...authConfig,
+  providers,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days

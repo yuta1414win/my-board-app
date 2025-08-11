@@ -59,7 +59,7 @@ export default function AuthButton({
         size={size}
         color="primary"
         component={Link}
-        href="/auth/login"
+        href="/auth/signin"
         fullWidth={fullWidth}
         startIcon={showIcon ? <Login /> : undefined}
       >

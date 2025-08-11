@@ -279,7 +279,7 @@ export const authOptions: any = {
 
   // ページ設定
   pages: {
-    signIn: '/auth/login',
+    signIn: '/auth/signin',
     signOut: '/auth/logout',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',

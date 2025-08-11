@@ -24,7 +24,7 @@ export function useRequireAuth(options: UseRequireAuthOptions = {}): AuthState {
   const [error, setError] = useState<string>();
 
   const {
-    redirectTo = '/auth/login',
+  redirectTo = '/auth/signin',
     requireEmailVerification = false,
     requiredRole,
   } = options;
