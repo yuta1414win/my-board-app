@@ -216,7 +216,7 @@ export const authOptions: any = {
 
   // イベントハンドラー
   events: {
-    async signIn({ user, account, profile, isNewUser }) {
+    async signIn({ user, account, profile, isNewUser }: any) {
       // 新規ユーザーの場合
       if (isNewUser) {
         try {
