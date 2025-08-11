@@ -79,7 +79,7 @@ export default defineConfig({
   webServer: process.env.CI
     ? {
         command:
-          'NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
+          'NODE_ENV=development NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
         port: 3000,
         reuseExistingServer: false,
         timeout: 300 * 1000, // 5分に延長
