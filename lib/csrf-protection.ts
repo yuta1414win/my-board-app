@@ -29,7 +29,7 @@ const DEFAULT_CSRF_CONFIG: CSRFConfig = {
   ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
   sameSitePolicy: 'strict',
   secure: process.env.NODE_ENV === 'production',
-  httpOnly: false // フロントエンドからアクセスする必要があるため
+  httpOnly: false, // フロントエンドからアクセスする必要があるため
 };
 
 // セッション設定の最適化
@@ -52,8 +52,18 @@ const OPTIMIZED_SESSION_CONFIG: SessionConfig = {
   httpOnly: true,
   sameSite: 'strict',
   rolling: true, // アクセス時にセッション延長
-  regenerateOnAuth: true // 認証時にセッションID再生成
+  regenerateOnAuth: true, // 認証時にセッションID再生成
 };
+
+// セッション情報の構造
+interface SessionInfo {
+  userId: string;
+  createdAt: number;
+  lastAccess: number;
+  ipAddress: string;
+  userAgent: string;
+  isActive: boolean;
+}
 
 export class CSRFProtection {
   private config: CSRFConfig;
@@ -67,13 +77,15 @@ export class CSRFProtection {
     const timestamp = Date.now().toString();
     const randomBytes = CryptoJS.lib.WordArray.random(this.config.tokenLength);
     const payload = `${timestamp}-${randomBytes.toString(CryptoJS.enc.Hex)}`;
-    
+
     // セッションIDと組み合わせてハッシュ化
     if (sessionId) {
-      const hash = CryptoJS.HmacSHA256(payload, sessionId).toString(CryptoJS.enc.Hex);
+      const hash = CryptoJS.HmacSHA256(payload, sessionId).toString(
+        CryptoJS.enc.Hex
+      );
       return `${payload}.${hash}`;
     }
-    
+
     return CryptoJS.SHA256(payload).toString(CryptoJS.enc.Hex);
   }
 
@@ -85,8 +97,10 @@ export class CSRFProtection {
       if (sessionId && token.includes('.')) {
         // セッションベースの検証
         const [payload, hash] = token.split('.');
-        const expectedHash = CryptoJS.HmacSHA256(payload, sessionId).toString(CryptoJS.enc.Hex);
-        
+        const expectedHash = CryptoJS.HmacSHA256(payload, sessionId).toString(
+          CryptoJS.enc.Hex
+        );
+
         // タイミング攻撃を防ぐ固定時間比較
         if (!this.constantTimeCompare(hash, expectedHash)) {
           return false;
@@ -95,8 +109,8 @@ export class CSRFProtection {
         // タイムスタンプの検証
         const timestamp = parseInt(payload.split('-')[0]);
         const now = Date.now();
-        
-        return (now - timestamp) <= this.config.tokenExpiry;
+
+        return now - timestamp <= this.config.tokenExpiry;
       } else {
         // シンプルな検証（後方互換性）
         const cachedToken = csrfTokenCache.get(token);
@@ -111,12 +125,12 @@ export class CSRFProtection {
   // 固定時間での文字列比較（タイミング攻撃対策）
   private constantTimeCompare(a: string, b: string): boolean {
     if (a.length !== b.length) return false;
-    
+
     let result = 0;
     for (let i = 0; i < a.length; i++) {
       result |= a.charCodeAt(i) ^ b.charCodeAt(i);
     }
-    
+
     return result === 0;
   }
 
@@ -145,19 +159,21 @@ export class CSRFProtection {
 
     // CSRFトークンの取得（ヘッダー優先、次にクッキー）
     const csrfTokenFromHeader = request.headers.get(this.config.headerName);
-    const csrfTokenFromCookie = request.cookies.get(this.config.cookieName)?.value;
+    const csrfTokenFromCookie = request.cookies.get(
+      this.config.cookieName
+    )?.value;
     const csrfToken = csrfTokenFromHeader || csrfTokenFromCookie;
 
     // トークンの検証
     if (!csrfToken || !this.verifyToken(csrfToken, sessionId)) {
       return new NextResponse(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'CSRF token validation failed',
-          code: 'CSRF_TOKEN_INVALID' 
+          code: 'CSRF_TOKEN_INVALID',
         }),
-        { 
+        {
           status: 403,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -175,7 +191,7 @@ export class CSRFProtection {
       secure: this.config.secure,
       httpOnly: this.config.httpOnly,
       sameSite: this.config.sameSitePolicy,
-      path: '/'
+      path: '/',
     });
 
     // ヘッダーにも設定（フロントエンド用）
@@ -197,10 +213,11 @@ export class OptimizedSessionManager {
     this.config = { ...OPTIMIZED_SESSION_CONFIG, ...customConfig };
   }
 
-
   // セッションの作成
   createSession(userId: string, ipAddress: string, userAgent: string): string {
-    const sessionId = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+    const sessionId = CryptoJS.lib.WordArray.random(32).toString(
+      CryptoJS.enc.Hex
+    );
     const now = Date.now();
 
     const sessionInfo: SessionInfo = {
@@ -209,7 +226,7 @@ export class OptimizedSessionManager {
       lastAccess: now,
       ipAddress,
       userAgent: userAgent.substring(0, 500), // 長さ制限
-      isActive: true
+      isActive: true,
     };
 
     this.activeSessions.set(sessionId, sessionInfo);
@@ -217,19 +234,23 @@ export class OptimizedSessionManager {
   }
 
   // セッションの検証と更新
-  validateSession(sessionId: string, ipAddress: string, userAgent: string): {
+  validateSession(
+    sessionId: string,
+    ipAddress: string,
+    userAgent: string
+  ): {
     valid: boolean;
     userId?: string;
     shouldRegenerate?: boolean;
   } {
     const session = this.activeSessions.get(sessionId);
-    
+
     if (!session || !session.isActive) {
       return { valid: false };
     }
 
     const now = Date.now();
-    
+
     // セッションの有効期限チェック
     if (now - session.lastAccess > this.config.maxAge) {
       this.invalidateSession(sessionId);
@@ -238,7 +259,9 @@ export class OptimizedSessionManager {
 
     // セキュリティチェック（IPアドレスの変更を検知）
     if (session.ipAddress !== ipAddress) {
-      console.warn(`Session ${sessionId} accessed from different IP: ${session.ipAddress} -> ${ipAddress}`);
+      console.warn(
+        `Session ${sessionId} accessed from different IP: ${session.ipAddress} -> ${ipAddress}`
+      );
       // 本番環境では厳格にする場合はここでセッション無効化
       // return { valid: false };
     }
@@ -247,10 +270,10 @@ export class OptimizedSessionManager {
     if (session.userAgent !== userAgent.substring(0, 500)) {
       console.warn(`Session ${sessionId} accessed with different user agent`);
       // セッション再生成を推奨
-      return { 
-        valid: true, 
-        userId: session.userId, 
-        shouldRegenerate: true 
+      return {
+        valid: true,
+        userId: session.userId,
+        shouldRegenerate: true,
       };
     }
 
@@ -313,7 +336,7 @@ export class OptimizedSessionManager {
       if (session.isActive) {
         activeSessions++;
         uniqueUsers.add(session.userId);
-        totalDuration += (now - session.createdAt);
+        totalDuration += now - session.createdAt;
         sessionCount++;
       }
     }
@@ -322,7 +345,8 @@ export class OptimizedSessionManager {
       totalSessions: this.activeSessions.size,
       activeSessions,
       uniqueUsers: uniqueUsers.size,
-      averageSessionDuration: sessionCount > 0 ? totalDuration / sessionCount : 0
+      averageSessionDuration:
+        sessionCount > 0 ? totalDuration / sessionCount : 0,
     };
   }
 }
@@ -373,7 +397,7 @@ export function getOptimizedCookieSettings(): {
       secure: OPTIMIZED_SESSION_CONFIG.secure,
       httpOnly: OPTIMIZED_SESSION_CONFIG.httpOnly,
       sameSite: OPTIMIZED_SESSION_CONFIG.sameSite,
-      path: '/'
-    }
+      path: '/',
+    },
   };
 }
