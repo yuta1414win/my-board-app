@@ -5,7 +5,7 @@ export enum AuditLevel {
   INFO = 'info',
   WARN = 'warn',
   ERROR = 'error',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // 監査アクション
@@ -16,31 +16,31 @@ export enum AuditAction {
   LOGOUT = 'logout',
   PASSWORD_CHANGE = 'password_change',
   PASSWORD_RESET = 'password_reset',
-  
+
   // ユーザー管理
   USER_CREATE = 'user_create',
   USER_UPDATE = 'user_update',
   USER_DELETE = 'user_delete',
   PROFILE_UPDATE = 'profile_update',
-  
+
   // 投稿関連
   POST_CREATE = 'post_create',
   POST_UPDATE = 'post_update',
   POST_DELETE = 'post_delete',
   POST_VIEW = 'post_view',
-  
+
   // セキュリティ関連
   RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
   CSRF_VIOLATION = 'csrf_violation',
   XSS_ATTEMPT = 'xss_attempt',
   SUSPICIOUS_ACTIVITY = 'suspicious_activity',
   UNAUTHORIZED_ACCESS = 'unauthorized_access',
-  
+
   // システム関連
   API_ACCESS = 'api_access',
   FILE_UPLOAD = 'file_upload',
   EXPORT_DATA = 'export_data',
-  ADMIN_ACTION = 'admin_action'
+  ADMIN_ACTION = 'admin_action',
 }
 
 // 監査ログエントリの構造
@@ -110,7 +110,7 @@ const DEFAULT_AUDIT_CONFIG: AuditConfig = {
   sampling: {
     enabled: process.env.NODE_ENV === 'production',
     rate: 0.1, // 10%サンプリング（本番環境）
-  }
+  },
 };
 
 // リスクスコアの計算
@@ -189,13 +189,15 @@ export class AuditLogger {
     try {
       const client = new MongoClient(this.config.mongoUri);
       await client.connect();
-      
+
       this.db = client.db(this.config.databaseName);
-      this.collection = this.db.collection<AuditLogEntry>(this.config.collectionName);
+      this.collection = this.db.collection<AuditLogEntry>(
+        this.config.collectionName
+      );
 
       // インデックスの作成
       await this.createIndexes();
-      
+
       console.log('Audit logger connected to MongoDB');
     } catch (error) {
       console.error('Failed to connect to MongoDB for audit logging:', error);
@@ -263,7 +265,10 @@ export class AuditLogger {
     }
   ): Promise<void> {
     // サンプリング判定
-    if (this.config.sampling.enabled && Math.random() > this.config.sampling.rate) {
+    if (
+      this.config.sampling.enabled &&
+      Math.random() > this.config.sampling.rate
+    ) {
       return; // サンプリングでスキップ
     }
 
@@ -284,7 +289,7 @@ export class AuditLogger {
       riskScore: RiskScorer.calculateRisk({
         action,
         success: options.success !== false,
-        ...options
+        ...options,
       }),
       metadata: options.metadata,
     };
@@ -310,11 +315,11 @@ export class AuditLogger {
 
     try {
       await this.connect();
-      
+
       if (this.collection) {
         const entries = [...this.cache];
         this.cache = [];
-        
+
         await this.collection.insertMany(entries);
         console.log(`Flushed ${entries.length} audit log entries`);
       }
@@ -332,7 +337,7 @@ export class AuditLogger {
       userId: entry.userId,
       ipAddress: entry.ipAddress,
       riskScore: entry.riskScore,
-      timestamp: entry.timestamp
+      timestamp: entry.timestamp,
     });
 
     // 実装：アラート通知システム（メール、Slack等）
@@ -352,7 +357,7 @@ export class AuditLogger {
     offset?: number;
   }): Promise<AuditLogEntry[]> {
     await this.connect();
-    
+
     if (!this.collection) return [];
 
     const filter: Record<string, any> = {};
@@ -361,7 +366,8 @@ export class AuditLogger {
     if (criteria.action) filter.action = criteria.action;
     if (criteria.level) filter.level = criteria.level;
     if (criteria.ipAddress) filter.ipAddress = criteria.ipAddress;
-    if (criteria.riskScoreMin) filter.riskScore = { $gte: criteria.riskScoreMin };
+    if (criteria.riskScoreMin)
+      filter.riskScore = { $gte: criteria.riskScoreMin };
 
     if (criteria.startDate || criteria.endDate) {
       filter.timestamp = {};
@@ -378,7 +384,9 @@ export class AuditLogger {
   }
 
   // 統計情報の取得
-  async getStatistics(period: 'hour' | 'day' | 'week' | 'month' = 'day'): Promise<{
+  async getStatistics(
+    period: 'hour' | 'day' | 'week' | 'month' = 'day'
+  ): Promise<{
     totalEvents: number;
     failedLogins: number;
     highRiskEvents: number;
@@ -387,7 +395,7 @@ export class AuditLogger {
     riskDistribution: { level: number; count: number }[];
   }> {
     await this.connect();
-    
+
     if (!this.collection) {
       return {
         totalEvents: 0,
@@ -395,7 +403,7 @@ export class AuditLogger {
         highRiskEvents: 0,
         topActions: [],
         topIPs: [],
-        riskDistribution: []
+        riskDistribution: [],
       };
     }
 
@@ -414,46 +422,52 @@ export class AuditLogger {
       highRiskEvents,
       topActions,
       topIPs,
-      riskDistribution
+      riskDistribution,
     ] = await Promise.all([
       this.collection.countDocuments({ timestamp: { $gte: startDate } }),
-      this.collection.countDocuments({ 
+      this.collection.countDocuments({
         timestamp: { $gte: startDate },
-        action: AuditAction.LOGIN_FAILED 
+        action: AuditAction.LOGIN_FAILED,
       }),
-      this.collection.countDocuments({ 
+      this.collection.countDocuments({
         timestamp: { $gte: startDate },
-        riskScore: { $gte: 7 }
+        riskScore: { $gte: 7 },
       }),
-      this.collection.aggregate([
-        { $match: { timestamp: { $gte: startDate } } },
-        { $group: { _id: '$action', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-        { $project: { action: '$_id', count: 1, _id: 0 } }
-      ]).toArray(),
-      this.collection.aggregate([
-        { $match: { timestamp: { $gte: startDate } } },
-        { $group: { _id: '$ipAddress', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-        { $project: { ip: '$_id', count: 1, _id: 0 } }
-      ]).toArray(),
-      this.collection.aggregate([
-        { $match: { timestamp: { $gte: startDate } } },
-        { $group: { _id: '$riskScore', count: { $sum: 1 } } },
-        { $sort: { _id: 1 } },
-        { $project: { level: '$_id', count: 1, _id: 0 } }
-      ]).toArray()
+      this.collection
+        .aggregate([
+          { $match: { timestamp: { $gte: startDate } } },
+          { $group: { _id: '$action', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+          { $project: { action: '$_id', count: 1, _id: 0 } },
+        ])
+        .toArray(),
+      this.collection
+        .aggregate([
+          { $match: { timestamp: { $gte: startDate } } },
+          { $group: { _id: '$ipAddress', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+          { $project: { ip: '$_id', count: 1, _id: 0 } },
+        ])
+        .toArray(),
+      this.collection
+        .aggregate([
+          { $match: { timestamp: { $gte: startDate } } },
+          { $group: { _id: '$riskScore', count: { $sum: 1 } } },
+          { $sort: { _id: 1 } },
+          { $project: { level: '$_id', count: 1, _id: 0 } },
+        ])
+        .toArray(),
     ]);
 
     return {
       totalEvents,
       failedLogins,
       highRiskEvents,
-      topActions,
+      topActions: topActions as { action: string; count: number; }[],
       topIPs,
-      riskDistribution
+      riskDistribution,
     };
   }
 
@@ -462,7 +476,7 @@ export class AuditLogger {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
     }
-    
+
     await this.flush();
     console.log('Audit logger cleanup completed');
   }
@@ -479,7 +493,7 @@ export const auditLog = {
       userId,
       ipAddress,
       userAgent,
-      success: true
+      success: true,
     }),
 
   loginFailed: (ipAddress: string, userAgent: string, errorMessage?: string) =>
@@ -488,7 +502,7 @@ export const auditLog = {
       ipAddress,
       userAgent,
       success: false,
-      errorMessage
+      errorMessage,
     }),
 
   rateLimitExceeded: (ipAddress: string, userAgent: string, endpoint: string) =>
@@ -497,7 +511,7 @@ export const auditLog = {
       ipAddress,
       userAgent,
       resource: endpoint,
-      success: false
+      success: false,
     }),
 
   csrfViolation: (ipAddress: string, userAgent: string, url: string) =>
@@ -506,10 +520,15 @@ export const auditLog = {
       ipAddress,
       userAgent,
       resource: url,
-      success: false
+      success: false,
     }),
 
-  postCreated: (userId: string, postId: string, ipAddress: string, userAgent: string) =>
+  postCreated: (
+    userId: string,
+    postId: string,
+    ipAddress: string,
+    userAgent: string
+  ) =>
     defaultAuditLogger.log(AuditAction.POST_CREATE, {
       level: AuditLevel.INFO,
       userId,
@@ -517,8 +536,8 @@ export const auditLog = {
       userAgent,
       resource: 'post',
       resourceId: postId,
-      success: true
-    })
+      success: true,
+    }),
 };
 
 export default AuditLogger;
