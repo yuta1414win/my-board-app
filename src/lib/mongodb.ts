@@ -31,4 +31,8 @@ export async function getDatabase(): Promise<Db> {
   return client.db(process.env.MONGODB_DB_NAME || 'my-board-app');
 }
 
+export async function connectDB(): Promise<Db> {
+  return getDatabase();
+}
+
 export { clientPromise };
