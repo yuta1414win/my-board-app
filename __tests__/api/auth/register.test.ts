@@ -416,10 +416,10 @@ describe('/api/auth/register', () => {
 
       // Act
       const response = await POST(request);
-      
+
       // Assert - Check raw response since JSON parsing might fail
       expect(response.status).toBe(400);
-      
+
       // Try to parse if possible
       if (response.body) {
         const result = await parseApiResponse(response);

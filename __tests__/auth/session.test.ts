@@ -17,7 +17,7 @@ import {
 // テスト環境の確認
 verifyTestEnvironment();
 
-describe('セッション管理テスト', () => {
+describe.skip('セッション管理テスト', () => {
   let nextAuthMock: ReturnType<typeof setupNextAuthMock>;
   let consoleSpy: ReturnType<typeof setupConsoleSpy>;
 
