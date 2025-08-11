@@ -33,6 +33,20 @@ interface Post {
   updatedAt: string;
 }
 
+interface PostPermissions {
+  canEdit: boolean;
+  canDelete: boolean;
+  isOwner: boolean;
+  isAdmin: boolean;
+}
+
+interface APIError {
+  error: string;
+  code: string;
+  action?: string;
+  postId?: string;
+}
+
 interface PostListProps {
   onEditPost: (post: Post) => void;
   refresh: number;
@@ -86,8 +100,8 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   };
 
   const handleMenuClose = () => {
+    // メニューだけを閉じる（選択中の投稿は維持）
     setAnchorEl(null);
-    setSelectedPost(null);
   };
 
   const handleEdit = () => {
@@ -98,6 +112,17 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
   };
 
   const handleDeleteClick = () => {
+    if (!selectedPost) return;
+    // 権限チェック - 管理者または投稿者のみ削除可能
+    const canDelete = session?.user?.role === 'admin' || session?.user?.id === selectedPost.author;
+    if (!canDelete) {
+      const errorMessage = session?.user?.role === 'admin' 
+        ? '削除権限がありません'
+        : '自分が投稿した内容のみ削除できます';
+      setError(errorMessage);
+      handleMenuClose();
+      return;
+    }
     setDeleteDialogOpen(true);
     handleMenuClose();
   };
@@ -107,20 +132,20 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
 
     console.log('削除開始 - 投稿ID:', selectedPost._id);
     console.log('選択された投稿:', selectedPost);
-    
+
     setDeleting(true);
     setError(''); // エラーをクリア
 
     try {
       const deleteUrl = `/api/posts/${selectedPost._id}`;
       console.log('削除API呼び出し:', deleteUrl);
-      
+
       const response = await fetch(deleteUrl, {
         method: 'DELETE',
       });
 
       console.log('削除APIレスポンス status:', response.status);
-      
+
       if (response.ok) {
         console.log('削除成功');
         // 削除成功時の処理
@@ -130,7 +155,14 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         await fetchPosts(page);
       } else {
         const data = await response.json();
-        const errorMessage = data.error || '削除に失敗しました';
+        let errorMessage = data.error || '削除に失敗しました';
+        if (response.status === 403) {
+          errorMessage = 'この投稿を削除する権限がありません';
+        } else if (response.status === 404) {
+          errorMessage = '投稿が見つかりません';
+        } else if (response.status === 400) {
+          errorMessage = '無効な投稿IDです';
+        }
         setError(errorMessage);
         console.error('削除エラー:', errorMessage);
         console.error('エラーレスポンス:', data);
@@ -214,14 +246,9 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
                 </Typography>
               </Box>
 
-              {session?.user?.id === post.author && (
-                <IconButton
-                  onClick={(e) => handleMenuOpen(e, post)}
-                  size="small"
-                >
-                  <MoreVert />
-                </IconButton>
-              )}
+              <IconButton onClick={(e) => handleMenuOpen(e, post)} size="small">
+                <MoreVert />
+              </IconButton>
             </Box>
           </CardContent>
         </Card>
@@ -232,14 +259,18 @@ export default function PostList({ onEditPost, refresh }: PostListProps) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleEdit}>
-          <Edit sx={{ mr: 1 }} fontSize="small" />
-          編集
-        </MenuItem>
-        <MenuItem onClick={handleDeleteClick}>
-          <Delete sx={{ mr: 1 }} fontSize="small" />
-          削除
-        </MenuItem>
+        {selectedPost && session?.user?.id === selectedPost.author && (
+          <MenuItem onClick={handleEdit}>
+            <Edit sx={{ mr: 1 }} fontSize="small" />
+            編集
+          </MenuItem>
+        )}
+        {selectedPost && session?.user?.id === selectedPost.author && (
+          <MenuItem onClick={handleDeleteClick}>
+            <Delete sx={{ mr: 1 }} fontSize="small" />
+            削除
+          </MenuItem>
+        )}
       </Menu>
 
       {totalPages > 1 && (
