@@ -38,13 +38,25 @@ export interface ChangePasswordData {
   newPassword: string;
 }
 
-export class UserModel {
-  private static COLLECTION_NAME = 'users';
+// Mongoose Schema定義
+const userSchema = new Schema<UserDocument>({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  bio: { type: String },
+  quickComment: { type: String },
+  avatar: { type: String },
+  emailVerified: { type: Boolean, default: false },
+  role: { type: String, enum: ['user', 'admin'], default: 'user' },
+  isActive: { type: Boolean, default: true },
+}, {
+  timestamps: true,
+});
 
-  static async getCollection() {
-    const db = await getDatabase();
-    return db.collection<UserDocument>(this.COLLECTION_NAME);
-  }
+// Mongoose Model
+const User = mongoose.models.User || mongoose.model<UserDocument>('User', userSchema);
+
+export class UserModel {
 
   static async findById(id: string): Promise<UserDocument | null> {
     const collection = await this.getCollection();
