@@ -43,14 +43,27 @@ const limiter = rateLimit({
 
 export async function POST(request: Request) {
   try {
+    // 環境変数の診断ログ（本番環境での問題特定用）
+    console.log('Environment check:', {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasEmailConfig: !!(process.env.EMAIL_SERVER_USER && process.env.EMAIL_SERVER_PASSWORD),
+      hasAppUrl: !!(process.env.NEXTAUTH_URL || process.env.APP_URL),
+      nodeEnv: process.env.NODE_ENV,
+    });
+
     // データベース接続チェック（接続失敗は 503 を返す）
     try {
       const db = await dbConnect();
       if (!db) {
+        console.error('Database connection returned null - MONGODB_URI may be missing');
         return NextResponse.json(
           {
             error: 'Database connection not available',
             code: 'DATABASE_CONNECTION_UNAVAILABLE',
+            debug: process.env.NODE_ENV === 'development' ? {
+              hasMongoUri: !!process.env.MONGODB_URI,
+            } : undefined,
           },
           { status: 503 }
         );
