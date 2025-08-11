@@ -89,8 +89,7 @@ describe('/api/auth/register', () => {
       // メール送信の検証
       expect(emailMock.mockSendEmail).toHaveBeenCalledWith(
         validRegistrationData.email.toLowerCase(),
-        'mock-verification-token',
-        validRegistrationData.name
+        'mock-verification-token'
       );
     });
 
