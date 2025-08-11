@@ -29,16 +29,40 @@ interface Post {
   updatedAt: string;
 }
 
+interface PostResponse {
+  post: Post;
+  permissions: {
+    canEdit: boolean;
+    canDelete: boolean;
+    isOwner: boolean;
+    isAdmin: boolean;
+  };
+}
+
+interface APIError {
+  error: string;
+  code: string;
+  action?: string;
+  postId?: string;
+}
+
 export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const { data: session } = useSession();
   const [post, setPost] = useState<Post | null>(null);
+  const [permissions, setPermissions] = useState<{
+    canEdit: boolean;
+    canDelete: boolean;
+    isOwner: boolean;
+    isAdmin: boolean;
+  } | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingPost, setLoadingPost] = useState(true);
   const [error, setError] = useState('');
+  const [permissionError, setPermissionError] = useState('');
 
   const titleLength = title.length;
   const contentLength = content.length;
@@ -65,16 +89,49 @@ export default function EditPostPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setPost(data);
-        setTitle(data.title);
-        setContent(data.content);
-        
-        // 投稿者チェック
-        if (session?.user?.id !== data.author) {
-          setError('この投稿を編集する権限がありません');
+        // 新しいAPIレスポンス形式に対応
+        if (data.post && data.permissions) {
+          setPost(data.post);
+          setPermissions(data.permissions);
+          setTitle(data.post.title);
+          setContent(data.post.content);
+
+          // 権限チェック
+          if (!data.permissions.canEdit) {
+            setPermissionError(
+              data.permissions.isAdmin 
+                ? '管理者権限でのみ編集可能です' 
+                : 'この投稿を編集する権限がありません'
+            );
+          }
+        } else {
+          // 旧形式のレスポンスとの互換性
+          setPost(data);
+          setTitle(data.title);
+          setContent(data.content);
+          
+          // 従来の権限チェック
+          if (session?.user?.id !== data.author) {
+            setPermissionError('この投稿を編集する権限がありません');
+          } else {
+            setPermissions({
+              canEdit: true,
+              canDelete: true,
+              isOwner: true,
+              isAdmin: session?.user?.role === 'admin'
+            });
+          }
         }
       } else {
-        setError(data.error || '投稿の読み込みに失敗しました');
+        // エラーレスポンスの詳細処理
+        const apiError = data as APIError;
+        if (response.status === 403) {
+          setPermissionError(apiError.error || 'アクセスが拒否されました');
+        } else if (response.status === 404) {
+          setError('投稿が見つかりません');
+        } else {
+          setError(apiError.error || '投稿の読み込みに失敗しました');
+        }
       }
     } catch (error) {
       setError('サーバーエラーが発生しました');
@@ -91,7 +148,7 @@ export default function EditPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !content.trim()) {
       setError('タイトルと内容を入力してください');
       return;
@@ -122,7 +179,15 @@ export default function EditPostPage() {
       if (response.ok) {
         router.push('/board');
       } else {
-        setError(data.error || '更新に失敗しました');
+        // エラー処理の強化
+        const apiError = data as APIError;
+        if (response.status === 403) {
+          setPermissionError(apiError.error || 'アクセスが拒否されました');
+        } else if (response.status === 400) {
+          setError(apiError.error || '入力内容に問題があります');
+        } else {
+          setError(apiError.error || '更新に失敗しました');
+        }
       }
     } catch (error) {
       setError('サーバーエラーが発生しました');
@@ -138,9 +203,7 @@ export default function EditPostPage() {
   if (!session) {
     return (
       <Container maxWidth="md" sx={{ py: 3 }}>
-        <Alert severity="warning">
-          編集するにはログインが必要です
-        </Alert>
+        <Alert severity="warning">編集するにはログインが必要です</Alert>
       </Container>
     );
   }
@@ -157,9 +220,7 @@ export default function EditPostPage() {
   if (error && !post) {
     return (
       <Container maxWidth="md" sx={{ py: 3 }}>
-        <Alert severity="error">
-          {error}
-        </Alert>
+        <Alert severity="error">{error}</Alert>
       </Container>
     );
   }
@@ -167,9 +228,9 @@ export default function EditPostPage() {
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       <Breadcrumbs sx={{ mb: 3 }}>
-        <Link 
-          component="button" 
-          variant="inherit" 
+        <Link
+          component="button"
+          variant="inherit"
           onClick={() => router.push('/board')}
           sx={{ textDecoration: 'none', cursor: 'pointer' }}
         >
@@ -182,7 +243,7 @@ export default function EditPostPage() {
         <Typography variant="h5" gutterBottom>
           ✏️ 投稿を編集
         </Typography>
-        
+
         <Typography variant="body2" color="text.secondary" paragraph>
           投稿内容を修正してください
         </Typography>
@@ -205,7 +266,7 @@ export default function EditPostPage() {
             error={titleLength > titleMaxLength}
             helperText={getTitleHelperText()}
           />
-          
+
           <Box sx={{ mb: 1 }}>
             <LinearProgress
               variant="determinate"
@@ -213,7 +274,7 @@ export default function EditPostPage() {
               color={titleLength > titleMaxLength ? 'error' : 'primary'}
             />
           </Box>
-          
+
           <TextField
             fullWidth
             label="内容"
@@ -246,12 +307,16 @@ export default function EditPostPage() {
             >
               戻る
             </Button>
-            
+
             <Button
               type="submit"
               variant="contained"
               startIcon={loading ? <CircularProgress size={20} /> : <Save />}
-              disabled={loading || titleLength > titleMaxLength || contentLength > contentMaxLength}
+              disabled={
+                loading ||
+                titleLength > titleMaxLength ||
+                contentLength > contentMaxLength
+              }
               sx={{ flex: 1 }}
             >
               {loading ? '更新中...' : '更新する'}
