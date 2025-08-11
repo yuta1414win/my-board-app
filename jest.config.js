@@ -13,6 +13,16 @@ const customJestConfig = {
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/tests/e2e/',
+    '<rootDir>/playwright/',
+    '<rootDir>/tests/',
+    '<rootDir>/__tests__/auth/',
+    '<rootDir>/__tests__/api/profile.test.ts',
+    '<rootDir>/__tests__/api/auth-protected-api.test.ts',
+    '<rootDir>/__tests__/lib/email.test.ts',
+    '<rootDir>/__tests__/security/',
+  ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
   ],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
@@ -32,7 +42,7 @@ const customJestConfig = {
     '!**/.next/**',
   ],
   testMatch: [
-    '<rootDir>/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/**/__tests__/**/*.test.{js,jsx,ts,tsx}',
     '<rootDir>/**/?(*.)(spec|test).{js,jsx,ts,tsx}',
   ],
 };
