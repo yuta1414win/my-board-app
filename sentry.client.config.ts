@@ -5,7 +5,7 @@ if (
   process.env.NODE_ENV === 'production' &&
   process.env.NEXT_PUBLIC_SENTRY_DSN
 ) {
-  Sentry.init({
+  // Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
     // セッション追跡を有効化
