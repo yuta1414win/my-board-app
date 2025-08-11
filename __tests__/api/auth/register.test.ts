@@ -73,6 +73,7 @@ describe('/api/auth/register', () => {
       expectApiSuccess(result, 201);
       expect(result.data.code).toBe('REGISTRATION_SUCCESS');
       expect(result.data.message).toContain('登録が完了しました');
+      expect(result.data.verificationUrl).toBeDefined();
 
       // MongoDB呼び出しの検証
       expect(mongoMock.mockFindOne).toHaveBeenCalledWith({
@@ -117,7 +118,9 @@ describe('/api/auth/register', () => {
       // Assert
       expectApiSuccess(result, 200); // This returns 200 as it's updating existing user
       expect(result.data.code).toBe('VERIFICATION_EMAIL_RESENT');
-      expect(result.data.message).toContain('既存のアカウントに確認メールを送信しました');
+      expect(result.data.message).toContain(
+        '既存のアカウントに確認メールを送信しました'
+      );
 
       // 確認トークンとメール送信の検証
       expect(existingUnverifiedUser.save).toHaveBeenCalled();
