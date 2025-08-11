@@ -88,17 +88,8 @@ export class UserModel {
   static async createUser(
     userData: Omit<UserData, 'createdAt' | 'updatedAt'>
   ): Promise<UserDocument> {
-    const collection = await this.getCollection();
-    const now = new Date();
-
-    const user: Omit<UserDocument, '_id'> = {
-      ...userData,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const result = await collection.insertOne(user);
-    return result.insertedId;
+    const user = new User(userData);
+    return await user.save();
   }
 
   static async updateProfile(
