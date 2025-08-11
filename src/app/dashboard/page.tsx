@@ -117,7 +117,7 @@ export default function DashboardPage() {
 
         {/* クイックアクションカード */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
                 <PostAddIcon
@@ -140,7 +140,7 @@ export default function DashboardPage() {
             </Card>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
                 <ForumIcon
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             </Card>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
                 <PersonIcon sx={{ fontSize: 48, color: 'info.main', mb: 1 }} />
@@ -184,7 +184,7 @@ export default function DashboardPage() {
             </Card>
           </Grid>
 
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <Card elevation={2} sx={{ height: '100%' }}>
               <CardContent sx={{ textAlign: 'center', pb: 1 }}>
                 <SettingsIcon
@@ -210,7 +210,7 @@ export default function DashboardPage() {
 
         {/* 統計・アクティビティセクション */}
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 8 }}>
+          <Grid item xs={12} md={8}>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Typography
                 variant="h6"
@@ -264,7 +264,7 @@ export default function DashboardPage() {
             </Paper>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid item xs={12} md={4}>
             <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
               <Stack
                 direction="row"
