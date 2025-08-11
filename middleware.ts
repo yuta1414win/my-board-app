@@ -5,13 +5,13 @@ import { getEdgeRateLimiter, getClientIP } from './lib/edge-rate-limiter';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = getClientIP(request);
-  
+
   console.log('🔥 MIDDLEWARE RUNNING:', pathname, 'IP:', ip);
 
   // レート制限チェック（Edge Runtime対応）
   const rateLimiter = getEdgeRateLimiter();
   const rateLimitResult = rateLimiter.checkLimit(ip);
-  
+
   if (!rateLimitResult.allowed) {
     console.log('🚨 RATE LIMIT EXCEEDED for IP:', ip);
     return new NextResponse(
@@ -36,11 +36,17 @@ export async function middleware(request: NextRequest) {
 
   // 基本的なセキュリティヘッダーを設定（Edge Runtime互換）
   const response = NextResponse.next();
-  
+
   // レート制限情報をヘッダーに追加
   response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
-  response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
-  response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
+  response.headers.set(
+    'X-RateLimit-Remaining',
+    rateLimitResult.remaining.toString()
+  );
+  response.headers.set(
+    'X-RateLimit-Reset',
+    rateLimitResult.resetTime.toString()
+  );
 
   // 基本セキュリティヘッダーの設定
   response.headers.set('X-Frame-Options', 'DENY');
@@ -78,6 +84,10 @@ export async function middleware(request: NextRequest) {
   ].join(', ');
 
   response.headers.set('Permissions-Policy', permissionsPolicy);
+
+  // フレームワーク情報の隠蔽
+  response.headers.delete('X-Powered-By');
+  response.headers.set('Server', 'SecureServer');
 
   // 認証チェック（保護されたルート）
   const protectedPaths = [
