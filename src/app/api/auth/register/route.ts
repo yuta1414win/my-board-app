@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import dbConnect from '@/lib/mongodb';
-import { UserModel } from '@/models/User';
+import dbConnect from '../../../../lib/mongodb';
+import { UserModel } from '../../../../models/User';
 import {
   checkPasswordStrength,
   validateEmail,
   generateVerificationToken,
-} from '@/lib/validation';
-import { sendVerificationEmail } from '@/lib/email';
+} from '../../../../lib/validation';
+import { sendVerificationEmail } from '../../../../lib/email';
 
 export async function POST(request: NextRequest) {
   try {
