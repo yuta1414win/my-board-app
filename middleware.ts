@@ -54,16 +54,18 @@ export async function middleware(request: NextRequest) {
   // 基本的なセキュリティヘッダーを設定（Edge Runtime互換）
   const response = NextResponse.next();
 
-  // レート制限情報をヘッダーに追加
-  response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
-  response.headers.set(
-    'X-RateLimit-Remaining',
-    rateLimitResult.remaining.toString()
-  );
-  response.headers.set(
-    'X-RateLimit-Reset',
-    rateLimitResult.resetTime.toString()
-  );
+  // レート制限情報をヘッダーに追加（チェックした場合のみ）
+  if (rateLimitResult) {
+    response.headers.set('X-RateLimit-Limit', rateLimitResult.limit.toString());
+    response.headers.set(
+      'X-RateLimit-Remaining',
+      rateLimitResult.remaining.toString()
+    );
+    response.headers.set(
+      'X-RateLimit-Reset',
+      rateLimitResult.resetTime.toString()
+    );
+  }
 
   // 基本セキュリティヘッダーの設定
   response.headers.set('X-Frame-Options', 'DENY');
