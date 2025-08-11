@@ -7,7 +7,7 @@ export async function GET() {
 
     const result = await testEmailConnection();
 
-    if (result.success) {
+    if (result === true || (typeof result === 'object' && 'ok' in result && result.ok !== false)) {
       return NextResponse.json({
         success: true,
         message: 'メール接続テストが成功しました',
