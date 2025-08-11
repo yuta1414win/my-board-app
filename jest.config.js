@@ -18,11 +18,6 @@ const customJestConfig = {
   transformIgnorePatterns: [
     'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
   ],
-  transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      useESM: true,
-    }],
-  },
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
