@@ -127,7 +127,7 @@ export const authOptions: any = {
         algorithm: 'HS512',
       });
     },
-    decode: async ({ token, secret }) => {
+    decode: async ({ token, secret }: any) => {
       const { decode } = await import('next-auth/jwt');
       return decode({ token, secret });
     },
