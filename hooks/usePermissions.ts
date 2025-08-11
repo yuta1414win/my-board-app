@@ -80,8 +80,10 @@ export function usePermissions(): UsePermissionsReturn {
     return isPostOwner(post) || userPermissions.isAdmin;
   };
 
-  const checkPostPermissions = (post: { author: string } | null): PermissionCheck => {
-    if (!session?.user || status === 'loading') {
+  const checkPostPermissions = (
+    post: { author: string } | null
+  ): PermissionCheck => {
+    if (!session?.user || status !== 'authenticated') {
       return {
         canEdit: false,
         canDelete: false,
@@ -152,10 +154,7 @@ export const PERMISSION_ERRORS = {
     'NOT_POST_OWNER',
     'この投稿を変更する権限がありません'
   ),
-  NOT_ADMIN: createPermissionError(
-    'NOT_ADMIN',
-    '管理者権限が必要です'
-  ),
+  NOT_ADMIN: createPermissionError('NOT_ADMIN', '管理者権限が必要です'),
   PERMISSION_DENIED: createPermissionError(
     'PERMISSION_DENIED',
     'アクセスが拒否されました'
