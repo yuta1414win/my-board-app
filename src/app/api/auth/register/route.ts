@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
         success: true,
         message:
           'アカウントが作成されました。メールアドレスに送信された確認リンクをクリックしてください。',
-        userId: insertedId.toString(),
+        userId: createdUser._id!.toString(),
         emailSent: true,
       },
       { status: 201 }
