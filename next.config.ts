@@ -74,7 +74,7 @@ const nextConfig: NextConfig = {
 
   // 実験的機能
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // crittersモジュールエラーのため一時的に無効化
     gzipSize: true,
   },
 
