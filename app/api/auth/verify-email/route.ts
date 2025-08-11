@@ -54,7 +54,7 @@ export async function GET(request: Request) {
       message: 'メールアドレスの確認が完了しました。ログインできます。',
       success: true,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Email verification error:', error);
     return NextResponse.json(
       { error: 'サーバーエラーが発生しました' },
