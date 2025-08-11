@@ -7,7 +7,10 @@ export async function GET() {
 
     const result = await testEmailConnection();
 
-    if (result === true || (typeof result === 'object' && 'ok' in result && result.ok !== false)) {
+    if (
+      result === true ||
+      (typeof result === 'object' && 'ok' in result && result.ok !== false)
+    ) {
       return NextResponse.json({
         success: true,
         message: 'メール接続テストが成功しました',
@@ -22,7 +25,7 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         message: 'メール接続テストが失敗しました',
-        error: result.error,
+        error: typeof result === 'object' && 'error' in result ? result.error : 'Unknown error',
         config: {
           host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
           port: process.env.EMAIL_SERVER_PORT || '587',
