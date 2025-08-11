@@ -5,7 +5,7 @@ test.describe('スモークテスト - 基本機能確認', () => {
     await page.goto('/');
 
     // ページが正常にロードされることを確認
-    await expect(page).toHaveTitle(/My Board App/);
+    await expect(page).toHaveTitle(/掲示板アプリ/);
 
     // 基本的なナビゲーション要素が存在することを確認
     await expect(page.locator('nav')).toBeVisible();
@@ -46,6 +46,6 @@ test.describe('スモークテスト - 基本機能確認', () => {
     expect(response.ok()).toBeTruthy();
 
     const health = await response.json();
-    expect(health.status).toBe('healthy');
+    expect(health.status).toBe('ok');
   });
 });
