@@ -63,6 +63,13 @@ const nextConfig: NextConfig = {
   output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   poweredByHeader: false,
   compress: true,
+  
+  // APIルートの静的解析を調整
+  experimental: {
+    // optimizeCss: true, // crittersモジュールエラーのため一時的に無効化
+    gzipSize: true,
+    dynamicIO: true, // 動的なI/Oを許可
+  },
 
   // 画像最適化設定
   images: {
