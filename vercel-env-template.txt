@@ -1,0 +1,78 @@
+# Vercel環境変数設定テンプレート
+# これらの変数をVercel Dashboardで設定してください
+# https://vercel.com/dashboard → Project → Settings → Environment Variables
+
+# ===========================================
+# 必須設定 (Required)
+# ===========================================
+
+# Database Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority
+DB_NAME=my-board-app
+
+# NextAuth Configuration
+NEXTAUTH_URL=https://your-project-name.vercel.app
+NEXTAUTH_SECRET=your-32-character-random-secret-here
+
+# Email Configuration (Gmail SMTP)
+EMAIL_SERVER_HOST=smtp.gmail.com
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER=your-email@gmail.com
+EMAIL_SERVER_PASSWORD=your-gmail-app-password
+GMAIL_USER=your-email@gmail.com
+GMAIL_APP_PASSWORD=your-gmail-app-password
+
+# ===========================================
+# オプション設定 (Optional)
+# ===========================================
+
+# OAuth Providers (ソーシャルログイン用)
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
+GITHUB_CLIENT_ID=your-github-oauth-client-id
+GITHUB_CLIENT_SECRET=your-github-oauth-client-secret
+
+# Error Monitoring (Sentry)
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+NEXT_PUBLIC_SENTRY_DSN=https://your-public-sentry-dsn@sentry.io/project-id
+
+# ===========================================
+# 設定手順
+# ===========================================
+
+# 1. MongoDBの準備:
+#    - MongoDB Atlas (https://cloud.mongodb.com) でクラスター作成
+#    - IP Access List に 0.0.0.0/0 を追加 (Vercelからのアクセス許可)
+#    - Database User を作成してURIを取得
+
+# 2. Gmail設定:
+#    - Googleアカウントで2段階認証を有効化
+#    - アプリパスワードを生成: https://myaccount.google.com/apppasswords
+#    - 生成されたパスワードをEMAIL_SERVER_PASSWORD, GMAIL_APP_PASSWORDに設定
+
+# 3. NextAuth Secret生成:
+#    - ランダムな32文字以上の文字列を生成
+#    - OpenSSL使用例: openssl rand -base64 32
+
+# 4. OAuth設定 (オプション):
+#    - Google: https://console.cloud.google.com/apis/credentials
+#    - GitHub: https://github.com/settings/applications/new
+#    - Authorized redirect URIs: https://your-domain.vercel.app/api/auth/callback/[provider]
+
+# 5. Sentry設定 (オプション):
+#    - Sentry.io でプロジェクト作成
+#    - DSNを取得して設定
+
+# ===========================================
+# 設定確認
+# ===========================================
+
+# 環境変数が正しく設定されているか確認するには:
+# 1. Vercel Dashboard → Project → Settings → Environment Variables
+# 2. 各変数が Production, Preview, Development のすべてに設定されているか確認
+# 3. 機密情報（パスワード、シークレット）が正しく隠されているか確認
+
+# デプロイ後のテスト:
+# - ユーザー登録でメールが送信されるか
+# - ログイン・ログアウトが動作するか
+# - データベースへの読み書きが正常か
