@@ -121,6 +121,7 @@ describe('/api/auth/register', () => {
       expect(result.data.message).toContain(
         '既存のアカウントに確認メールを送信しました'
       );
+      expect(result.data.verificationUrl).toBeDefined();
 
       // 確認トークンとメール送信の検証
       expect(existingUnverifiedUser.save).toHaveBeenCalled();
