@@ -110,6 +110,9 @@ jobs:
         NEXT_PUBLIC_API_URL: http://localhost:3000
         MONGODB_URI: mongodb://localhost:27017/test-db
         JWT_SECRET: test-jwt-secret-for-ci
+        NEXTAUTH_SECRET: test-secret-for-e2e-testing-only
+        NEXTAUTH_URL: http://localhost:3000
+        AUTH_TRUST_HOST: true
     
     - name: Run E2E tests
       run: npm run test:e2e
@@ -118,6 +121,9 @@ jobs:
         PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
         MONGODB_URI: mock://localhost/test-db
         JWT_SECRET: test-jwt-secret-for-ci
+        NEXTAUTH_SECRET: test-secret-for-e2e-testing-only
+        NEXTAUTH_URL: http://localhost:3000
+        AUTH_TRUST_HOST: true
         NEXT_PUBLIC_API_URL: http://localhost:3000
         USE_MOCK_DB: true
     
