@@ -4,7 +4,7 @@ import { getDatabase } from '@/lib/mongodb';
 export async function GET() {
   try {
     // データベース接続チェック
-    await connectDB();
+    await getDatabase();
 
     const healthData = {
       status: 'ok',
