@@ -86,8 +86,8 @@ export class UserModel {
   }
 
   static async createUser(
-    userData: Omit<UserDocument, '_id' | 'createdAt' | 'updatedAt'>
-  ): Promise<ObjectId> {
+    userData: Omit<UserData, 'createdAt' | 'updatedAt'>
+  ): Promise<UserDocument> {
     const collection = await this.getCollection();
     const now = new Date();
 
