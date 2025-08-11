@@ -123,6 +123,7 @@ export const authOptions: any = {
         token,
         secret,
         maxAge,
+        salt: '', // NextAuth v5では空文字列でOK
       });
     },
     decode: async ({ token, secret }: any) => {
