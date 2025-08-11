@@ -307,7 +307,7 @@ declare module 'next-auth' {
       emailVerified?: Date;
       lastLoginAt?: Date;
       sessionId?: string;
-    } & DefaultSession['user'];
+    };
   }
 
   interface User {
