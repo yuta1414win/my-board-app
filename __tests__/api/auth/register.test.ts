@@ -36,7 +36,10 @@ describe('/api/auth/register', () => {
 
     // デフォルトのモック設定
     emailMock.mockGenerateToken.mockReturnValue('mock-verification-token');
-    emailMock.mockSendEmail.mockResolvedValue(true);
+    emailMock.mockSendEmail.mockResolvedValue({
+      success: true,
+      messageId: 'mock-message-id'
+    });
   });
 
   afterEach(() => {
@@ -111,8 +114,8 @@ describe('/api/auth/register', () => {
       const response = await POST(request);
       const result = await parseApiResponse(response);
 
-      // Assert  
-      expectApiSuccess(result, 200);  // This returns 200 as it's updating existing user
+      // Assert
+      expectApiSuccess(result, 200); // This returns 200 as it's updating existing user
       expect(result.data.code).toBe('VERIFICATION_EMAIL_RESENT');
       expect(result.data.message).toContain('新しい確認メールを送信しました');
 
