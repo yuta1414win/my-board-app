@@ -24,6 +24,12 @@ if (!global.mongoose) {
 }
 
 async function dbConnect() {
+  // ビルド時やテスト時にMONGODB_URIがない場合はnullを返す
+  if (!MONGODB_URI) {
+    console.warn('MONGODB_URI not defined, returning null connection');
+    return null;
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
