@@ -117,7 +117,7 @@ export const authOptions: any = {
   jwt: {
     maxAge: 24 * 60 * 60, // 24時間（秒単位）
     // セキュアな署名アルゴリズム
-    encode: async ({ token, secret, maxAge }) => {
+    encode: async ({ token, secret, maxAge }: any) => {
       const { encode } = await import('next-auth/jwt');
       return encode({
         token,
