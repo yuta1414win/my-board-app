@@ -108,7 +108,7 @@ export async function middleware(request: NextRequest) {
   response.headers.delete('X-Powered-By');
   response.headers.set('Server', 'SecureServer');
 
-  // 認証チェック（保護されたルート）
+  // リダイレクトループ防止のため、認証関連のチェックを統一
   const protectedPaths = [
     '/board',
     '/profile',
@@ -116,35 +116,46 @@ export async function middleware(request: NextRequest) {
     '/dashboard',
     '/posts',
   ];
+  const authPaths = ['/auth/signin', '/auth/register'];
+  
   const isProtectedRoute = protectedPaths.some((path) =>
     pathname.startsWith(path)
   );
-
-  if (isProtectedRoute) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
-    if (!token) {
-      const loginUrl = new URL('/auth/signin', request.url);
-      loginUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // 認証済みユーザーの認証ページリダイレクト
-  const authPaths = ['/auth/signin', '/auth/register'];
   const isAuthPage = authPaths.some((path) => pathname.startsWith(path));
 
-  if (isAuthPage) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+  // 認証が必要な場合のみトークンを取得（パフォーマンス改善）
+  if (isProtectedRoute || isAuthPage) {
+    try {
+      const token = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+      });
 
-    if (token) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      // 保護されたルートで認証されていない場合
+      if (isProtectedRoute && !token) {
+        const loginUrl = new URL('/auth/signin', request.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // 認証ページで既に認証されている場合（リダイレクトループ防止）
+      if (isAuthPage && token) {
+        // callbackUrlがある場合はそこにリダイレクト
+        const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
+        if (callbackUrl && !authPaths.some(path => callbackUrl.startsWith(path))) {
+          return NextResponse.redirect(new URL(callbackUrl, request.url));
+        }
+        // デフォルトはダッシュボードへ
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+    } catch (error) {
+      console.error('🚨 Token validation error:', error);
+      // トークン検証エラーの場合、認証が必要なページでのみリダイレクト
+      if (isProtectedRoute) {
+        const loginUrl = new URL('/auth/signin', request.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
     }
   }
 
