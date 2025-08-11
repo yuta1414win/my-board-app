@@ -80,11 +80,23 @@ export default defineConfig({
         port: 3000,
         reuseExistingServer: false,
         timeout: 180 * 1000, // 3分（CI環境用に短縮）
+        env: {
+          NEXTAUTH_SECRET: 'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+          NEXTAUTH_URL: 'http://localhost:3000',
+          AUTH_TRUST_HOST: 'true',
+          JWT_SECRET: 'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+        }
       }
     : {
         command: 'npm run dev',
         url: 'http://localhost:3001',
         reuseExistingServer: true,
         timeout: 120 * 1000, // 2分
+        env: {
+          NEXTAUTH_SECRET: 'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+          NEXTAUTH_URL: 'http://localhost:3001',
+          AUTH_TRUST_HOST: 'true',
+          JWT_SECRET: 'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
+        }
       },
 });
