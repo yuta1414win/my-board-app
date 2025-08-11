@@ -263,7 +263,7 @@ export const authOptions: any = {
       }
     },
 
-    async signOut({ session, token }) {
+    async signOut({ session, token }: any) {
       // ログアウト時の監査ログ
       if (token?.sub) {
         // 監査ログの記録（IPアドレスが必要だが、ここでは取得が困難）
@@ -271,7 +271,7 @@ export const authOptions: any = {
       }
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       // セッション使用時のログ（必要に応じて）
       // 頻繁に呼ばれるため、重要なアクション時のみログを記録
     },
