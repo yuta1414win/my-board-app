@@ -14,6 +14,7 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/tests/e2e/',
     '<rootDir>/playwright/',
+    '<rootDir>/tests/',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
