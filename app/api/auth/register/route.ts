@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     const validatedFields = registerSchema.safeParse(body);
 
     if (!validatedFields.success) {
-      const errors = validatedFields.error.errors.map((err) => ({
+      const errors = validatedFields.error.issues.map((err) => ({
         field: err.path.join('.'),
         message: err.message,
       }));
@@ -174,8 +174,16 @@ export async function POST(request: Request) {
     }
 
     // MongoDB バリデーションエラー
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
-      const errors = Object.values(error.errors as Record<string, {path: string, message: string}>).map((err) => ({
+    if (
+      error &&
+      typeof error === 'object' &&
+      'name' in error &&
+      error.name === 'ValidationError' &&
+      'errors' in error
+    ) {
+      const errors = Object.values(
+        error.errors as Record<string, { path: string; message: string }>
+      ).map((err) => ({
         field: err.path,
         message: err.message,
       }));
