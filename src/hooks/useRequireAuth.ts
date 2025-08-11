@@ -14,7 +14,7 @@ interface UseRequireAuthOptions {
 interface AuthState {
   loading: boolean;
   authenticated: boolean;
-  user: any; // TODO: 適切な User 型に置き換える
+  user: User | undefined;
   error?: string;
 }
 
