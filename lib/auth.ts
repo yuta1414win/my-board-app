@@ -1,4 +1,5 @@
-import { NextAuthOptions } from 'next-auth';
+// NextAuth v5では NextAuthOptions は不要
+// import { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
