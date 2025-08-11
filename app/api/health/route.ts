@@ -4,7 +4,8 @@ import dbConnect from '../../../lib/mongodb';
 export async function GET() {
   try {
     // データベース接続チェック
-    await dbConnect();
+    const db = await dbConnect();
+    const databaseStatus = db ? 'connected' : 'disabled';
 
     const healthData = {
       status: 'ok',
