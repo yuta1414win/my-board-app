@@ -15,7 +15,7 @@ import {
 
 // Nodemailerをモック化
 jest.mock('nodemailer');
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 describe('メール送信機能テスト', () => {
   let mockTransporter: any;
