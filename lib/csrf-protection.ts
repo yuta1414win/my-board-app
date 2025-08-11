@@ -154,7 +154,7 @@ export class CSRFProtection {
       return null;
     }
 
-    const token = await getToken({ req: request, secret: this.config.secret });
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
     const sessionId = token?.sub; // ユーザーID
 
     // CSRFトークンの取得（ヘッダー優先、次にクッキー）
