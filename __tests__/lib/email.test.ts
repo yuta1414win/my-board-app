@@ -2,7 +2,7 @@
  * メール送信機能のJestテスト
  */
 
-const {
+import {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
@@ -11,7 +11,7 @@ const {
   generatePasswordResetToken,
   verifyToken,
   testEmailConnection,
-} = require('../../lib/email');
+} from '../../lib/email';
 
 // Nodemailerをモック化
 jest.mock('nodemailer');
