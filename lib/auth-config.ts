@@ -128,8 +128,8 @@ export const authOptions: any = {
     },
     decode: async ({ token, secret }: any) => {
       const { decode } = await import('next-auth/jwt');
-      return decode({ 
-        token, 
+      return decode({
+        token,
         secret,
         salt: '', // NextAuth v5では空文字列でOK
       });
@@ -173,7 +173,7 @@ export const authOptions: any = {
 
   // コールバック関数
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: any) {
       // 初回ログイン時
       if (user) {
         token.role = user.role;
