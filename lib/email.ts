@@ -121,7 +121,7 @@ export async function testEmailConnection(): Promise<EmailResult> {
     await transporter.verify();
     return {
       success: true,
-      message: 'Email connection successful',
+      messageId: 'test-connection-success',
     };
   } catch (error) {
     console.error('Email connection test failed:', error);
@@ -270,4 +270,3 @@ export async function sendWelcomeEmail(
     html,
   });
 }
-
