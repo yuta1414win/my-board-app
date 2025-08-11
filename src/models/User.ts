@@ -96,17 +96,12 @@ export class UserModel {
     id: string,
     data: UpdateUserProfileData
   ): Promise<boolean> {
-    const collection = await this.getCollection();
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          ...data,
-          updatedAt: new Date(),
-        },
-      }
+    const result = await User.findByIdAndUpdate(
+      id,
+      { ...data, updatedAt: new Date() },
+      { new: true }
     );
-    return result.modifiedCount > 0;
+    return !!result;
   }
 
   static async changePassword(
