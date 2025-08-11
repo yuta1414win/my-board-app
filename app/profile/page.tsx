@@ -3,6 +3,9 @@ import { UserModel } from '@/models/User';
 import { redirect } from 'next/navigation';
 import ProfileClient from '@/components/profile/ProfileClient';
 
+// 動的レンダリングを強制（cookiesを使用するため）
+export const dynamic = 'force-dynamic';
+
 export default async function ProfilePage() {
   const currentUser = await getCurrentUser();
 
