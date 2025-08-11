@@ -3,12 +3,12 @@ import { auth } from '../../../../auth';
 import dbConnect from '../../../../lib/mongodb';
 import Post from '../../../../models/Post';
 import mongoose from 'mongoose';
-import { 
-  checkPostPermissions, 
-  canEditPost, 
-  canDeletePost, 
+import {
+  checkPostPermissions,
+  canEditPost,
+  canDeletePost,
   PERMISSION_MESSAGES,
-  PermissionError 
+  PermissionError,
 } from '../../../../lib/permissions';
 
 // GET関数を追加
@@ -19,12 +19,18 @@ export async function GET(
   try {
     const session = await auth();
     if (!session?.user?.email) {
-      return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+      return NextResponse.json(
+        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' }, 
+        { status: 401 }
+      );
     }
 
     // ObjectIdの形式チェック
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json({ error: '無効な投稿IDです' }, { status: 400 });
+      return NextResponse.json(
+        { error: '無効な投稿IDです', code: 'INVALID_POST_ID' }, 
+        { status: 400 }
+      );
     }
 
     await dbConnect();
@@ -32,16 +38,33 @@ export async function GET(
     const post = await Post.findById(params.id).lean();
     if (!post) {
       return NextResponse.json(
-        { error: '投稿が見つかりません' },
+        { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(post);
+    // 権限チェック
+    const permissions = checkPostPermissions(session, post);
+    if (!permissions.canView) {
+      return NextResponse.json(
+        { error: PERMISSION_MESSAGES.NOT_AUTHORIZED, code: 'PERMISSION_DENIED' },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({
+      post,
+      permissions: {
+        canEdit: permissions.canEdit,
+        canDelete: permissions.canDelete,
+        isOwner: permissions.isOwner,
+        isAdmin: permissions.isAdmin,
+      },
+    });
   } catch (error: any) {
     console.error('Get post error:', error);
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { error: 'サーバーエラーが発生しました', code: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }
