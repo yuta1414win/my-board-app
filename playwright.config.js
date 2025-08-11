@@ -76,31 +76,10 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI
     ? {
-        command: 'npm run build && npm run start',
+        command: 'NEXTAUTH_SECRET=test-secret-for-e2e-testing-only JWT_SECRET=test-jwt-secret-for-e2e-testing-only AUTH_TRUST_HOST=true NEXTAUTH_URL=http://localhost:3000 npm run build && npm run start',
         port: 3000,
         reuseExistingServer: false,
-        timeout: 180 * 1000, // 3分（CI環境用に短縮）
-        env: {
-          NEXTAUTH_SECRET:
-            'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-          NEXTAUTH_URL: 'http://localhost:3000',
-          AUTH_TRUST_HOST: 'true',
-          JWT_SECRET:
-            'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-        },
+        timeout: 300 * 1000, // 5分に延長
       }
-    : {
-        command: 'npm run dev',
-        url: 'http://localhost:3001',
-        reuseExistingServer: true,
-        timeout: 120 * 1000, // 2分
-        env: {
-          NEXTAUTH_SECRET:
-            'test-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-          NEXTAUTH_URL: 'http://localhost:3001',
-          AUTH_TRUST_HOST: 'true',
-          JWT_SECRET:
-            'test-jwt-secret-for-e2e-testing-only-do-not-use-in-production-12345',
-        },
-      },
+    : undefined, // ローカルでは既存のサーバーを使用
 });
