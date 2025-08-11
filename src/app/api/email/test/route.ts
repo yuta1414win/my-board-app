@@ -25,7 +25,10 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         message: 'メール接続テストが失敗しました',
-        error: typeof result === 'object' && 'error' in result ? result.error : 'Unknown error',
+        error:
+          typeof result === 'object' && 'error' in result
+            ? result.error
+            : 'Unknown error',
         config: {
           host: process.env.EMAIL_SERVER_HOST || 'smtp.gmail.com',
           port: process.env.EMAIL_SERVER_PORT || '587',
@@ -90,7 +93,7 @@ export async function POST(req: NextRequest) {
       </html>
     `;
 
-    const { sendEmail } = await import('@/lib/email');
+    const { sendEmail } = await import('@/lib/email-nodemailer');
     const result = await sendEmail({
       to: email,
       subject: '【My Board App】メール送信テスト',
