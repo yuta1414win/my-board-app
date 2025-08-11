@@ -14,9 +14,10 @@ import {
 // GET関数を追加
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -29,7 +30,7 @@ export async function GET(
     }
 
     // ObjectIdの形式チェック
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
         { status: 400 }
@@ -38,7 +39,7 @@ export async function GET(
 
     await dbConnect();
 
-    const post = await Post.findById(params.id).lean();
+    const post = await Post.findById(id).lean();
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -67,7 +68,7 @@ export async function GET(
         isAdmin: permissions.isAdmin,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get post error:', error);
     return NextResponse.json(
       { error: 'サーバーエラーが発生しました', code: 'INTERNAL_ERROR' },
@@ -78,9 +79,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -93,7 +95,7 @@ export async function PUT(
     }
 
     // ObjectIdの形式チェック
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
         { status: 400 }
@@ -132,7 +134,7 @@ export async function PUT(
 
     await dbConnect();
 
-    const post = await Post.findById(params.id);
+    const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -147,14 +149,14 @@ export async function PUT(
           error: PERMISSION_MESSAGES.NOT_POST_OWNER,
           code: 'PERMISSION_DENIED',
           action: 'edit',
-          postId: params.id,
+          postId: id,
         },
         { status: 403 }
       );
     }
 
     const updatedPost = await Post.findByIdAndUpdate(
-      params.id,
+      id,
       {
         title: title.trim(),
         content: content.trim(),
@@ -168,7 +170,7 @@ export async function PUT(
       message: '投稿が更新されました',
       success: true,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update post error:', error);
     if (error instanceof PermissionError) {
       return NextResponse.json(
@@ -185,19 +187,23 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
-        { error: PERMISSION_MESSAGES.NOT_AUTHENTICATED, code: 'NOT_AUTHENTICATED' },
+        {
+          error: PERMISSION_MESSAGES.NOT_AUTHENTICATED,
+          code: 'NOT_AUTHENTICATED',
+        },
         { status: 401 }
       );
     }
 
     // ObjectIdの形式チェック
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: '無効な投稿IDです', code: 'INVALID_POST_ID' },
         { status: 400 }
@@ -206,7 +212,7 @@ export async function DELETE(
 
     await dbConnect();
 
-    const post = await Post.findById(params.id);
+    const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -217,18 +223,18 @@ export async function DELETE(
     // 権限チェック - 新しいヘルパー関数を使用
     if (!canDeletePost(session, post)) {
       return NextResponse.json(
-        { 
-          error: PERMISSION_MESSAGES.NOT_POST_OWNER, 
+        {
+          error: PERMISSION_MESSAGES.NOT_POST_OWNER,
           code: 'PERMISSION_DENIED',
           action: 'delete',
-          postId: params.id 
+          postId: id,
         },
         { status: 403 }
       );
     }
 
     // 削除実行
-    const result = await Post.findByIdAndDelete(params.id);
+    const result = await Post.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json(
         { error: '削除に失敗しました', code: 'DELETE_FAILED' },
@@ -240,7 +246,7 @@ export async function DELETE(
       message: '投稿が削除されました',
       success: true,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Delete post error:', error);
     if (error instanceof PermissionError) {
       return NextResponse.json(
