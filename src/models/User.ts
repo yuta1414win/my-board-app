@@ -1,5 +1,4 @@
-import { ObjectId } from 'mongodb';
-import { getDatabase } from '../../lib/mongodb';
+import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface UserDocument {
