@@ -13,7 +13,7 @@ interface UseRequireAuthOptions {
 interface AuthState {
   loading: boolean;
   authenticated: boolean;
-  user: any;
+  user: any; // TODO: 適切な User 型に置き換える
   error?: string;
 }
 
