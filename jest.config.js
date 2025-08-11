@@ -15,6 +15,10 @@ const customJestConfig = {
     '<rootDir>/tests/e2e/',
     '<rootDir>/playwright/',
     '<rootDir>/tests/',
+    '<rootDir>/__tests__/auth/',
+    '<rootDir>/__tests__/api/profile.test.ts',
+    '<rootDir>/__tests__/api/auth-protected-api.test.ts',
+    '<rootDir>/__tests__/lib/email.test.ts',
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(next-auth|@auth|jose|oauth|openid-client|preact-render-to-string|preact|@panva)/)',
