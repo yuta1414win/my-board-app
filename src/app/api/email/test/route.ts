@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { testEmailConnection } from '@/lib/email';
+import { testEmailConnection } from '../../../../lib/email-nodemailer';
 
 export async function GET() {
   try {
