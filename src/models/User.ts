@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { ObjectId } from 'mongodb';
 
 // プレーンオブジェクト用の型
 export interface UserData {
