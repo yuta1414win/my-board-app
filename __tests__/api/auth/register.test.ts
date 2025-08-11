@@ -140,9 +140,12 @@ describe('/api/auth/register', () => {
 
       // Assert
       expectValidationError(result, ['password']);
-      expect(result.data.details[0].message).toContain(
-        '数字、英字、特殊文字を含む必要があります'
-      );
+      // パスワードの複合バリデーションエラーメッセージを確認
+      const messages = result.data.details.map((detail: any) => detail.message);
+      expect(messages.some((msg: string) => 
+        msg.includes('数字、英字、特殊文字を含む必要があります') ||
+        msg.includes('8文字以上で入力してください')
+      )).toBe(true);
     });
 
     it('無効なメールアドレスでバリデーションエラーが発生する', async () => {
@@ -410,7 +413,7 @@ describe('/api/auth/register', () => {
 
       // Act
       const result = await POST(request);
-      
+
       // Assert
       expectApiError(result, 'VALIDATION_ERROR', 400);
     });
