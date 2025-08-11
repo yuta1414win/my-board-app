@@ -38,7 +38,7 @@ export const authOptions: any = {
           if (!validatedFields.success) {
             console.error(
               '認証情報の検証に失敗:',
-              validatedFields.error.errors
+              validatedFields.error.issues
             );
             return null;
           }
