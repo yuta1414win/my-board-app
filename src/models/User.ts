@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getDatabase } from '@/lib/mongodb';
+import { getDatabase } from '../../lib/mongodb';
 import bcrypt from 'bcryptjs';
 
 export interface UserDocument {
