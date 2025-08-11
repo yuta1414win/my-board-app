@@ -39,33 +39,34 @@ export interface ChangePasswordData {
 }
 
 // Mongoose Schema定義
-const userSchema = new Schema<UserDocument>({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  bio: { type: String },
-  quickComment: { type: String },
-  avatar: { type: String },
-  emailVerified: { type: Boolean, default: false },
-  role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  isActive: { type: Boolean, default: true },
-}, {
-  timestamps: true,
-});
+const userSchema = new Schema<UserDocument>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    bio: { type: String },
+    quickComment: { type: String },
+    avatar: { type: String },
+    emailVerified: { type: Boolean, default: false },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    isActive: { type: Boolean, default: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Mongoose Model
-const User = mongoose.models.User || mongoose.model<UserDocument>('User', userSchema);
+const User =
+  mongoose.models.User || mongoose.model<UserDocument>('User', userSchema);
 
 export class UserModel {
-
   static async findById(id: string): Promise<UserDocument | null> {
-    const collection = await this.getCollection();
-    return collection.findOne({ _id: new ObjectId(id) });
+    return await User.findById(id);
   }
 
   static async findByEmail(email: string): Promise<UserDocument | null> {
-    const collection = await this.getCollection();
-    return collection.findOne({ email });
+    return await User.findOne({ email });
   }
 
   static async createUser(
