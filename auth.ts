@@ -72,12 +72,12 @@ const providers = [
           }
 
           // ログイン成功 - 最終ログイン時刻を更新
-          await User.findByIdAndUpdate((user as any)._id, {
+          await User.findByIdAndUpdate(user._id, {
             lastLoginAt: new Date(),
           });
 
           return {
-            id: (user as any)._id.toString(),
+            id: user._id.toString(),
             email: user.email,
             name: user.name,
             emailVerified: user.emailVerified
