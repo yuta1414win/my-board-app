@@ -71,10 +71,9 @@ export const authOptions: any = {
           }
 
           // ログイン成功 - 最終ログイン時刻を更新
-          await User.findOneAndUpdate(
-            { _id: user._id },
-            { lastLoginAt: new Date() }
-          );
+          await User.findByIdAndUpdate(user._id, {
+            lastLoginAt: new Date(),
+          });
 
           return {
             id: user._id.toString(),
