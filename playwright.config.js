@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests/e2e',
-  testMatch: process.env.CI
+  testMatch: process.env.CI 
     ? '**/smoke.spec.{js,ts}' // CI環境では smoke テストのみ実行
     : '**/tests/e2e/**/*.spec.{js,ts}', // ローカルでは全E2Eテスト実行
   /* Run tests in files in parallel */
