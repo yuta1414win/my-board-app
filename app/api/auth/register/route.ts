@@ -127,7 +127,7 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       } else {
-        // 未認証ユーザーの場合、新しい確認トークンを送信（失敗時も確認URLを返す）
+        // 未認証ユーザーの場合、新しい確認トークンを送信
         const verificationToken = generateEmailVerificationToken(
           existingUser._id.toString()
         );
@@ -138,24 +138,12 @@ export async function POST(request: Request) {
         ); // 24時間有効
         await existingUser.save();
 
-        const emailResult = await sendVerificationEmail(email, verificationToken);
-
-        const baseUrl =
-          process.env.NEXTAUTH_URL ||
-          process.env.APP_URL ||
-          process.env.NEXT_PUBLIC_APP_URL ||
-          '';
-        const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}`;
+        await sendVerificationEmail(email, verificationToken);
 
         return NextResponse.json({
-          message: emailResult.success
-            ? '既存のアカウントに確認メールを送信しました。'
-            : '確認メールの送信に失敗しました。以下のリンクから確認を完了してください。',
+          message: '既存のアカウントに新しい確認メールを送信しました。',
           success: true,
-          code: emailResult.success
-            ? 'VERIFICATION_EMAIL_RESENT'
-            : 'VERIFICATION_LINK_PROVIDED',
-          verificationUrl,
+          code: 'VERIFICATION_EMAIL_RESENT',
         });
       }
     }
@@ -175,24 +163,25 @@ export async function POST(request: Request) {
 
     // 確認メール送信（失敗しても 201 で返し、UIから再送誘導可能に）
     const emailResult = await sendVerificationEmail(email, verificationToken);
-    const baseUrl =
-      process.env.NEXTAUTH_URL ||
-      process.env.APP_URL ||
-      process.env.NEXT_PUBLIC_APP_URL ||
-      '';
-    const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}`;
+    if (!emailResult.success) {
+      console.error('Email sending error (non-throw):', emailResult.error);
+      return NextResponse.json(
+        {
+          error:
+            'アカウントは作成されましたが、確認メールの送信に失敗しました。しばらくしてから再度お試しください。',
+          code: 'EMAIL_SEND_FAILED',
+          userId: user._id.toString(),
+        },
+        { status: 201 }
+      );
+    }
 
     return NextResponse.json(
       {
-        message: emailResult.success
-          ? '登録が完了しました。メールの確認をお願いします。'
-          : '登録が完了しました。メール送信に失敗したため、以下のリンクから確認を完了してください。',
+        message:
+          '登録が完了しました。メールアドレスに確認メール（24時間有効）を送信しました。',
         success: true,
-        code: emailResult.success
-          ? 'REGISTRATION_SUCCESS'
-          : 'VERIFICATION_LINK_PROVIDED',
-        userId: user._id.toString(),
-        verificationUrl,
+        code: 'REGISTRATION_SUCCESS',
       },
       { status: 201 }
     );
