@@ -55,7 +55,7 @@ export async function GET() {
     // 全ユーザーの_id形式を確認（最初の5件のみ）
     const allUsers = await User.find({}).limit(5).select('_id email');
     const idFormats = allUsers.map((u) => {
-      const id = (u as any)._id.toString();
+      const id = u._id.toString();
       if (id.match(/^[0-9a-f]{24}$/i)) {
         return { email: u.email, idFormat: 'ObjectID', id };
       } else if (
