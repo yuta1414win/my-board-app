@@ -131,6 +131,7 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    _id: false, // MongooseのデフォルトObjectId生成を無効化
   }
 );
 
