@@ -3,9 +3,6 @@ import { redirect } from 'next/navigation';
 import { Box, Typography, Button, Card, CardContent } from '@mui/material';
 import Link from 'next/link';
 
-// 動的レンダリングを強制（cookiesを使用するため）
-export const dynamic = 'force-dynamic';
-
 export default async function HomePage() {
   const session = await auth();
 
