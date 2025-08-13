@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       } else {
         // 未認証ユーザーの場合、新しい確認トークンを送信
         const verificationToken = generateEmailVerificationToken(
-          existingUser._id.toString()
+          (existingUser as any)._id.toString()
         );
 
         existingUser.emailVerificationToken = verificationToken;
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
           error:
             'アカウントは作成されましたが、確認メールの送信に失敗しました。サポートにお問い合わせください。',
           code: 'EMAIL_SEND_FAILED',
-          userId: user._id.toString(),
+          userId: (user as any)._id.toString(),
         },
         { status: 201 }
       );
