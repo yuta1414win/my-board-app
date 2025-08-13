@@ -457,12 +457,11 @@ export default function SignInForm() {
 
         {/* セキュリティ情報 */}
         <Box mt={3} p={2} bgcolor="grey.50" borderRadius={1}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            display="block"
-          >
-            <Security fontSize="small" sx={{ mr: 1, verticalAlign: 'middle' }} />
+          <Typography variant="caption" color="text.secondary" display="block">
+            <Security
+              fontSize="small"
+              sx={{ mr: 1, verticalAlign: 'middle' }}
+            />
             セキュリティのため、5回連続でログインに失敗するとアカウントが5分間ロックされます。
           </Typography>
         </Box>

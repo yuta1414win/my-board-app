@@ -54,7 +54,7 @@ export default function ResetRequestPage() {
 
       // 一時的に成功状態を表示
       setSuccess(true);
-      
+
       // 5秒後にサインインページへリダイレクト
       setTimeout(() => {
         router.push('/auth/signin');
@@ -141,7 +141,9 @@ export default function ResetRequestPage() {
                   required
                   autoComplete="email"
                   InputProps={{
-                    startAdornment: <Email sx={{ mr: 1, color: 'action.active' }} />,
+                    startAdornment: (
+                      <Email sx={{ mr: 1, color: 'action.active' }} />
+                    ),
                   }}
                 />
 
@@ -187,11 +189,7 @@ export default function ResetRequestPage() {
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary">
             アカウントをお持ちでない方は
-            <Link
-              component={NextLink}
-              href="/auth/register"
-              sx={{ ml: 0.5 }}
-            >
+            <Link component={NextLink} href="/auth/register" sx={{ ml: 0.5 }}>
               新規登録
             </Link>
           </Typography>
