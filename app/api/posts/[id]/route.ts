@@ -39,7 +39,7 @@ export async function GET(
 
     await dbConnect();
 
-    const post = await Post.findOne({ _id: id }).lean();
+    const post = await Post.findById(id).lean();
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -134,7 +134,7 @@ export async function PUT(
 
     await dbConnect();
 
-    const post = await Post.findOne({ _id: id });
+    const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -155,8 +155,8 @@ export async function PUT(
       );
     }
 
-    const updatedPost = await Post.findOneAndUpdate(
-      { _id: id },
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
       {
         title: title.trim(),
         content: content.trim(),
@@ -212,7 +212,7 @@ export async function DELETE(
 
     await dbConnect();
 
-    const post = await Post.findOne({ _id: id });
+    const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません', code: 'POST_NOT_FOUND' },
@@ -234,7 +234,7 @@ export async function DELETE(
     }
 
     // 削除実行
-    const result = await Post.findOneAndDelete({ _id: id });
+    const result = await Post.findByIdAndDelete(id);
     if (!result) {
       return NextResponse.json(
         { error: '削除に失敗しました', code: 'DELETE_FAILED' },
