@@ -151,7 +151,7 @@ export async function POST(request: Request) {
           error:
             'アカウントは作成されましたが、確認メールの送信に失敗しました。サポートにお問い合わせください。',
           code: 'EMAIL_SEND_FAILED',
-          userId: (user as any)._id.toString(),
+          userId: user._id.toString(),
         },
         { status: 201 }
       );
