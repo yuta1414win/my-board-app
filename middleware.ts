@@ -98,7 +98,9 @@ export async function middleware(request: NextRequest) {
     'usb=()',
     'magnetometer=()',
     'gyroscope=()',
-    'fullscreen=(self)'
+    'speaker=(self)',
+    'fullscreen=(self)',
+    'sync-xhr=()',
   ].join(', ');
 
   response.headers.set('Permissions-Policy', permissionsPolicy);
