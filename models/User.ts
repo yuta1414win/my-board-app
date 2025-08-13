@@ -208,7 +208,9 @@ const User: Model<IUser> =
 export class UserModel {
   static async findById(id: string): Promise<IUser | null> {
     try {
-      return await User.findById(id).exec();
+      // NextAuthのUUID形式のIDに対応するため、_idフィールドで直接検索
+      // MongooseのcastingをスキップしてString型のIDを検索
+      return await User.findOne({ _id: id as any }).exec();
     } catch (error) {
       console.error('UserModel.findById error:', error);
       return null;
@@ -229,8 +231,9 @@ export class UserModel {
     data: UpdateUserProfileData
   ): Promise<boolean> {
     try {
-      const result = await User.findByIdAndUpdate(
-        id,
+      // NextAuthのUUID形式のIDに対応するため、_idフィールドで検索
+      const result = await User.findOneAndUpdate(
+        { _id: id as any },
         { $set: data },
         { new: true }
       ).exec();
@@ -246,8 +249,8 @@ export class UserModel {
     data: ChangePasswordData
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // 現在のユーザー情報を取得
-      const user = await User.findById(id)
+      // 現在のユーザー情報を取得（NextAuthのUUID形式のIDに対応）
+      const user = await User.findOne({ _id: id as any })
         .select('+password')
         .exec();
       if (!user) {
