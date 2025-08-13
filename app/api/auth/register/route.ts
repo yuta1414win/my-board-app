@@ -170,15 +170,12 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json(
-      {
-        message:
-          '登録が完了しました。メールアドレスに確認メール（24時間有効）を送信しました。',
-        success: true,
-        code: 'REGISTRATION_SUCCESS',
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      message:
+        '登録が完了しました。メールアドレスに確認メール（24時間有効）を送信しました。',
+      success: true,
+      code: 'REGISTRATION_SUCCESS',
+    });
   } catch (error: unknown) {
     console.error('Registration error:', error);
 
