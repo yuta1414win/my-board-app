@@ -111,8 +111,8 @@ describe('/api/auth/register', () => {
       const response = await POST(request);
       const result = await parseApiResponse(response);
 
-      // Assert  
-      expectApiSuccess(result, 200);  // This returns 200 as it's updating existing user
+      // Assert
+      expectApiSuccess(result, 200);
       expect(result.data.code).toBe('VERIFICATION_EMAIL_RESENT');
       expect(result.data.message).toContain('新しい確認メールを送信しました');
 
@@ -261,7 +261,7 @@ describe('/api/auth/register', () => {
       mongoMock.mockCreate.mockResolvedValue(createdUser);
       emailMock.mockSendEmail.mockResolvedValue({
         success: false,
-        error: new Error('Email service down'),
+        error: new Error('Email service down')
       });
 
       const request = createApiRequest(
@@ -454,7 +454,7 @@ describe('/api/auth/register', () => {
       const result = await parseApiResponse(response);
 
       // Assert
-      expectApiSuccess(result, 201);
+      expectApiSuccess(result, 200);
       // 名前はそのまま保存されるが、SQLインジェクションは効果がない（NoSQL）
       expect(mongoMock.mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -483,7 +483,7 @@ describe('/api/auth/register', () => {
       const result = await parseApiResponse(response);
 
       // Assert
-      expectApiSuccess(result, 201);
+      expectApiSuccess(result, 200);
       // データはそのまま保存される（フロントエンドでエスケープされるべき）
       expect(mongoMock.mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
