@@ -74,7 +74,7 @@ const providers = [
         );
 
         return {
-          id: user._id.toString(),
+          id: (user as any)._id.toString(),
           email: user.email,
           name: user.name,
           emailVerified: user.emailVerified
