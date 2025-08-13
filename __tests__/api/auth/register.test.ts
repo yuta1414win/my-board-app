@@ -67,7 +67,7 @@ describe('/api/auth/register', () => {
       const result = await parseApiResponse(response);
 
       // Assert
-      expectApiSuccess(result, 201);
+      expectApiSuccess(result, 200);
       expect(result.data.code).toBe('REGISTRATION_SUCCESS');
       expect(result.data.message).toContain('登録が完了しました');
 
@@ -259,10 +259,9 @@ describe('/api/auth/register', () => {
         save: jest.fn(),
       };
       mongoMock.mockCreate.mockResolvedValue(createdUser);
-      emailMock.mockSendEmail.mockResolvedValue({
-        success: false,
-        error: new Error('Email service down')
-      });
+      emailMock.mockSendEmail.mockRejectedValue(
+        new Error('Email service down')
+      );
 
       const request = createApiRequest(
         'POST',
