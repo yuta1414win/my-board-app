@@ -72,12 +72,12 @@ const providers = [
           }
 
           // ログイン成功 - 最終ログイン時刻を更新
-          await User.findByIdAndUpdate(user._id, {
+          await User.findByIdAndUpdate((user as any)._id, {
             lastLoginAt: new Date(),
           });
 
           return {
-            id: user._id.toString(),
+            id: (user as any)._id.toString(),
             email: user.email,
             name: user.name,
             emailVerified: user.emailVerified
@@ -199,7 +199,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               lastLoginAt: new Date(),
             });
           } else {
-            await User.findByIdAndUpdate(existing._id, {
+            await User.findByIdAndUpdate((existing as any)._id, {
               lastLoginAt: new Date(),
               isActive: true,
             });
