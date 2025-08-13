@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import dbConnect from '../../../../lib/mongodb';
 import User from '../../../../models/User';
 import {
@@ -19,7 +18,8 @@ const registerSchema = z.object({
   email: z
     .string()
     .email('正しいメールアドレスを入力してください')
-    .transform((v) => v.toLowerCase().trim()),
+    .toLowerCase()
+    .trim(),
   password: z
     .string()
     .min(8, 'パスワードは8文字以上で入力してください')
@@ -43,19 +43,11 @@ const limiter = rateLimit({
 
 export async function POST(request: Request) {
   try {
-    // データベース接続チェック（接続失敗は 503 を返す）
-    try {
-      const db = await dbConnect();
-      if (!db) {
-        return NextResponse.json(
-          { error: 'Database connection not available', code: 'DATABASE_CONNECTION_UNAVAILABLE' },
-          { status: 503 }
-        );
-      }
-    } catch (connErr) {
-      console.error('Database connection error:', connErr);
+    // データベース接続チェック
+    const db = await dbConnect();
+    if (!db) {
       return NextResponse.json(
-        { error: 'Database connection failed', code: 'DATABASE_CONNECTION_FAILED' },
+        { error: 'Database connection not available' },
         { status: 503 }
       );
     }
@@ -78,15 +70,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch (parseErr) {
-      return NextResponse.json(
-        { error: 'Invalid JSON body', code: 'INVALID_JSON' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
 
     // バリデーション
     const validatedFields = registerSchema.safeParse(body);
@@ -108,6 +92,8 @@ export async function POST(request: Request) {
     }
 
     const { name, email, password } = validatedFields.data;
+
+    await dbConnect();
 
     // 既存ユーザーチェック
     const existingUser = await User.findOne({ email });
@@ -142,11 +128,10 @@ export async function POST(request: Request) {
       }
     }
 
-    // ユーザー作成（_id は必須のためUUIDを採番）
-    const newUserId = crypto.randomUUID();
-    const verificationToken = generateEmailVerificationToken(newUserId);
+    // ユーザー作成（暫定的に仮IDでトークン生成）
+    const tempUserId = new Date().getTime().toString();
+    const verificationToken = generateEmailVerificationToken(tempUserId);
     const user = await User.create({
-      _id: newUserId,
       name,
       email,
       password,
@@ -155,14 +140,16 @@ export async function POST(request: Request) {
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24時間有効
     });
 
-    // 確認メール送信（失敗しても 201 で返し、UIから再送誘導可能に）
-    const emailResult = await sendVerificationEmail(email, verificationToken);
-    if (!emailResult.success) {
-      console.error('Email sending error (non-throw):', emailResult.error);
+    // 確認メール送信
+    try {
+      await sendVerificationEmail(email, verificationToken);
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+      // ユーザー作成は成功したが、メール送信に失敗した場合
       return NextResponse.json(
         {
           error:
-            'アカウントは作成されましたが、確認メールの送信に失敗しました。しばらくしてから再度お試しください。',
+            'アカウントは作成されましたが、確認メールの送信に失敗しました。サポートにお問い合わせください。',
           code: 'EMAIL_SEND_FAILED',
           userId: user._id.toString(),
         },
