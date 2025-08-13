@@ -148,9 +148,7 @@ export async function POST(request: Request) {
         );
       } else {
         // 未認証ユーザーの場合、新しい確認トークンを送信（失敗時も確認URLを返す）
-        const verificationToken = generateEmailVerificationToken(
-          existingUser._id.toString()
-        );
+        const verificationToken = crypto.randomBytes(32).toString('hex');
 
         existingUser.emailVerificationToken = verificationToken;
         existingUser.emailVerificationExpires = new Date(
