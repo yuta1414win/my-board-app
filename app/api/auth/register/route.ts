@@ -183,9 +183,11 @@ export async function POST(request: Request) {
       }
     }
 
-    // ユーザー作成（MongoDBが自動的にObjectIDを生成）
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    // ユーザー作成（_id は必須のためUUIDを採番）
+    const newUserId = crypto.randomUUID();
+    const verificationToken = generateEmailVerificationToken(newUserId);
     const user = await User.create({
+      _id: newUserId,
       name,
       email,
       password,
