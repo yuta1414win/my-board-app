@@ -38,7 +38,7 @@ describe('/api/auth/register', () => {
     emailMock.mockGenerateToken.mockReturnValue('mock-verification-token');
     emailMock.mockSendEmail.mockResolvedValue({
       success: true,
-      messageId: 'mock-message-id',
+      messageId: 'mock-message-id'
     });
   });
 
