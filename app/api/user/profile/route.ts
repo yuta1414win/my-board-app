@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     // データベースからユーザー情報を取得
-    const user = await UserModel.findById(currentUser.id);
+    const user = await UserModel.findOne({ _id: currentUser.id });
 
     if (!user) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // 更新後のデータを取得
-    const updatedUser = await UserModel.findById(currentUser.id);
+    const updatedUser = await UserModel.findOne({ _id: currentUser.id });
     if (!updatedUser) {
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },
