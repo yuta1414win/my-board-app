@@ -2,7 +2,6 @@ import mongoose, { Document, Model, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
-  _id: string;
   name: string;
   email: string;
   password: string;
@@ -54,10 +53,6 @@ export interface ChangePasswordData {
 
 const UserSchema = new Schema<IUser>(
   {
-    _id: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: [true, '名前は必須です'],
@@ -136,7 +131,6 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-    _id: false, // MongooseのデフォルトObjectId生成を無効化
   }
 );
 
