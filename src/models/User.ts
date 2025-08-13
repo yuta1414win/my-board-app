@@ -79,7 +79,13 @@ const User =
 
 export class UserModel {
   static async findById(id: string): Promise<UserDocument | null> {
-    return await User.findById(id);
+    try {
+      // UUID形式のIDに対応するため、findOneを使用
+      return await User.findOne({ _id: id });
+    } catch (error) {
+      console.error('UserModel.findById error:', error);
+      return null;
+    }
   }
 
   static async findByEmail(email: string): Promise<UserDocument | null> {
@@ -97,8 +103,8 @@ export class UserModel {
     id: string,
     data: UpdateUserProfileData
   ): Promise<boolean> {
-    const result = await User.findByIdAndUpdate(
-      id,
+    const result = await User.findOneAndUpdate(
+      { _id: id },
       { ...data, updatedAt: new Date() },
       { new: true }
     );
@@ -128,8 +134,9 @@ export class UserModel {
     const hashedNewPassword = await bcrypt.hash(data.newPassword, 12);
 
     // パスワードを更新
-    const result = await User.findByIdAndUpdate(id, {
-      password: hashedNewPassword,
+    const result = await User.findOneAndUpdate(
+      { _id: id },
+      { password: hashedNewPassword,
       updatedAt: new Date(),
     });
 
