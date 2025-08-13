@@ -221,19 +221,6 @@ export async function POST(request: Request) {
     );
   } catch (error: unknown) {
     console.error('Registration error:', error);
-    console.error('Error type:', typeof error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-
-    // エラーの詳細情報を収集
-    let errorMessage = 'サーバーエラーが発生しました';
-    let errorCode = 'INTERNAL_SERVER_ERROR';
-    let errorDetails: any = {};
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-      errorDetails.name = error.name;
-      errorDetails.stack = process.env.NODE_ENV === 'development' ? error.stack : undefined;
-    }
 
     // MongoDB重複エラーの処理
     if (
@@ -276,23 +263,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // MongoDB接続エラー
-    if (errorMessage.includes('MONGODB_URI')) {
-      return NextResponse.json(
-        {
-          error: 'データベース設定エラー',
-          code: 'DATABASE_CONFIG_ERROR',
-          message: 'MongoDB URIが設定されていません。管理者に連絡してください。',
-        },
-        { status: 503 }
-      );
-    }
-
     return NextResponse.json(
       {
-        error: errorMessage,
-        code: errorCode,
-        debug: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
+        error:
+          'サーバーエラーが発生しました。しばらく時間を置いてお試しください。',
+        code: 'INTERNAL_SERVER_ERROR',
       },
       { status: 500 }
     );
