@@ -19,12 +19,11 @@ export async function middleware(request: NextRequest) {
     pathname.endsWith('.css') ||
     pathname.endsWith('.js');
 
-  // レート制限チェック（アプリ独自のAPIのみ対象。Auth.jsやページは除外）
+  // レート制限チェック（APIルートと重要なページのみ）
   let rateLimitResult = null;
   if (
     !isStaticResource &&
-    pathname.startsWith('/api/') &&
-    !pathname.startsWith('/api/auth')
+    (pathname.startsWith('/api/') || pathname.startsWith('/auth/'))
   ) {
     const rateLimiter = getEdgeRateLimiter();
     rateLimitResult = rateLimiter.checkLimit(ip);
@@ -98,7 +97,7 @@ export async function middleware(request: NextRequest) {
     'usb=()',
     'magnetometer=()',
     'gyroscope=()',
-    'fullscreen=(self)'
+    'fullscreen=(self)',
   ].join(', ');
 
   response.headers.set('Permissions-Policy', permissionsPolicy);
@@ -127,7 +126,7 @@ export async function middleware(request: NextRequest) {
     try {
       const token = await getToken({
         req: request,
-        secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+        secret: process.env.NEXTAUTH_SECRET,
       });
 
       // 保護されたルートで認証されていない場合

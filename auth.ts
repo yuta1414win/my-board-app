@@ -2,7 +2,6 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
-import crypto from 'crypto';
 import { authConfig } from './auth.config';
 import dbConnect from './lib/mongodb';
 import User from './models/User';
@@ -169,48 +168,12 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   },
   events: {
     async signIn({ user, account, isNewUser }) {
-      try {
-        console.log('サインイン成功:', {
-          userId: user.id,
-          email: user.email,
-          provider: account?.provider,
-          isNewUser,
-        });
-
-        // OAuth での初回サインイン時にユーザーをDBへ作成/更新
-        if (account?.provider && account.provider !== 'credentials') {
-          await dbConnect();
-          const User = (await import('./models/User')).default;
-
-          const existing = await User.findOne({ email: user.email });
-          if (!existing) {
-            const randomPassword = crypto.randomBytes(32).toString('hex');
-            await User.create({
-              _id: crypto.randomUUID(),
-              name:
-                user.name || (user.email ? user.email.split('@')[0] : 'User'),
-              email: (user.email || '').toLowerCase(),
-              password: randomPassword,
-              emailVerified: true,
-              avatar: (user as any).image,
-              role: 'user',
-              isActive: true,
-              lastLoginAt: new Date(),
-            });
-          } else {
-            await User.findOneAndUpdate(
-              { _id: existing._id },
-              {
-                lastLoginAt: new Date(),
-                isActive: true,
-              }
-            );
-          }
-        }
-      } catch (e) {
-        console.error('OAuth signIn DB sync error:', e);
-        // DB同期失敗でもサインイン自体は続行
-      }
+      console.log('サインイン成功:', {
+        userId: user.id,
+        email: user.email,
+        provider: account?.provider,
+        isNewUser,
+      });
     },
   },
   debug: process.env.NODE_ENV === 'development',
