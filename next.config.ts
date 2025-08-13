@@ -67,16 +67,6 @@ const nextConfig: NextConfig = {
       : undefined,
   poweredByHeader: false,
   compress: true,
-  
-  // CI環境でのビルド最適化
-  ...(process.env.CI && {
-    eslint: {
-      ignoreDuringBuilds: true, // CI環境ではlintスキップ（別途実施）
-    },
-    typescript: {
-      ignoreBuildErrors: false, // 型エラーは維持
-    },
-  }),
 
   // 実験的機能
   experimental: {
