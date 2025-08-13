@@ -136,9 +136,8 @@ export class UserModel {
     // パスワードを更新
     const result = await User.findOneAndUpdate(
       { _id: id },
-      { password: hashedNewPassword,
-      updatedAt: new Date(),
-    });
+      { password: hashedNewPassword, updatedAt: new Date() }
+    );
 
     return { success: !!result };
   }
