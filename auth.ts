@@ -18,81 +18,84 @@ const credentialsSchema = z.object({
 // プロバイダー定義（OAuthは環境変数が揃っている場合のみ有効化）
 const providers = [
   Credentials({
-    name: 'credentials',
-    credentials: {
-      email: {
-        label: 'メールアドレス',
-        type: 'email',
-        placeholder: 'example@email.com',
+      name: 'credentials',
+      credentials: {
+        email: {
+          label: 'メールアドレス',
+          type: 'email',
+          placeholder: 'example@email.com',
+        },
+        password: {
+          label: 'パスワード',
+          type: 'password',
+          placeholder: '8文字以上のパスワード',
+        },
       },
-      password: {
-        label: 'パスワード',
-        type: 'password',
-        placeholder: '8文字以上のパスワード',
-      },
-    },
-    async authorize(credentials) {
-      try {
-        // 入力値の検証
-        const validatedFields = credentialsSchema.safeParse(credentials);
+      async authorize(credentials) {
+        try {
+          // 入力値の検証
+          const validatedFields = credentialsSchema.safeParse(credentials);
 
-        if (!validatedFields.success) {
-          console.error('認証情報の検証に失敗:', validatedFields.error.issues);
-          return null;
-        }
+          if (!validatedFields.success) {
+            console.error(
+              '認証情報の検証に失敗:',
+              validatedFields.error.issues
+            );
+            return null;
+          }
 
-        const { email, password } = validatedFields.data;
+          const { email, password } = validatedFields.data;
 
-        await dbConnect();
+          await dbConnect();
 
-        const user = await User.findOne({
-          email: email.toLowerCase(),
-        }).select('+password');
+          const user = await User.findOne({
+            email: email.toLowerCase(),
+          }).select('+password');
 
-        if (!user) {
-          console.error('ユーザーが見つかりません:', email);
-          return null;
-        }
+          if (!user) {
+            console.error('ユーザーが見つかりません:', email);
+            return null;
+          }
 
-        // メール認証チェック
-        if (!user.emailVerified) {
-          throw new Error(
-            'メールアドレスが確認されていません。確認メールをご確認ください。'
+          // メール認証チェック
+          if (!user.emailVerified) {
+            throw new Error(
+              'メールアドレスが確認されていません。確認メールをご確認ください。'
+            );
+          }
+
+          const isPasswordValid = await bcrypt.compare(password, user.password);
+
+          if (!isPasswordValid) {
+            console.error('パスワードが正しくありません:', email);
+            return null;
+          }
+
+          // ログイン成功 - 最終ログイン時刻を更新
+          await User.findOneAndUpdate(
+            { _id: user._id },
+            { lastLoginAt: new Date() }
           );
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            emailVerified: user.emailVerified
+              ? typeof user.emailVerified === 'boolean'
+                ? new Date()
+                : new Date(user.emailVerified)
+              : undefined,
+          };
+        } catch (error) {
+          console.error('認証エラー:', error);
+          if (error instanceof Error) {
+            throw error;
+          }
+          throw new Error('認証に失敗しました。');
         }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-          console.error('パスワードが正しくありません:', email);
-          return null;
-        }
-
-        // ログイン成功 - 最終ログイン時刻を更新
-        await User.findOneAndUpdate(
-          { _id: user._id },
-          { lastLoginAt: new Date() }
-        );
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          emailVerified: user.emailVerified
-            ? typeof user.emailVerified === 'boolean'
-              ? new Date()
-              : new Date(user.emailVerified)
-            : undefined,
-        };
-      } catch (error) {
-        console.error('認証エラー:', error);
-        if (error instanceof Error) {
-          throw error;
-        }
-        throw new Error('認証に失敗しました。');
-      }
-    },
-  }),
+      },
+    }),
 ];
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
@@ -187,8 +190,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             const randomPassword = crypto.randomBytes(32).toString('hex');
             await User.create({
               _id: crypto.randomUUID(),
-              name:
-                user.name || (user.email ? user.email.split('@')[0] : 'User'),
+              name: user.name || (user.email ? user.email.split('@')[0] : 'User'),
               email: (user.email || '').toLowerCase(),
               password: randomPassword,
               emailVerified: true,
@@ -198,13 +200,10 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               lastLoginAt: new Date(),
             });
           } else {
-            await User.findOneAndUpdate(
-              { _id: existing._id },
-              {
-                lastLoginAt: new Date(),
-                isActive: true,
-              }
-            );
+            await User.findByIdAndUpdate(existing._id, {
+              lastLoginAt: new Date(),
+              isActive: true,
+            });
           }
         }
       } catch (e) {
