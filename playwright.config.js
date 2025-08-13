@@ -82,5 +82,10 @@ export default defineConfig({
         reuseExistingServer: false,
         timeout: 120 * 1000, // 2分のタイムアウト
       }
-    : undefined, // ローカルでは既存のサーバーを使用
+    : {
+        command: 'npm run dev',
+        port: 3001,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
+      }, // ローカルでは開発サーバーを使用
 });
