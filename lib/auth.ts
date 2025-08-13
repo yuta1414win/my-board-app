@@ -77,7 +77,7 @@ export const authOptions: any = {
           );
 
           return {
-            id: (user as any)._id.toString(),
+            id: user._id.toString(),
             email: user.email,
             name: user.name,
             emailVerified: user.emailVerified
