@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     let user = null;
     if (decoded && decoded.type === 'email-verification' && decoded.userId) {
       // JWTにユーザーIDが含まれる場合はIDで検索
-      user = await User.findOne({ _id: decoded.userId }).select(
+      user = await User.findById(decoded.userId).select(
         '+emailVerificationToken +emailVerificationExpires'
       );
     } else {
