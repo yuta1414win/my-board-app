@@ -247,9 +247,7 @@ export class UserModel {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // 現在のユーザー情報を取得
-      const user = await User.findById(id)
-        .select('+password')
-        .exec();
+      const user = await User.findById(id).select('+password').exec();
       if (!user) {
         return { success: false, error: 'ユーザーが見つかりません' };
       }
@@ -275,7 +273,7 @@ export class UserModel {
 
   static documentToProfile(user: IUser): UserProfile {
     return {
-      id: user._id.toString(),
+      id: (user as any)._id.toString(),
       name: user.name,
       email: user.email,
       bio: user.bio,
