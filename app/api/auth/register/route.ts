@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       } else {
         // 未認証ユーザーの場合、新しい確認トークンを送信
         const verificationToken = generateEmailVerificationToken(
-          (existingUser as any)._id.toString()
+          existingUser._id.toString()
         );
 
         existingUser.emailVerificationToken = verificationToken;
