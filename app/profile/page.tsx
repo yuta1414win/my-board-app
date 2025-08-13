@@ -14,7 +14,7 @@ export default async function ProfilePage() {
   }
 
   // データベースからユーザー情報を取得を試行
-  let user = await UserModel.findById(currentUser.id);
+  let user = await UserModel.findOne({ _id: currentUser.id });
 
   // OAuthユーザーの場合、セッション情報を使用してプロフィールを作成
   if (!user && currentUser.email) {
