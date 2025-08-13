@@ -104,7 +104,7 @@ export async function GET() {
         idMismatch:
           session.user?.id &&
           userByEmail &&
-          session.user.id !== (userByEmail as any)._id.toString(),
+          session.user.id !== userByEmail._id.toString(),
       },
     });
   } catch (error) {
