@@ -293,7 +293,7 @@ export class UserModel {
 
   static documentToProfile(user: IUser): UserProfile {
     return {
-      id: user._id.toString(),
+      id: (user as any)._id.toString(),
       name: user.name,
       email: user.email,
       bio: user.bio,
