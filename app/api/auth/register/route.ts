@@ -210,7 +210,7 @@ export async function POST(request: Request) {
         code: emailResult.success
           ? 'REGISTRATION_SUCCESS'
           : 'VERIFICATION_LINK_PROVIDED',
-        userId: (user as any)._id.toString(),
+        userId: user._id.toString(),
         verificationUrl,
       },
       { status: 201 }
