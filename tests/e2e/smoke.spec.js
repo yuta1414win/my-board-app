@@ -11,69 +11,53 @@ test.describe('スモークテスト（CI用）', () => {
 
     // 基本要素の存在確認
     await expect(page).toHaveTitle(/掲示板アプリ/);
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.locator('h1')).toBeVisible();
 
-    // ナビゲーションの確認（AppBarのbannerロールで確認）
-    await expect(page.getByRole('banner')).toBeVisible();
+    // ナビゲーションの確認
+    await expect(page.locator('nav')).toBeVisible();
   });
 
   test('掲示板ページへのナビゲーション', async ({ page }) => {
     await page.goto('/');
 
-    // セッション有無でCTAが変わるため分岐
-    const boardCta = page.getByRole('link', { name: '掲示板を開く' });
-    if (await boardCta.isVisible().catch(() => false)) {
-      await boardCta.click();
-      await page.waitForURL('**/board');
-      await expect(page.getByRole('heading')).toContainText(/掲示板|Board/);
-    } else {
-      // 未ログインの場合はログイン→成功後/boardへ
-      await page.getByRole('link', { name: 'ログイン', exact: true }).click();
-      await expect(page).toHaveURL(/\/auth\/signin/);
-      await page.getByLabel(/メールアドレス/).fill('existing@example.com');
-      await page.getByLabel(/パスワード/).fill('ExistingPassword123!');
-      await page
-        .locator('form')
-        .getByRole('button', { name: 'ログイン', exact: true })
-        .click();
-      await expect(page).toHaveURL(/\/board/);
-    }
+    // 掲示板リンクをクリック
+    await page.click('text=掲示板を開く');
+    await page.waitForURL('**/board');
+
+    // 掲示板ページの基本要素
+    await expect(page.locator('h1')).toContainText('掲示板');
   });
 
   test('投稿フォームの表示確認', async ({ page }) => {
-    // 認証が必要なのでログインしてから/boardへ
-    await page.goto('/auth/signin');
-    await page.getByLabel(/メールアドレス/).fill('existing@example.com');
-    await page.getByLabel(/パスワード/).fill('ExistingPassword123!');
-    await page
-      .locator('form')
-      .getByRole('button', { name: 'ログイン', exact: true })
-      .click();
-    await expect(page).toHaveURL(/\/board/);
+    await page.goto('/board');
 
-    // 新規投稿ページに遷移して投稿フォームを確認（実装に準拠）
-    await page.getByRole('button', { name: '新規投稿' }).click();
-    await page.waitForURL('**/posts/new');
-    await expect(page.getByRole('heading', { name: /新しい投稿|新規投稿/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: /投稿|投稿する/ })).toBeVisible();
+    // 投稿フォームの存在確認
+    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('input[name="title"]')).toBeVisible();
+    await expect(page.locator('textarea[name="content"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
   test('基本的なフォームバリデーション', async ({ page }) => {
-    await page.goto('/auth/signin');
-    // ログインフォームのバリデーション（空送信でURL不変）
-    const submit = page
-      .locator('form')
-      .getByRole('button', { name: 'ログイン', exact: true });
-    await submit.click();
-    const current = page.url();
-    await page.waitForTimeout(500);
-    await expect(page).toHaveURL(current);
+    await page.goto('/board');
+
+    // 投稿ボタンが無効化されていることを確認
+    await expect(page.locator('button[type="submit"]')).toBeDisabled();
+
+    // 必須フィールドの確認
+    await expect(page.locator('input[name="title"][required]')).toBeVisible();
+    await expect(
+      page.locator('textarea[name="content"][required]')
+    ).toBeVisible();
   });
 
   test('レスポンシブデザインの基本確認', async ({ page }) => {
+    // モバイルサイズでテスト
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.getByRole('banner')).toBeVisible();
+
+    // ページが表示される
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('nav')).toBeVisible();
   });
 });
