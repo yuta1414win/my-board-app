@@ -447,7 +447,7 @@ export default function SignInForm() {
           </Link>
           <Link
             component={NextLink}
-            href="/auth/forgot-password"
+            href="/auth/reset-request"
             variant="body2"
             sx={{ color: 'text.secondary' }}
           >
