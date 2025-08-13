@@ -214,11 +214,26 @@ const User: Model<IUser> =
 export class UserModel {
   static async findById(id: string): Promise<IUser | null> {
     try {
+      // 空のIDチェック
+      if (!id) {
+        console.error('UserModel.findById: ID is empty');
+        return null;
+      }
+      
       // NextAuthのUUID形式のIDに対応するため、_idフィールドで直接検索
       // MongooseのcastingをスキップしてString型のIDを検索
-      return await User.findOne({ _id: id as any }).exec();
+      // findOneを使うことでMongooseのObjectIDキャストエラーを回避
+      const user = await User.findOne({ _id: id }).exec();
+      
+      if (!user) {
+        console.log(`UserModel.findById: No user found with ID: ${id}`);
+      }
+      
+      return user;
     } catch (error) {
       console.error('UserModel.findById error:', error);
+      console.error('Failed ID:', id);
+      // エラーが発生しても null を返してアプリケーションの継続を保証
       return null;
     }
   }
