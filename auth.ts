@@ -196,7 +196,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               lastLoginAt: new Date(),
             });
           } else {
-            await User.findByIdAndUpdate(existing._id, {
+            await User.findByIdAndUpdate((existing as any)._id, {
               lastLoginAt: new Date(),
               isActive: true,
             });
