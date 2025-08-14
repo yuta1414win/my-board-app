@@ -60,7 +60,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   // パフォーマンス設定（CI環境のE2Eテスト時は無効化）
-  output: process.env.NODE_ENV === 'production' && !process.env.CI ? 'standalone' : undefined,
+  output:
+    process.env.NODE_ENV === 'production' && !process.env.CI
+      ? 'standalone'
+      : undefined,
   poweredByHeader: false,
   compress: true,
 
