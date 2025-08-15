@@ -119,8 +119,11 @@ export async function POST(request: Request) {
         ); // 24時間有効
         await existingUser.save();
 
-        const emailResult = await sendVerificationEmail(email, verificationToken);
-        
+        const emailResult = await sendVerificationEmail(
+          email,
+          verificationToken
+        );
+
         if (!emailResult.success) {
           console.error('[REGISTER] 再送信メール送信失敗:', {
             email,
@@ -158,14 +161,14 @@ export async function POST(request: Request) {
     try {
       console.log(`[REGISTER] ${email} への確認メール送信を開始`);
       const emailResult = await sendVerificationEmail(email, verificationToken);
-      
+
       if (!emailResult.success) {
         console.error('[REGISTER] メール送信失敗:', {
           email,
           error: emailResult.error,
           provider: emailResult.provider,
         });
-        
+
         // ユーザー作成は成功したが、メール送信に失敗した場合
         return NextResponse.json(
           {
@@ -180,12 +183,11 @@ export async function POST(request: Request) {
           { status: 201 }
         );
       }
-      
+
       console.log(`[REGISTER] ${email} への確認メール送信成功:`, {
         provider: emailResult.provider,
         messageId: emailResult.messageId,
       });
-      
     } catch (emailError) {
       console.error('[REGISTER] 予期しないメール送信エラー:', emailError);
       // ユーザー作成は成功したが、メール送信に失敗した場合

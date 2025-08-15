@@ -31,7 +31,7 @@ async function sendViaResend({
 }: EmailOptions): Promise<EmailResult> {
   try {
     console.log(`[EMAIL] Resendでメール送信を試行: ${to}`);
-    
+
     const result = await resend.emails.send({
       from: process.env.EMAIL_FROM || 'My Board App <noreply@example.com>',
       to,
@@ -42,7 +42,7 @@ async function sendViaResend({
     });
 
     console.log(`[EMAIL] Resend送信成功: ${result.data?.id}`);
-    
+
     return {
       success: true,
       messageId: result.data?.id,
@@ -54,7 +54,7 @@ async function sendViaResend({
       to,
       subject,
     });
-    
+
     return {
       success: false,
       error: error.message || 'Resend送信に失敗しました',
@@ -72,7 +72,7 @@ export async function sendEmailWithFallback({
   replyTo,
 }: EmailOptions): Promise<EmailResult> {
   const startTime = Date.now();
-  
+
   // まずResendを試行
   if (process.env.RESEND_API_KEY) {
     const resendResult = await sendViaResend({
@@ -82,18 +82,18 @@ export async function sendEmailWithFallback({
       text,
       replyTo,
     });
-    
+
     if (resendResult.success) {
       const duration = Date.now() - startTime;
       console.log(`[EMAIL] 送信成功 (${duration}ms): ${to} via Resend`);
       return resendResult;
     }
-    
+
     console.warn('[EMAIL] Resend失敗、Nodemailerにフォールバック');
   } else {
     console.warn('[EMAIL] RESEND_API_KEY未設定、Nodemailerを使用');
   }
-  
+
   // Nodemailerでフォールバック
   try {
     const nodemailerResult = await sendViaNodemailer({
@@ -102,10 +102,12 @@ export async function sendEmailWithFallback({
       html,
       text,
     });
-    
+
     const duration = Date.now() - startTime;
-    console.log(`[EMAIL] フォールバック送信完了 (${duration}ms): ${to} via Nodemailer`);
-    
+    console.log(
+      `[EMAIL] フォールバック送信完了 (${duration}ms): ${to} via Nodemailer`
+    );
+
     return {
       ...nodemailerResult,
       provider: 'nodemailer',
@@ -118,7 +120,7 @@ export async function sendEmailWithFallback({
       subject,
       error: error.message,
     });
-    
+
     return {
       success: false,
       error: `メール送信に失敗しました: ${error.message}`,
@@ -131,8 +133,8 @@ export async function sendEmailWithFallback({
 // トークン生成関数
 export function generateEmailVerificationToken(userId: string): string {
   return jwt.sign(
-    { 
-      userId, 
+    {
+      userId,
       type: 'email-verification',
       timestamp: Date.now(),
     },
@@ -143,8 +145,8 @@ export function generateEmailVerificationToken(userId: string): string {
 
 export function generatePasswordResetToken(userId: string): string {
   return jwt.sign(
-    { 
-      userId, 
+    {
+      userId,
       type: 'password-reset',
       timestamp: Date.now(),
     },
@@ -157,7 +159,10 @@ export function verifyToken(token: string): any {
   try {
     return jwt.verify(token, process.env.JWT_SECRET!);
   } catch (error) {
-    console.error('[EMAIL] トークン検証失敗:', error instanceof Error ? error.message : error);
+    console.error(
+      '[EMAIL] トークン検証失敗:',
+      error instanceof Error ? error.message : error
+    );
     return null;
   }
 }
@@ -199,7 +204,7 @@ export async function sendVerificationEmail(
   token: string
 ): Promise<EmailResult> {
   const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${token}`;
-  
+
   const html = `
     <!DOCTYPE html>
     <html lang="ja">

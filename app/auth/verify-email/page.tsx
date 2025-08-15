@@ -2,7 +2,14 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Box, Alert, CircularProgress, Button, Typography, Paper } from '@mui/material';
+import {
+  Box,
+  Alert,
+  CircularProgress,
+  Button,
+  Typography,
+  Paper,
+} from '@mui/material';
 import Link from 'next/link';
 
 function VerifyEmailContent() {
@@ -25,8 +32,11 @@ function VerifyEmailContent() {
 
   const verifyEmail = async (token: string) => {
     try {
-      console.log('[VERIFY-PAGE] メール認証開始:', token.substring(0, 20) + '...');
-      
+      console.log(
+        '[VERIFY-PAGE] メール認証開始:',
+        token.substring(0, 20) + '...'
+      );
+
       const response = await fetch(`/api/auth/verify-email?token=${token}`);
       const data = await response.json();
 
@@ -96,13 +106,13 @@ function VerifyEmailContent() {
       {status === 'error' && (
         <>
           <Alert severity="error">{message}</Alert>
-          
+
           {details && (
-            <Paper 
-              sx={{ 
-                p: 2, 
-                mt: 2, 
-                maxWidth: '500px', 
+            <Paper
+              sx={{
+                p: 2,
+                mt: 2,
+                maxWidth: '500px',
                 bgcolor: '#fafafa',
                 fontSize: '0.875rem',
               }}
@@ -110,7 +120,13 @@ function VerifyEmailContent() {
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 🔍 デバッグ情報:
               </Typography>
-              <pre style={{ margin: 0, fontSize: '0.75rem', wordWrap: 'break-word' }}>
+              <pre
+                style={{
+                  margin: 0,
+                  fontSize: '0.75rem',
+                  wordWrap: 'break-word',
+                }}
+              >
                 {JSON.stringify(details, null, 2)}
               </pre>
             </Paper>

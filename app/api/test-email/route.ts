@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { 
+import {
   testEmailConnection,
   sendEmailWithFallback,
   sendVerificationEmail,
@@ -13,9 +13,9 @@ export async function POST(request: Request) {
 
     if (!to) {
       return NextResponse.json(
-        { 
+        {
           error: '送信先メールアドレスが必要です',
-          code: 'MISSING_TO_ADDRESS' 
+          code: 'MISSING_TO_ADDRESS',
         },
         { status: 400 }
       );
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         // 認証メールテスト
         result = await sendVerificationEmail(to, 'test-token-123');
         break;
-      
+
       case 'simple':
       default:
         // シンプルなテストメール
@@ -94,7 +94,6 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-
   } catch (error: unknown) {
     console.error('[TEST-EMAIL] 予期しないエラー:', error);
     return NextResponse.json(
@@ -114,9 +113,9 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     console.log('[TEST-EMAIL] メール接続テスト開始');
-    
+
     const result = await testEmailConnection();
-    
+
     if (result.success) {
       console.log('[TEST-EMAIL] メール接続テスト成功:', {
         provider: result.provider,
@@ -134,8 +133,8 @@ export async function GET(request: Request) {
           hasResendKey: !!process.env.RESEND_API_KEY,
           hasEmailFrom: !!process.env.EMAIL_FROM,
           hasGmailConfig: !!(
-            process.env.EMAIL_SERVER_HOST && 
-            process.env.EMAIL_SERVER_USER && 
+            process.env.EMAIL_SERVER_HOST &&
+            process.env.EMAIL_SERVER_USER &&
             process.env.EMAIL_SERVER_PASSWORD
           ),
           nextAuthUrl: process.env.NEXTAUTH_URL || 'NOT_SET',
@@ -156,8 +155,8 @@ export async function GET(request: Request) {
             hasResendKey: !!process.env.RESEND_API_KEY,
             hasEmailFrom: !!process.env.EMAIL_FROM,
             hasGmailConfig: !!(
-              process.env.EMAIL_SERVER_HOST && 
-              process.env.EMAIL_SERVER_USER && 
+              process.env.EMAIL_SERVER_HOST &&
+              process.env.EMAIL_SERVER_USER &&
               process.env.EMAIL_SERVER_PASSWORD
             ),
             nextAuthUrl: process.env.NEXTAUTH_URL || 'NOT_SET',
@@ -166,7 +165,6 @@ export async function GET(request: Request) {
         { status: 500 }
       );
     }
-
   } catch (error: unknown) {
     console.error('[TEST-EMAIL] 接続テストで予期しないエラー:', error);
     return NextResponse.json(
