@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/mongodb';
 import User from '../../../../models/User';
-import { verifyToken } from '../../../../lib/email';
+import { verifyToken, sendWelcomeEmail } from '../../../../lib/email-resend';
 
 export async function GET(request: Request) {
   try {
@@ -50,14 +50,37 @@ export async function GET(request: Request) {
     user.emailVerificationToken = undefined;
     await user.save();
 
+    // ウェルカムメールを送信
+    try {
+      console.log(`[VERIFY] ${user.email} へのウェルカムメール送信を開始`);
+      const welcomeResult = await sendWelcomeEmail(user.email, user.name);
+      
+      if (welcomeResult.success) {
+        console.log(`[VERIFY] ${user.email} へのウェルカムメール送信成功:`, {
+          provider: welcomeResult.provider,
+          messageId: welcomeResult.messageId,
+        });
+      } else {
+        console.warn(`[VERIFY] ${user.email} へのウェルカムメール送信失敗:`, welcomeResult.error);
+      }
+    } catch (welcomeError) {
+      console.warn('[VERIFY] ウェルカムメール送信で予期しないエラー:', welcomeError);
+    }
+
     return NextResponse.json({
       message: 'メールアドレスの確認が完了しました。ログインできます。',
       success: true,
     });
   } catch (error: unknown) {
-    console.error('Email verification error:', error);
+    console.error('[VERIFY] メール認証エラー:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました。しばらく時間を置いてお試しください。',
+        code: 'VERIFICATION_SERVER_ERROR',
+      },
       { status: 500 }
     );
   }
