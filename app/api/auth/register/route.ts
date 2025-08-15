@@ -4,7 +4,8 @@ import User from '../../../../models/User';
 import {
   generateEmailVerificationToken,
   sendVerificationEmail,
-} from '../../../../lib/email';
+  sendEmailWithFallback,
+} from '../../../../lib/email-resend';
 import { z } from 'zod';
 import { rateLimit } from '../../../../lib/rate-limit';
 
@@ -118,7 +119,20 @@ export async function POST(request: Request) {
         ); // 24時間有効
         await existingUser.save();
 
-        await sendVerificationEmail(email, verificationToken);
+        const emailResult = await sendVerificationEmail(email, verificationToken);
+        
+        if (!emailResult.success) {
+          console.error('[REGISTER] 再送信メール送信失敗:', {
+            email,
+            error: emailResult.error,
+            provider: emailResult.provider,
+          });
+        } else {
+          console.log(`[REGISTER] ${email} への再送信メール成功:`, {
+            provider: emailResult.provider,
+            messageId: emailResult.messageId,
+          });
+        }
 
         return NextResponse.json({
           message: '既存のアカウントに新しい確認メールを送信しました。',
@@ -140,17 +154,46 @@ export async function POST(request: Request) {
       emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24時間有効
     });
 
-    // 確認メール送信
+    // 確認メール送信（改善版）
     try {
-      await sendVerificationEmail(email, verificationToken);
+      console.log(`[REGISTER] ${email} への確認メール送信を開始`);
+      const emailResult = await sendVerificationEmail(email, verificationToken);
+      
+      if (!emailResult.success) {
+        console.error('[REGISTER] メール送信失敗:', {
+          email,
+          error: emailResult.error,
+          provider: emailResult.provider,
+        });
+        
+        // ユーザー作成は成功したが、メール送信に失敗した場合
+        return NextResponse.json(
+          {
+            error: `アカウントは作成されましたが、確認メールの送信に失敗しました。${emailResult.provider}プロバイダーでエラーが発生しました。サポートにお問い合わせください。`,
+            code: 'EMAIL_SEND_FAILED',
+            userId: (user as any)._id.toString(),
+            details: {
+              provider: emailResult.provider,
+              error: emailResult.error,
+            },
+          },
+          { status: 201 }
+        );
+      }
+      
+      console.log(`[REGISTER] ${email} への確認メール送信成功:`, {
+        provider: emailResult.provider,
+        messageId: emailResult.messageId,
+      });
+      
     } catch (emailError) {
-      console.error('Email sending error:', emailError);
+      console.error('[REGISTER] 予期しないメール送信エラー:', emailError);
       // ユーザー作成は成功したが、メール送信に失敗した場合
       return NextResponse.json(
         {
           error:
-            'アカウントは作成されましたが、確認メールの送信に失敗しました。サポートにお問い合わせください。',
-          code: 'EMAIL_SEND_FAILED',
+            'アカウントは作成されましたが、確認メールの送信で予期しないエラーが発生しました。サポートにお問い合わせください。',
+          code: 'EMAIL_SEND_UNEXPECTED_ERROR',
           userId: (user as any)._id.toString(),
         },
         { status: 201 }
