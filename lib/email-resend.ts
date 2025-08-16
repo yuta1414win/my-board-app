@@ -38,7 +38,7 @@ async function sendViaResend({
       subject,
       html,
       text: text || html.replace(/<[^>]*>/g, ''),
-      reply_to: replyTo,
+      replyTo,
     });
 
     console.log(`[EMAIL] Resend送信成功: ${result.data?.id}`);
